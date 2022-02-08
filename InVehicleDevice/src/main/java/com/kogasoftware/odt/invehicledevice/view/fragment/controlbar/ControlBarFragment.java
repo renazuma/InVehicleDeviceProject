@@ -5,7 +5,6 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 
@@ -29,193 +28,182 @@ import java.util.List;
 /**
  * 到着ボタン、地図ボタン、運行予定ボタンを表示する領域
  */
-public class ControlBarFragment	extends OperationSchedulesSyncFragmentAbstract {
-	private static final String TAG = ControlBarFragment.class.getSimpleName();
-	public static final String OPERATION_LIST_FRAGMENT_TAG = ControlBarFragment.class
-			+ "/" + OperationSchedulesSyncFragmentAbstract.class;
-	private ContentResolver contentResolver;
-	private Button mapButton;
-	private OperationPhase operationPhase;
+public class ControlBarFragment extends OperationSchedulesSyncFragmentAbstract {
+    private static final String TAG = ControlBarFragment.class.getSimpleName();
+    public static final String OPERATION_LIST_FRAGMENT_TAG = ControlBarFragment.class
+            + "/" + OperationSchedulesSyncFragmentAbstract.class;
+    private ContentResolver contentResolver;
+    private Button mapButton;
+    private OperationPhase operationPhase;
 
-	public static ControlBarFragment newInstance() {
-		ControlBarFragment fragment = new ControlBarFragment();
-		return fragment;
-	}
+    public static ControlBarFragment newInstance() {
+        return new ControlBarFragment();
+    }
 
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		return inflater.inflate(R.layout.control_bar_fragment, container, false);
-	}
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.control_bar_fragment, container, false);
+    }
 
-	@Override
-	public void onActivityCreated(Bundle savedInstanceState) {
-		super.onActivityCreated(savedInstanceState);
-		contentResolver = getActivity().getContentResolver();
-		mapButton = (Button) getView().findViewById(R.id.map_button);
-		Button operationScheduleListButton = (Button) getView().findViewById(R.id.operation_schedule_list_button);
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        contentResolver = getActivity().getContentResolver();
+        mapButton = getView().findViewById(R.id.map_button);
+        Button operationScheduleListButton = getView().findViewById(R.id.operation_schedule_list_button);
 
-		// TODO: 運行予定ボタンの定義。地図やphaseボタンと異なり、特別な引数や文字の変更が無いから、ここで定義されているが、わかりにくい。
-		operationScheduleListButton.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				ViewDisabler.disable(v);
-				showOperationScheduleListFragment();
-			}
-		});
-	}
+        // TODO: 運行予定ボタンの定義。地図やphaseボタンと異なり、特別な引数や文字の変更が無いから、ここで定義されているが、わかりにくい。
+        operationScheduleListButton.setOnClickListener(v -> {
+            ViewDisabler.disable(v);
+            showOperationScheduleListFragment();
+        });
+    }
 
-	// 表示メソッド
-	public void showNavigation(Phase phase) {
-		if (!isAdded()) { return; }
+    // 表示メソッド
+    public void showNavigation(Phase phase) {
+        if (!isAdded()) {
+            return;
+        }
 
-		if (phase.equals(Phase.DRIVE)) {
-			if (operationPhase.isExistCurrent()) {
-				operationPhase.getCurrentRepresentativeOS().startNavigation(getActivity());
-			}
-		} else {
-			if (operationPhase.isExistNext()) {
-				operationPhase.getNextRepresentativeOS().startNavigation(getActivity());
-			}
-		}
-	}
+        if (phase.equals(Phase.DRIVE)) {
+            if (operationPhase.isExistCurrent()) {
+                operationPhase.getCurrentRepresentativeOS().startNavigation(getActivity());
+            }
+        } else {
+            if (operationPhase.isExistNext()) {
+                operationPhase.getNextRepresentativeOS().startNavigation(getActivity());
+            }
+        }
+    }
 
-	public void showOperationScheduleListFragment() {
-		if (!isAdded()) { return; }
+    public void showOperationScheduleListFragment() {
+        if (!isAdded()) {
+            return;
+        }
 
-		Fragments.showModalFragment(getFragmentManager(), OperationListFragment.newInstance(true), OPERATION_LIST_FRAGMENT_TAG);
-	}
+        Fragments.showModalFragment(getFragmentManager(), OperationListFragment.newInstance(true), OPERATION_LIST_FRAGMENT_TAG);
+    }
 
-	public void showArrivalCheckFragment() {
+    public void showArrivalCheckFragment() {
 
-		if (!isAdded()) { return; }
+        if (!isAdded()) {
+            return;
+        }
 
-		if (!operationPhase.isExistCurrent()) { return; }
+        if (!operationPhase.isExistCurrent()) {
+            return;
+        }
 
-		getFragmentManager()
-			.beginTransaction()
-			.add(R.id.modal_fragment_container, ArrivalCheckFragment.newInstance(operationPhase))
-			.commitAllowingStateLoss();
-	}
+        getFragmentManager()
+                .beginTransaction()
+                .add(R.id.modal_fragment_container, ArrivalCheckFragment.newInstance(operationPhase))
+                .commitAllowingStateLoss();
+    }
 
-	public void showDepartureCheckFragment(Phase phase) {
-		if (!isAdded()) { return; }
+    public void showDepartureCheckFragment(Phase phase) {
+        if (!isAdded()) {
+            return;
+        }
 
-		if (!operationPhase.isExistCurrent()) { return; }
+        if (!operationPhase.isExistCurrent()) {
+            return;
+        }
 
-		if (existPassengerRecordError(phase)) {
-			Fragments.showModalFragment(getFragmentManager(), PassengerRecordErrorFragment.newInstance(operationPhase));
-		} else if (phase.equals(Phase.PLATFORM_GET_OFF)) {
-			List<PassengerRecord> getOnPassengerRecords = Lists.newArrayList();
-			for (OperationSchedule operationSchedule : operationPhase.getCurrentOperationSchedules()) {
-				getOnPassengerRecords.addAll(operationSchedule.getGetOnScheduledPassengerRecords(operationPhase.passengerRecords));
-			}
+        if (existPassengerRecordError(phase)) {
+            Fragments.showModalFragment(getFragmentManager(), PassengerRecordErrorFragment.newInstance(operationPhase));
+        } else if (phase.equals(Phase.PLATFORM_GET_OFF)) {
+            List<PassengerRecord> getOnPassengerRecords = Lists.newArrayList();
+            for (OperationSchedule operationSchedule : operationPhase.getCurrentOperationSchedules()) {
+                getOnPassengerRecords.addAll(operationSchedule.getGetOnScheduledPassengerRecords(operationPhase.passengerRecords));
+            }
 
-			if (getOnPassengerRecords.isEmpty()) {
-				Fragments.showModalFragment(getFragmentManager(), DepartureCheckFragment.newInstance(operationPhase));
-			} else {
-				for (OperationSchedule operationSchedule : operationPhase.getCurrentOperationSchedules()) {
-					operationSchedule.completeGetOff = true;
-				}
-				new Thread() {
-					@Override
-					public void run() {
-						for (OperationSchedule operationSchedule : operationPhase.getCurrentOperationSchedules()) {
-							contentResolver.insert(OperationSchedule.CONTENT.URI, operationSchedule.toContentValues());
-						}
-					}
-				}.start();
-			}
-		} else {
-			Fragments.showModalFragment(getFragmentManager(), DepartureCheckFragment.newInstance(operationPhase));
-		}
-	}
+            if (getOnPassengerRecords.isEmpty()) {
+                Fragments.showModalFragment(getFragmentManager(), DepartureCheckFragment.newInstance(operationPhase));
+            } else {
+                for (OperationSchedule operationSchedule : operationPhase.getCurrentOperationSchedules()) {
+                    operationSchedule.completeGetOff = true;
+                }
+                new Thread() {
+                    @Override
+                    public void run() {
+                        for (OperationSchedule operationSchedule : operationPhase.getCurrentOperationSchedules()) {
+                            contentResolver.insert(OperationSchedule.CONTENT.URI, operationSchedule.toContentValues());
+                        }
+                    }
+                }.start();
+            }
+        } else {
+            Fragments.showModalFragment(getFragmentManager(), DepartureCheckFragment.newInstance(operationPhase));
+        }
+    }
 
-	private boolean existPassengerRecordError(Phase phase) {
-		return (existGetOffPassengerError(phase) || existGetOnPassengerError(phase));
-	}
+    private boolean existPassengerRecordError(Phase phase) {
+        return (existGetOffPassengerError(phase) || existGetOnPassengerError(phase));
+    }
 
-	private boolean existGetOffPassengerError(Phase phase) {
-		if (!phase.equals(Phase.PLATFORM_GET_OFF)) {
-			return false;
-		}
+    private boolean existGetOffPassengerError(Phase phase) {
+        if (!phase.equals(Phase.PLATFORM_GET_OFF)) {
+            return false;
+        }
 
-		for (OperationSchedule operationSchedule : operationPhase.getCurrentOperationSchedules()) {
-			if (!operationSchedule.getNoGetOffErrorPassengerRecords(operationPhase.passengerRecords).isEmpty()) {
-				return true;
-			}
-		}
-		return false;
-	}
+        for (OperationSchedule operationSchedule : operationPhase.getCurrentOperationSchedules()) {
+            if (!operationSchedule.getNoGetOffErrorPassengerRecords(operationPhase.passengerRecords).isEmpty()) {
+                return true;
+            }
+        }
+        return false;
+    }
 
-	private boolean existGetOnPassengerError(Phase phase) {
-		if (!phase.equals(Phase.PLATFORM_GET_ON)) {
-			return false;
-		}
+    private boolean existGetOnPassengerError(Phase phase) {
+        if (!phase.equals(Phase.PLATFORM_GET_ON)) {
+            return false;
+        }
 
-		for (OperationSchedule operationSchedule : operationPhase.getCurrentOperationSchedules()) {
-			if (!operationSchedule.getNoGetOnErrorPassengerRecords(operationPhase.passengerRecords).isEmpty()) {
-				return true;
-			}
-		}
-		return false;
-	}
+        for (OperationSchedule operationSchedule : operationPhase.getCurrentOperationSchedules()) {
+            if (!operationSchedule.getNoGetOnErrorPassengerRecords(operationPhase.passengerRecords).isEmpty()) {
+                return true;
+            }
+        }
+        return false;
+    }
 
-	// 画面右部のボタンの、地図ボタン、phase変更ボタン（到着しました等）を定義する
-	@Override
-	protected void onOperationSchedulesAndPassengerRecordsLoadFinished(
-			final LinkedList<OperationSchedule> operationSchedules,
-			final LinkedList<PassengerRecord> passengerRecords) {
-		this.operationPhase = new OperationPhase(operationSchedules, passengerRecords);
-		final Phase phase = operationPhase.getPhase();
+    // 画面右部のボタンの、地図ボタン、phase変更ボタン（到着しました等）を定義する
+    @Override
+    protected void onOperationSchedulesAndPassengerRecordsLoadFinished(
+            final LinkedList<OperationSchedule> operationSchedules,
+            final LinkedList<PassengerRecord> passengerRecords) {
+        this.operationPhase = new OperationPhase(operationSchedules, passengerRecords);
+        final Phase phase = operationPhase.getPhase();
 
-		mapButton.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				ViewDisabler.disable(v);
-				showNavigation(phase);
-			}
-		});
+        mapButton.setOnClickListener(v -> {
+            ViewDisabler.disable(v);
+            showNavigation(phase);
+        });
 
-		Button changePhaseButton = (Button) getView().findViewById(R.id.change_phase_button);
-		getView().setBackgroundColor(Color.WHITE);
-		switch (operationPhase.getPhase()) {
-			case DRIVE :
-				changePhaseButton.setEnabled(true);
-				changePhaseButton.setText(getString(R.string.it_arrives_button_text));
-				changePhaseButton.setOnClickListener(new OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						ViewDisabler.disable(v);
-						showArrivalCheckFragment();
-					}
-				});
-				break;
-			case FINISH :
-				changePhaseButton.setEnabled(false);
-				changePhaseButton.setText("");
-				break;
-			case PLATFORM_GET_OFF :
-				changePhaseButton.setEnabled(true);
-				changePhaseButton.setText("確認\nする");
-				changePhaseButton.setOnClickListener(new OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						ViewDisabler.disable(v);
-						showDepartureCheckFragment(phase);
-					}
-				});
-				break;
-			case PLATFORM_GET_ON :
-				changePhaseButton.setEnabled(true);
-				changePhaseButton.setText("確認\nする");
-				changePhaseButton.setOnClickListener(new OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						ViewDisabler.disable(v);
-						showDepartureCheckFragment(phase);
-					}
-				});
-				break;
-		}
-	}
+        Button changePhaseButton = getView().findViewById(R.id.change_phase_button);
+        getView().setBackgroundColor(Color.WHITE);
+        switch (operationPhase.getPhase()) {
+            case DRIVE:
+                changePhaseButton.setEnabled(true);
+                changePhaseButton.setText(getString(R.string.it_arrives_button_text));
+                changePhaseButton.setOnClickListener(v -> {
+                    ViewDisabler.disable(v);
+                    showArrivalCheckFragment();
+                });
+                break;
+            case FINISH:
+                changePhaseButton.setEnabled(false);
+                changePhaseButton.setText("");
+                break;
+            case PLATFORM_GET_OFF:
+            case PLATFORM_GET_ON:
+                changePhaseButton.setEnabled(true);
+                changePhaseButton.setText("確認\nする");
+                changePhaseButton.setOnClickListener(v -> {
+                    ViewDisabler.disable(v);
+                    showDepartureCheckFragment(phase);
+                });
+                break;
+        }
+    }
 }

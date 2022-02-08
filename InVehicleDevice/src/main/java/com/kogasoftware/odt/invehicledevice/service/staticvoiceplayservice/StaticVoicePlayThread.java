@@ -12,14 +12,14 @@ import java.util.concurrent.Semaphore;
 
 /**
  * 静的な音声ファイル再生を直列に行うためのスレッドクラス
- *
+ * <p>
  * Created by tnoda on 2017/06/12.
  */
 
 public class StaticVoicePlayThread extends Thread {
     private final static String TAG = StaticVoicePlayThread.class.getSimpleName();
 
-    private Context context;
+    private final Context context;
     private final BlockingQueue<Voice> playFiles;
     private final AudioManager audioManager;
 
@@ -49,21 +49,13 @@ public class StaticVoicePlayThread extends Thread {
         audioManager.setStreamVolume(AudioManager.STREAM_MUSIC,
                 audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC), 0);
         MediaPlayer mp = MediaPlayer.create(this.context, voice.getVoiceFileResId());
-        mp.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mediaPlayer) {
-                semaphore.release();
-            }
-        });
+        mp.setOnCompletionListener(mediaPlayer -> semaphore.release());
 
-        mp.setOnErrorListener(new MediaPlayer.OnErrorListener() {
-            @Override
-            public boolean onError(MediaPlayer mp, int what, int extra) {
-                Log.w(TAG, "onError(" + mp + ", " + what + ", " + extra
-                        + ") voice=\"" + voice.getClass().getSimpleName() + "\"");
-                semaphore.release();
-                return false;
-            }
+        mp.setOnErrorListener((mp1, what, extra) -> {
+            Log.w(TAG, "onError(" + mp1 + ", " + what + ", " + extra
+                    + ") voice=\"" + voice.getClass().getSimpleName() + "\"");
+            semaphore.release();
+            return false;
         });
 
         Log.d(TAG, "voice=" + voice.getClass().getSimpleName() + ", volume=" + voice.getVolume());

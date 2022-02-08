@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.VehicleNotification;
 import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivity;
@@ -25,55 +26,55 @@ import com.kogasoftware.odt.invehicledevice.view.fragment.modal.notification.Veh
 
 public class ScheduleNotificationLoader {
 
-  // TODO:InVehicleDeviceActivity配下で一意である必要がある。Activityクラスで管理した方が良い？
-  public static final Integer LOADER_ID = 4;
+    // TODO:InVehicleDeviceActivity配下で一意である必要がある。Activityクラスで管理した方が良い？
+    public static final Integer LOADER_ID = 4;
 
-  private InVehicleDeviceActivity inVehicleDeviceActivity;
+    private final InVehicleDeviceActivity inVehicleDeviceActivity;
 
-  public ScheduleNotificationLoader(InVehicleDeviceActivity inVehicleDeviceActivity) {
-    // TODO:Activityを使いまわすのは良くない気がする。別の方法があれば変えたい。
-    this.inVehicleDeviceActivity = inVehicleDeviceActivity;
-  }
-
-  public void initLoader() {
-    inVehicleDeviceActivity.getLoaderManager().initLoader(LOADER_ID, null, callbacks);
-  }
-
-  public void destroyLoader() {
-    inVehicleDeviceActivity.getLoaderManager().destroyLoader(LOADER_ID);
-  }
-
-  private final LoaderManager.LoaderCallbacks<Cursor> callbacks = new LoaderManager.LoaderCallbacks<Cursor>() {
-    @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-
-      return new CursorLoader(
-              inVehicleDeviceActivity,
-              VehicleNotification.CONTENT.URI,
-              null,
-              VehicleNotification.WHERE_SCHEDULE_VEHICLE_NOTIFICATION_FRAGMENT_CONTENT,
-              null, null);
+    public ScheduleNotificationLoader(InVehicleDeviceActivity inVehicleDeviceActivity) {
+        // TODO:Activityを使いまわすのは良くない気がする。別の方法があれば変えたい。
+        this.inVehicleDeviceActivity = inVehicleDeviceActivity;
     }
 
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-      if (cursor.getCount() == 0) { return; }
+    public void initLoader() {
+        inVehicleDeviceActivity.getLoaderManager().initLoader(LOADER_ID, null, callbacks);
+    }
 
-      Handler mainUIHandler = new Handler(Looper.getMainLooper());
+    public void destroyLoader() {
+        inVehicleDeviceActivity.getLoaderManager().destroyLoader(LOADER_ID);
+    }
 
-      mainUIHandler.post(new Runnable() {
+    private final LoaderManager.LoaderCallbacks<Cursor> callbacks = new LoaderManager.LoaderCallbacks<Cursor>() {
         @Override
-        public void run() { VehicleNotificationAlertFragment.showModal(inVehicleDeviceActivity); }
-      });
+        public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 
-      mainUIHandler.postDelayed(new Runnable() {
+            return new CursorLoader(
+                    inVehicleDeviceActivity,
+                    VehicleNotification.CONTENT.URI,
+                    null,
+                    VehicleNotification.WHERE_SCHEDULE_VEHICLE_NOTIFICATION_FRAGMENT_CONTENT,
+                    null, null);
+        }
+
         @Override
-        public void run() { ScheduleVehicleNotificationFragment.showModal(inVehicleDeviceActivity); }
-      }, inVehicleDeviceActivity.VEHICLE_NOTIFICATION_ALERT_DELAY_MILLIS);
-    }
+        public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+            String tag = ScheduleNotificationLoader.class.getSimpleName();
+            Log.i(tag, "onLoadFinish and start process.");
+            if (cursor.getCount() == 0) {
+                return;
+            }
 
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-    }
-  };
+            Handler mainUIHandler = new Handler(Looper.getMainLooper());
+
+            mainUIHandler.post(() -> VehicleNotificationAlertFragment.showModal(inVehicleDeviceActivity));
+            Log.i(tag, "Notification alert fragment modal set.");
+
+            mainUIHandler.postDelayed(() -> ScheduleVehicleNotificationFragment.showModal(inVehicleDeviceActivity), InVehicleDeviceActivity.VEHICLE_NOTIFICATION_ALERT_DELAY_MILLIS);
+            Log.i(tag, "Notification schedule fragment modal set.");
+        }
+
+        @Override
+        public void onLoaderReset(Loader<Cursor> loader) {
+        }
+    };
 }

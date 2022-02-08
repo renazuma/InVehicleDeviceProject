@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * ネットワーク状態を監視し、定期的にダイアログメッセージを表示します。
- *
+ * <p>
  * Created by tnoda on 2017/06/07.
  */
 
@@ -29,10 +29,10 @@ public class NetworkAlerter implements Runnable {
     private static final int RUN_INTERVAL = 500; // 0.5 秒ごとに状態を確認
     private static final int NETWORK_DISCONNECT_LIMIT_MILLS = 3 * 60 * 1000;
 
-    private Context context;
-    private Handler handler;
-    private ImageView networkIconView;
-    private FragmentManager fragmentManager;
+    private final Context context;
+    private final Handler handler;
+    private final ImageView networkIconView;
+    private final FragmentManager fragmentManager;
     private final Stopwatch dialogStopwatch = new Stopwatch();
 
     /**

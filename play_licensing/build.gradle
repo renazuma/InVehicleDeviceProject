@@ -17,9 +17,12 @@ android {
         }
     }
 
-    lintOptions {
+    defaultConfig {
+        targetSdkVersion 26
+        minSdkVersion 3
+    }
+    lint {
         abortOnError false
         xmlReport false
     }
-    buildToolsVersion '27.0.3'
 }

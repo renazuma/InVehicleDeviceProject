@@ -19,47 +19,46 @@ import com.kogasoftware.odt.invehicledevice.view.fragment.modal.SignInFragment;
 
 public class onCreateSignInLoader {
 
-  // TODO:InVehicleDeviceActivity配下で一意である必要がある。Activityクラスで管理した方が良い？
-  // TODO: SignInFragmentとLOADER_IDが同じ。という事は、これはActivityクラスで起動derでSignInj
-  public static final Integer LOADER_ID = 1;
+    // TODO:InVehicleDeviceActivity配下で一意である必要がある。Activityクラスで管理した方が良い？
+    // TODO: SignInFragmentとLOADER_IDが同じ。という事は、これはActivityクラスで起動derでSignInj
+    public static final Integer LOADER_ID = 1;
 
-  private InVehicleDeviceActivity inVehicleDeviceActivity;
+    private final InVehicleDeviceActivity inVehicleDeviceActivity;
 
-  public onCreateSignInLoader(InVehicleDeviceActivity inVehicleDeviceActivity) {
-    // TODO:Activityを使いまわすのは良くない気がする。別の方法があれば変えたい。
-    this.inVehicleDeviceActivity = inVehicleDeviceActivity;
-  }
-
-  public void initLoader() {
-    inVehicleDeviceActivity.getLoaderManager().initLoader(LOADER_ID, null, callbacks);
-  }
-
-  public void destroyLoader() {
-    inVehicleDeviceActivity.getLoaderManager().destroyLoader(LOADER_ID);
-  }
-
-  private final LoaderManager.LoaderCallbacks<Cursor> callbacks = new LoaderManager.LoaderCallbacks<Cursor>() {
-    @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-      return new CursorLoader(inVehicleDeviceActivity,
-              InVehicleDevice.CONTENT.URI, null, null, null, null);
+    public onCreateSignInLoader(InVehicleDeviceActivity inVehicleDeviceActivity) {
+        // TODO:Activityを使いまわすのは良くない気がする。別の方法があれば変えたい。
+        this.inVehicleDeviceActivity = inVehicleDeviceActivity;
     }
 
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-      if (data.moveToFirst()) { return; }
+    public void initLoader() {
+        inVehicleDeviceActivity.getLoaderManager().initLoader(LOADER_ID, null, callbacks);
+    }
 
-      Handler mainUIHandler = new Handler(Looper.getMainLooper());
+    public void destroyLoader() {
+        inVehicleDeviceActivity.getLoaderManager().destroyLoader(LOADER_ID);
+    }
 
-      mainUIHandler.post(new Runnable() {
+    private final LoaderManager.LoaderCallbacks<Cursor> callbacks = new LoaderManager.LoaderCallbacks<Cursor>() {
         @Override
-        public void run() {SignInFragment.showModal(inVehicleDeviceActivity); }
-      });
-    }
+        public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+            return new CursorLoader(inVehicleDeviceActivity,
+                    InVehicleDevice.CONTENT.URI, null, null, null, null);
+        }
+
+        @Override
+        public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+            if (data.moveToFirst()) {
+                return;
+            }
+
+            Handler mainUIHandler = new Handler(Looper.getMainLooper());
+
+            mainUIHandler.post(() -> SignInFragment.showModal(inVehicleDeviceActivity));
+        }
 
 
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-    }
-  };
+        @Override
+        public void onLoaderReset(Loader<Cursor> loader) {
+        }
+    };
 }

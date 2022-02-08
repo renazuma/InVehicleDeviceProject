@@ -9,15 +9,15 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class OperationPhase implements Serializable {
-  public List<OperationSchedule> operationSchedules;
-  public List<PassengerRecord> passengerRecords;
+    public final List<OperationSchedule> operationSchedules;
+    public final List<PassengerRecord> passengerRecords;
 
-  public OperationPhase(List<OperationSchedule> operationSchedules, List<PassengerRecord> passengerRecords) {
-    this.operationSchedules = operationSchedules;
-    this.passengerRecords = passengerRecords;
-  }
+    public OperationPhase(List<OperationSchedule> operationSchedules, List<PassengerRecord> passengerRecords) {
+        this.operationSchedules = operationSchedules;
+        this.passengerRecords = passengerRecords;
+    }
 
-  public OperationSchedule.Phase getPhase() {
+    public OperationSchedule.Phase getPhase() {
         OperationPhase operationPhase = new OperationPhase(operationSchedules, passengerRecords);
         List<OperationSchedule> currentPhaseOperationSchedules = operationPhase.getCurrentOperationSchedules();
 
@@ -35,7 +35,7 @@ public class OperationPhase implements Serializable {
         }
     }
 
-  public List<List> getAllPhaseOperationSchedules() {
+    public List<List> getAllPhaseOperationSchedules() {
         List<List> phaseOperationSchedulesList = Lists.newLinkedList();
 
         for (List<OperationSchedule> samePlatformOperationSchedules : getOperationScheduleListSamePlatformChunk()) {
@@ -62,7 +62,7 @@ public class OperationPhase implements Serializable {
         return phaseOperationSchedulesList;
     }
 
-  private LinkedList<List> getOperationScheduleListSamePlatformChunk() {
+    private LinkedList<List> getOperationScheduleListSamePlatformChunk() {
 
         boolean first = true;
         OperationSchedule previousOS = null;
@@ -74,8 +74,8 @@ public class OperationPhase implements Serializable {
                 List<OperationSchedule> samePlatformOperationSchedules = Lists.newArrayList();
                 samePlatformOperationSchedules.add(currentOS);
                 platformOrderOperationScheduleLists.add(samePlatformOperationSchedules);
-                first = false;}
-            else {
+                first = false;
+            } else {
                 platformOrderOperationScheduleLists.getLast().add(currentOS);
             }
             previousOS = currentOS;
@@ -83,7 +83,7 @@ public class OperationPhase implements Serializable {
         return platformOrderOperationScheduleLists;
     }
 
-  public List<OperationSchedule> getCurrentOperationSchedules() {
+    public List<OperationSchedule> getCurrentOperationSchedules() {
         List<List> phaseOperationSchedulesList = getAllPhaseOperationSchedules();
         List<OperationSchedule> currentPhaseOperationSchedules = Lists.newArrayList();
 
@@ -102,19 +102,19 @@ public class OperationPhase implements Serializable {
         return currentPhaseOperationSchedules;
     }
 
-  public OperationSchedule getCurrentRepresentativeOS() {
-     if (isExistCurrent()) {
-         return getCurrentOperationSchedules().get(0);
-     } else {
-         return null;
-     }
-  }
+    public OperationSchedule getCurrentRepresentativeOS() {
+        if (isExistCurrent()) {
+            return getCurrentOperationSchedules().get(0);
+        } else {
+            return null;
+        }
+    }
 
-  public boolean isExistCurrent() {
+    public boolean isExistCurrent() {
         return !getCurrentOperationSchedules().isEmpty();
     }
 
-  public List<OperationSchedule> getNextOperationSchedules() {
+    public List<OperationSchedule> getNextOperationSchedules() {
         List<List> phaseOperationSchedulesList = getAllPhaseOperationSchedules();
         List<OperationSchedule> nextPhaseOperationSchedules = Lists.newArrayList();
 
@@ -134,15 +134,15 @@ public class OperationPhase implements Serializable {
         return nextPhaseOperationSchedules;
     }
 
-  public OperationSchedule getNextRepresentativeOS() {
-    if (isExistNext()) {
-      return getNextOperationSchedules().get(0);
-    } else {
-      return null;
+    public OperationSchedule getNextRepresentativeOS() {
+        if (isExistNext()) {
+            return getNextOperationSchedules().get(0);
+        } else {
+            return null;
+        }
     }
-  }
 
-  public boolean isExistNext() {
-    return !getNextOperationSchedules().isEmpty();
-  }
+    public boolean isExistNext() {
+        return !getNextOperationSchedules().isEmpty();
+    }
 }

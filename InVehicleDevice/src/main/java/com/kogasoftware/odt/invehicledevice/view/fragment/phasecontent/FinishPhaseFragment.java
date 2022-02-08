@@ -13,16 +13,15 @@ import com.kogasoftware.odt.invehicledevice.R;
  * 運行終了画面
  */
 public class FinishPhaseFragment extends Fragment {
-	private static final String TAG = FinishPhaseFragment.class.getSimpleName();
+    private static final String TAG = FinishPhaseFragment.class.getSimpleName();
 
-	public static FinishPhaseFragment newInstance() {
-		FinishPhaseFragment fragment = new FinishPhaseFragment();
-		return fragment;
-	}
+    public static FinishPhaseFragment newInstance() {
+        return new FinishPhaseFragment();
+    }
 
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		Log.i(TAG, "onCreateView");
-		return inflater.inflate(R.layout.finish_phase_fragment, container, false);
-	}
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        Log.i(TAG, "onCreateView");
+        return inflater.inflate(R.layout.finish_phase_fragment, container, false);
+    }
 }

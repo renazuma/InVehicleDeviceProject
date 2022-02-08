@@ -16,17 +16,17 @@ import java.util.concurrent.ScheduledExecutorService;
 
 public class OnCreateDataSync {
 
-  Context context;
-  ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
-  SQLiteDatabase database;
+    final Context context;
+    final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+    final SQLiteDatabase database;
 
-  public OnCreateDataSync(Context context) {
-    this.context = context;
-    this.database = new DatabaseHelper(context).getWritableDatabase();
-  }
+    public OnCreateDataSync(Context context) {
+        this.context = context;
+        this.database = new DatabaseHelper(context).getWritableDatabase();
+    }
 
-  public void execute() {
-	executorService.execute(new GetServiceProviderTask(context, database, executorService));
-    executorService.execute(new GetOperationSchedulesTask(context, database, executorService));
-  }
+    public void execute() {
+        executorService.execute(new GetServiceProviderTask(context, database, executorService));
+        executorService.execute(new GetOperationSchedulesTask(context, database, executorService));
+    }
 }

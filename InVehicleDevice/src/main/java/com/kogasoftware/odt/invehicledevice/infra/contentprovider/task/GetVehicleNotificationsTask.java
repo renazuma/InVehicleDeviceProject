@@ -19,6 +19,7 @@ import org.apache.http.HttpResponse;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -26,119 +27,121 @@ import java.util.concurrent.ScheduledExecutorService;
  * 車載器通知の取得APIとの通信
  */
 public class GetVehicleNotificationsTask extends SynchronizationTask {
-	static final String TAG = GetVehicleNotificationsTask.class.getSimpleName();
-	public static final Integer INTERVAL_MILLIS = 20 * 1000;
+    static final String TAG = GetVehicleNotificationsTask.class.getSimpleName();
+    public static final Integer INTERVAL_MILLIS = 20 * 1000;
 
-	public GetVehicleNotificationsTask(Context context, SQLiteDatabase database, ScheduledExecutorService executorService) {
-		super(context, database, executorService);
-	}
+    public GetVehicleNotificationsTask(Context context, SQLiteDatabase database, ScheduledExecutorService executorService) {
+        super(context, database, executorService);
+    }
 
-	@Override
-	protected void runSession(URI baseUri, String authenticationToken) {
-		doHttpGet(baseUri, "vehicle_notifications", authenticationToken, logCallback);
-	}
+    @Override
+    protected void runSession(URI baseUri, String authenticationToken) {
+        Log.i(TAG, "Start schedule sync.");
+        doHttpGet(baseUri, "vehicle_notifications", authenticationToken, logCallback);
+        Log.i(TAG, "Finish schedule sync.");
+    }
 
-	LogCallback logCallback = new LogCallback(TAG) {
-		@Override
-		public void onSuccess(HttpResponse response, byte[] entity) {
-			VehicleNotificationJson[] vehicleNotifications;
-			// TODO: レスポンスのjson化と例外を拾うだけのチェックなので、親クラスの共通処理にした方が良いかも
-			try {
-				vehicleNotifications = JSON.readValue(new String(entity, Charsets.UTF_8), VehicleNotificationJson[].class);
-			} catch (IOException e) {
-				Log.e(TAG, "ParseError: " + entity, e);
-				return;
-			}
-			save(vehicleNotifications);
-		}
-	};
+    final LogCallback logCallback = new LogCallback(TAG) {
+        @Override
+        public void onSuccess(HttpResponse response, byte[] entity) {
+            VehicleNotificationJson[] vehicleNotifications;
+            try {
+                vehicleNotifications = JSON.readValue(new String(entity, Charsets.UTF_8), VehicleNotificationJson[].class);
+            } catch (IOException e) {
+                Log.e(TAG, "ParseError: " + Arrays.toString(entity), e);
+                return;
+            }
+            save(vehicleNotifications);
+        };
+    };
 
 
-	private void save(VehicleNotificationJson[] pulledJson) {
-		boolean existAdminNotification = false;
-		boolean existScheduleNotification = false;
-		boolean existExpectedChargeChangedNotification = false;
-		boolean existMemoChangedNotification = false;
+    private void save(VehicleNotificationJson[] pulledJson) {
+        boolean existAdminNotification = false;
+        boolean existScheduleNotification = false;
+        boolean existExpectedChargeChangedNotification = false;
+        boolean existMemoChangedNotification = false;
 
-		try {
-			database.beginTransaction();
-			for (VehicleNotificationJson json : selectTargetJson(pulledJson)) {
-				database.insertOrThrow(VehicleNotification.TABLE_NAME, null, json.toContentValues());
+        Log.i(TAG, "Start Notification Data Insert.");
+        try {
+            database.beginTransaction();
+            for (VehicleNotificationJson json : selectTargetJson(pulledJson)) {
+                database.insertOrThrow(VehicleNotification.TABLE_NAME, null, json.toContentValues());
 
-				if (json.isAdminNotification()) {
-					existAdminNotification = true;
-				} else if (json.isScheduleNotification()) {
-					existScheduleNotification = true;
-				} else if (json.isExpectedChargeChangedNotification()){
-				    existExpectedChargeChangedNotification = true;
-				} else if (json.isMemoChangedNotification()){
-					existMemoChangedNotification = true;
-				}
-			}
-			database.setTransactionSuccessful();
-		} finally {
-			database.endTransaction();
-		}
+                if (json.isAdminNotification()) {
+                    existAdminNotification = true;
+                } else if (json.isScheduleNotification()) {
+                    existScheduleNotification = true;
+                } else if (json.isExpectedChargeChangedNotification()) {
+                    existExpectedChargeChangedNotification = true;
+                } else if (json.isMemoChangedNotification()) {
+                    existMemoChangedNotification = true;
+                }
+            }
+            database.setTransactionSuccessful();
+        } finally {
+            database.endTransaction();
+        }
+        Log.i(TAG, "Finish Notification Data Insert.");
 
-		if (existAdminNotification) {
-			playAdminNotificationVoice();
-			contentResolver.notifyChange(VehicleNotification.CONTENT.URI, null);
-		}
+        if (existAdminNotification) {
+            playAdminNotificationVoice();
+            contentResolver.notifyChange(VehicleNotification.CONTENT.URI, null);
+        }
 
-		if (existScheduleNotification) {
-			playScheduleNotificationVoice();
-		}
+        if (existScheduleNotification) {
+            playScheduleNotificationVoice();
+            Log.i(TAG, "Schedule Notification voice has been played.");
+        }
 
-		if (existScheduleNotification || existExpectedChargeChangedNotification || existMemoChangedNotification) {
-			// スケジュール通知はこの時点では新しい通知を表示しない（スケジュール自体の同期が終わっていない）ため、ここではpublishされない。
-			executorService.execute(new GetOperationSchedulesTask(context, database, executorService, true));
-		}
-	}
+        if (existScheduleNotification || existExpectedChargeChangedNotification || existMemoChangedNotification) {
+            // スケジュール通知はこの時点では新しい通知を表示しない（スケジュール自体の同期が終わっていない）ため、ここではpublishされない。
+            executorService.execute(new GetOperationSchedulesTask(context, database, executorService, true));
+            Log.i(TAG, "Schedule sync executor set.");
+        }
+    }
 
-	private List<VehicleNotificationJson> selectTargetJson(VehicleNotificationJson[] pulledJson) {
-		List<VehicleNotificationJson> writeTargetJson = Lists.newLinkedList();
-		List<Long> existIds = getExistIds();
-		for (VehicleNotificationJson json : pulledJson) {
-			if (existIds.contains(json.id)) continue;
-			writeTargetJson.add(json);
-		}
-		return writeTargetJson;
-	}
+    private List<VehicleNotificationJson> selectTargetJson(VehicleNotificationJson[] pulledJson) {
+        List<VehicleNotificationJson> writeTargetJson = Lists.newLinkedList();
+        List<Long> existIds = getExistIds();
+        for (VehicleNotificationJson json : pulledJson) {
+            if (existIds.contains(json.id)) continue;
+            writeTargetJson.add(json);
+        }
+        return writeTargetJson;
+    }
 
-	private List<Long> getExistIds() {
-		List<Long> existIds = Lists.newLinkedList();
-		Cursor cursor = database.query(VehicleNotification.TABLE_NAME,
-				new String[]{VehicleNotification.Columns._ID}, null, null,
-				null, null, null);
-		try {
-			if (cursor.moveToFirst()) {
-				do {
-					existIds.add(cursor.getLong(cursor.getColumnIndexOrThrow(VehicleNotification.Columns._ID)));
-				} while (cursor.moveToNext());
-			}
-		} finally {
-			cursor.close();
-		}
-		return existIds;
-	}
+    private List<Long> getExistIds() {
+        List<Long> existIds = Lists.newLinkedList();
+        try (Cursor cursor = database.query(VehicleNotification.TABLE_NAME,
+                new String[]{VehicleNotification.Columns._ID}, null, null,
+                null, null, null)) {
+            if (cursor.moveToFirst()) {
+                do {
+                    existIds.add(cursor.getLong(cursor.getColumnIndexOrThrow(VehicleNotification.Columns._ID)));
+                } while (cursor.moveToNext());
+            }
+        }
+        return existIds;
+    }
 
-	// TODO: 音声再生の細かい処理は本来はcontentProviderにあるべきではないので、クラスを分けるべきかも
-	private void playAdminNotificationVoice() {
-		Voice chimeVoice = new ChimeVoice();
-		Voice adminNotificationVoice = new AdminNotificationVoice();
-		StaticVoicePlayService.playVoice(context, chimeVoice);
-		StaticVoicePlayService.playVoice(context, adminNotificationVoice);
-		StaticVoicePlayService.playVoice(context, chimeVoice);
-		StaticVoicePlayService.playVoice(context, adminNotificationVoice);
-	}
+    // TODO: 音声再生の細かい処理は本来はcontentProviderにあるべきではないので、クラスを分けるべきかも
+    private void playAdminNotificationVoice() {
+        Voice chimeVoice = new ChimeVoice();
+        Voice adminNotificationVoice = new AdminNotificationVoice();
+        StaticVoicePlayService.playVoice(context, chimeVoice);
+        StaticVoicePlayService.playVoice(context, adminNotificationVoice);
+        StaticVoicePlayService.playVoice(context, chimeVoice);
+        StaticVoicePlayService.playVoice(context, adminNotificationVoice);
+    }
 
-	// TODO: 音声再生の細かい処理は本来はcontentProviderにあるべきではないので、クラスを分けるべきかも
-	private void playScheduleNotificationVoice() {
-		Voice chimeVoice = new ChimeVoice();
-		Voice scheduleChange = new ScheduleChangeVoice();
-		StaticVoicePlayService.playVoice(context, chimeVoice);
-		StaticVoicePlayService.playVoice(context, scheduleChange);
-		StaticVoicePlayService.playVoice(context, chimeVoice);
-		StaticVoicePlayService.playVoice(context, scheduleChange);
-	}
+    // TODO: 音声再生の細かい処理は本来はcontentProviderにあるべきではないので、クラスを分けるべきかも
+    private void playScheduleNotificationVoice() {
+        Voice chimeVoice = new ChimeVoice();
+        Voice scheduleChange = new ScheduleChangeVoice();
+        StaticVoicePlayService.playVoice(context, chimeVoice);
+        StaticVoicePlayService.playVoice(context, scheduleChange);
+        StaticVoicePlayService.playVoice(context, chimeVoice);
+        StaticVoicePlayService.playVoice(context, scheduleChange);
+    }
 }

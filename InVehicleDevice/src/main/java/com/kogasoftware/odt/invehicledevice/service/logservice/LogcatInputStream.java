@@ -7,22 +7,22 @@ import java.io.IOException;
  * logcatを読み取るInputStream
  */
 public class LogcatInputStream extends FilterInputStream {
-	private final Process process;
-	
-	public LogcatInputStream() throws IOException {
-		this(Runtime.getRuntime().exec("logcat -v threadtime"));
-	}
+    private final Process process;
 
-	private LogcatInputStream(Process process) {
-		super(process.getInputStream());
-		this.process = process;
-	}
+    public LogcatInputStream() throws IOException {
+        this(Runtime.getRuntime().exec("logcat -v threadtime"));
+    }
 
-	public void close() throws IOException {
-		try {
-			process.destroy();
-		} finally {
-			super.close();
-		}
-	}
+    private LogcatInputStream(Process process) {
+        super(process.getInputStream());
+        this.process = process;
+    }
+
+    public void close() throws IOException {
+        try {
+            process.destroy();
+        } finally {
+            super.close();
+        }
+    }
 }

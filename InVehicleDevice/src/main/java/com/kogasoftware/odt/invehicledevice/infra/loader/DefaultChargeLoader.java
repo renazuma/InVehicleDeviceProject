@@ -20,41 +20,41 @@ import java.util.List;
 
 public class DefaultChargeLoader {
 
-  // HACK: InVehicleDeviceActivity配下で一意である必要がある。Activityクラスで管理した方が良い？
-  private static final Integer LOADER_ID = 5;
+    // HACK: InVehicleDeviceActivity配下で一意である必要がある。Activityクラスで管理した方が良い？
+    private static final Integer LOADER_ID = 5;
 
-  private InVehicleDeviceActivity inVehicleDeviceActivity;
+    private final InVehicleDeviceActivity inVehicleDeviceActivity;
 
-  public DefaultChargeLoader(InVehicleDeviceActivity inVehicleDeviceActivity) {
-    // HAKC: Activityを使いまわすのは良くない気がする。別の方法があれば変えたい。
-    this.inVehicleDeviceActivity = inVehicleDeviceActivity;
-  }
-
-  public void initLoader() {
-    inVehicleDeviceActivity.getLoaderManager().initLoader(LOADER_ID, null, callbacks);
-  }
-
-  public void destroyLoader() {
-    inVehicleDeviceActivity.getLoaderManager().destroyLoader(LOADER_ID);
-  }
-
-  private final LoaderManager.LoaderCallbacks<Cursor> callbacks = new LoaderManager.LoaderCallbacks<Cursor>() {
-    @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-      return new CursorLoader(inVehicleDeviceActivity, DefaultCharge.CONTENT.URI, null, null, null, null);
+    public DefaultChargeLoader(InVehicleDeviceActivity inVehicleDeviceActivity) {
+        // HACK: Activityを使いまわすのは良くない気がする。別の方法があれば変えたい。
+        this.inVehicleDeviceActivity = inVehicleDeviceActivity;
     }
 
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-      List default_charges = new ArrayList();
-      while (cursor.moveToNext()) {
-        default_charges.add(new DefaultCharge(cursor));
-      }
-      inVehicleDeviceActivity.setDefaultCharges(default_charges);
+    public void initLoader() {
+        inVehicleDeviceActivity.getLoaderManager().initLoader(LOADER_ID, null, callbacks);
     }
 
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
+    public void destroyLoader() {
+        inVehicleDeviceActivity.getLoaderManager().destroyLoader(LOADER_ID);
     }
-  };
+
+    private final LoaderManager.LoaderCallbacks<Cursor> callbacks = new LoaderManager.LoaderCallbacks<Cursor>() {
+        @Override
+        public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+            return new CursorLoader(inVehicleDeviceActivity, DefaultCharge.CONTENT.URI, null, null, null, null);
+        }
+
+        @Override
+        public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+            List default_charges = new ArrayList();
+            while (cursor.moveToNext()) {
+                default_charges.add(new DefaultCharge(cursor));
+            }
+            inVehicleDeviceActivity.setDefaultCharges(default_charges);
+        }
+
+        @Override
+        public void onLoaderReset(Loader<Cursor> loader) {
+        }
+    };
 }
