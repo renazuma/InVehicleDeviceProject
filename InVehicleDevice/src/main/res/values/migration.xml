@@ -157,5 +157,8 @@
     <item>
       ALTER TABLE service_providers ADD car_navigation_app TEXT
     </item>
+    <item>
+      ALTER TABLE reservations ADD settled INTEGER NOT NULL DEFAULT 0
+    </item>
   </string-array>
 </resources>

@@ -15,5 +15,6 @@ public class Reservation {
         public static final String MEMO = "memo";
         public static final String DEPARTURE_SCHEDULE_ID = "departure_schedule_id";
         public static final String ARRIVAL_SCHEDULE_ID = "arrival_schedule_id";
+        public static final String SETTLED  = "settled";
     }
 }
