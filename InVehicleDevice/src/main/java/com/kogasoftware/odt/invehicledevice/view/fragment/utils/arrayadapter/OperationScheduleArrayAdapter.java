@@ -255,7 +255,7 @@ public class OperationScheduleArrayAdapter
 
             // 料金設定ページに遷移するパターン。他のケースと動きが大きく異なるのでこのパターンだけ別扱いにしている。
             // HACK: その他のパターンも整理し直して、シンプルに直すべき。
-            if (defaultChargeCnt > 0 && passengerRecord.getOnTime == null) {
+            if (defaultChargeCnt > 0 && passengerRecord.getOnTime == null && !passengerRecord.settled) {
                 Fragments.showModalFragment(fragment.getFragmentManager(),
                         ChargeEditFragment.newInstance(operationSchedule.id, passengerRecord.id));
                 return false;
@@ -269,7 +269,9 @@ public class OperationScheduleArrayAdapter
                 } else {
                     passengerRecord.getOnTime = null;
                     passengerRecord.getOffTime = null;
-                    passengerRecord.paidCharge = null;
+                    if(!passengerRecord.settled) {
+                        passengerRecord.paidCharge = null;
+                    }
                 }
             } else {
                 if (passengerRecordRowTag.isNotYetGotOff()) {
