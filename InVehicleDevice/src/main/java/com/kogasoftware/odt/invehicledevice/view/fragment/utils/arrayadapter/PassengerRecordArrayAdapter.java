@@ -113,7 +113,9 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
                 if (passengerRecord.getOnTime != null) {
                     passengerRecord.getOnTime = null;
                     passengerRecord.getOffTime = null;
-                    passengerRecord.paidCharge = null;
+                    if(!passengerRecord.settled) {
+                        passengerRecord.paidCharge = null;
+                    }
                 } else {
                     passengerRecord.getOnTime = now;
                 }
@@ -122,7 +124,7 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
 
         private boolean isChargeEditPattern(PassengerRecord passengerRecord) {
             int defaultChargeCnt = ((InVehicleDeviceActivity) getContext()).defaultCharges.size();
-            return defaultChargeCnt > 0 && passengerRecord.getOnTime == null;
+            return defaultChargeCnt > 0 && passengerRecord.getOnTime == null && !passengerRecord.settled;
         }
     };
 
