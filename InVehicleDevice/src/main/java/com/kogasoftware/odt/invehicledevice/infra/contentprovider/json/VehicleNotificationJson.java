@@ -50,4 +50,7 @@ public class VehicleNotificationJson {
         return notificationKind == 3L;
     }
 
+    public boolean isCreditPaidChargeChangedNotification() {
+        return notificationKind == 4L;
+    }
 }
