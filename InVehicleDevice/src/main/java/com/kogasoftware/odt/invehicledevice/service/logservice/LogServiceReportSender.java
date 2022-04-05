@@ -37,8 +37,7 @@ public class LogServiceReportSender implements ReportSender {
     private final Context context;
 
     public LogServiceReportSender(Context context) {
-        this(context, new File(Environment.getExternalStorageDirectory()
-                + File.separator + ".odt" + File.separator + "log"));
+        this(context,  new File(context.getFilesDir().getPath() + File.separator + "log"));
     }
 
     @VisibleForTesting

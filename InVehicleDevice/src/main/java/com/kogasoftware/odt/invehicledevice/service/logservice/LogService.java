@@ -33,7 +33,6 @@ import androidx.core.app.NotificationCompat;
  */
 public class LogService extends Service {
     private static final String TAG = LogService.class.getSimpleName();
-    public static final long CHECK_DEVICE_INTERVAL_MILLIS = 10 * 1000;
     public static final String LOGCAT_FILE_TAG = "_logcat_";
     public static final String DROPBOX_FILE_TAG = "_dropbox_";
     private final BlockingQueue<File> rawLogFiles = new LinkedBlockingQueue<>();
@@ -58,8 +57,7 @@ public class LogService extends Service {
     }
 
     public File getDataDirectory() {
-        return new File(Environment.getExternalStorageDirectory()
-                + File.separator + ".odt" + File.separator + "log");
+        return new File(getApplicationContext().getFilesDir().getPath() + File.separator + "log");
     }
 
     public static void waitForDataDirectory(File directory)
