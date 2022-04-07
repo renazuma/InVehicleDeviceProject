@@ -2,7 +2,6 @@ package com.kogasoftware.odt.invehicledevice.service.logservice;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Environment;
 import android.util.Log;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
