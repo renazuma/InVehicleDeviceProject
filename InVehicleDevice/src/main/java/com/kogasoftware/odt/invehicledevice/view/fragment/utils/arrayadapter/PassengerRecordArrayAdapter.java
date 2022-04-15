@@ -199,8 +199,7 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
         // 料金表示
         TextView chargeText = convertView.findViewById(R.id.charge_edit_text_view);
         if (passengerRecord.paidCharge != null) {
-            String prePayedMessage = passengerRecord.settled ? "（カード）" : "";
-            chargeText.setText(prePayedMessage + passengerRecord.paidCharge.toString() + "円");
+            chargeText.setText(passengerRecord.settled? "カード決済" : passengerRecord.paidCharge.toString() + "円");
         } else {
             chargeText.setText("");
         }
