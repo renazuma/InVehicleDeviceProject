@@ -10,7 +10,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Build;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
@@ -33,7 +32,6 @@ import androidx.core.app.NotificationCompat;
  */
 public class LogService extends Service {
     private static final String TAG = LogService.class.getSimpleName();
-    public static final long CHECK_DEVICE_INTERVAL_MILLIS = 10 * 1000;
     public static final String LOGCAT_FILE_TAG = "_logcat_";
     public static final String DROPBOX_FILE_TAG = "_dropbox_";
     private final BlockingQueue<File> rawLogFiles = new LinkedBlockingQueue<>();
@@ -46,6 +44,7 @@ public class LogService extends Service {
     private Thread uploadThread = new Thread();
     private final List<Closeable> closeables = new LinkedList<>();
 
+     //  HACK: SDカードを使わない運用になったので、調査をして不要であれば削除してよい。
     /**
      * シャットダウン時、可能な限りSDカードのマウントが解除される前に書込み中のログをフラッシュするため、
      * ACTION_SHUTDOWNを受信して処理を行う。
@@ -58,18 +57,12 @@ public class LogService extends Service {
     }
 
     public File getDataDirectory() {
-        return new File(Environment.getExternalStorageDirectory()
-                + File.separator + ".odt" + File.separator + "log");
+        return new File(getApplicationContext().getFilesDir().getPath() + File.separator + "log");
     }
 
     public static void waitForDataDirectory(File directory)
             throws InterruptedException {
         while (true) {
-            Thread.sleep(CHECK_DEVICE_INTERVAL_MILLIS);
-            if (!Environment.getExternalStorageState().equals(
-                    Environment.MEDIA_MOUNTED)) {
-                continue;
-            }
             if (!directory.exists() && !directory.mkdirs()) {
                 Log.w(TAG, "!\"" + directory + "\".mkdirs()");
                 continue;

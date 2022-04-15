@@ -4,7 +4,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.os.Looper;
 import android.os.MessageQueue.IdleHandler;
-import android.telephony.TelephonyManager;
 import android.util.Log;
 
 import com.amazonaws.AmazonClientException;
@@ -13,7 +12,7 @@ import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Strings;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.InVehicleDevice;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.ServiceProvider;
 
 import java.io.File;
@@ -27,6 +26,7 @@ public class UploadThread extends Thread
         implements IdleHandler {
     private static final String TAG = UploadThread.class.getSimpleName();
     public static final Integer SERVICE_PROVIDER_TABLE_CHECK_INTERVAL = 5000;
+    public static final Integer IN_VEHICLE_DEVICE_TABLE_CHECK_INTERVAL = 5000;
     public static final Integer UPLOAD_DELAY_MILLIS = 5000;
     private static final int LOADER_ID = 0;
     private final Context context;
@@ -38,13 +38,6 @@ public class UploadThread extends Thread
     public UploadThread(Context context, BlockingQueue<File> uploadFiles) {
         this.context = context;
         this.uploadFiles = uploadFiles;
-        TelephonyManager telephonyManager = (TelephonyManager) context
-                .getSystemService(Context.TELEPHONY_SERVICE);
-        try {
-            this.deviceId = Strings.nullToEmpty(telephonyManager.getDeviceId());
-        } catch (SecurityException e) {
-            Log.w(TAG, "READ_PHONE_STATE is not granted.");
-        }
     }
 
     @VisibleForTesting
@@ -119,6 +112,19 @@ public class UploadThread extends Thread
                 synchronized (awsCredentialsLock) {
                     awsCredentials = serviceProvider.getBasicAWSCredentials();
                 }
+            } catch (InterruptedException e) {
+                break;
+            }
+
+            try (Cursor cursor = context.getContentResolver().query(InVehicleDevice.CONTENT.URI, null, null, null, null)) {
+                Thread.sleep(IN_VEHICLE_DEVICE_TABLE_CHECK_INTERVAL);
+
+                if (!cursor.moveToFirst()) {
+                    Log.i(TAG, "waiting for DeviceID");
+                    continue;
+                }
+
+                deviceId = cursor.getString(cursor.getColumnIndexOrThrow(InVehicleDevice.Columns.LOGIN));
             } catch (InterruptedException e) {
                 break;
             }

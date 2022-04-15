@@ -2,7 +2,6 @@ package com.kogasoftware.odt.invehicledevice.service.logservice;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Environment;
 import android.util.Log;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -37,8 +36,7 @@ public class LogServiceReportSender implements ReportSender {
     private final Context context;
 
     public LogServiceReportSender(Context context) {
-        this(context, new File(Environment.getExternalStorageDirectory()
-                + File.separator + ".odt" + File.separator + "log"));
+        this(context,  new File(context.getFilesDir().getPath() + File.separator + "log"));
     }
 
     @VisibleForTesting
