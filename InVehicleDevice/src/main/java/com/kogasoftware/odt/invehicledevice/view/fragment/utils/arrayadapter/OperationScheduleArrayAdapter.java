@@ -577,8 +577,7 @@ public class OperationScheduleArrayAdapter
 
         // 支払料金
         if (passengerRecord.paidCharge != null) {
-            String prePayedMessage = passengerRecord.settled ? "（カード）" : "";
-            paidChargeView.setText(prePayedMessage + passengerRecord.paidCharge.toString() + "円");
+            paidChargeView.setText(passengerRecord.settled? "カード決済" : passengerRecord.paidCharge.toString() + "円");
             paidChargeView.setVisibility(View.VISIBLE);
         }
 
