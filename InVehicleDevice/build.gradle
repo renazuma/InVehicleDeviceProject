@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 
 // リリース用APKを作る際に、バージョンコードをインクリメントするコミットを積むこと
-def VERSION_CODE = 20018
+def VERSION_CODE = 20019
 
 android {
     compileSdkVersion 31
