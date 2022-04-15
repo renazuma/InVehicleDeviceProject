@@ -44,6 +44,7 @@ public class PassengerRecord implements Serializable {
         public static final String REPRESENTATIVE = "representative";
         public static final String EXPECTED_CHARGE = "expected_charge";
         public static final String PAID_CHARGE = "paid_charge";
+        public static final String SETTLED = "settled";
     }
 
     public static final Comparator<PassengerRecord> DEFAULT_COMPARATOR = (l, r) -> ComparisonChain.start()
@@ -74,6 +75,8 @@ public class PassengerRecord implements Serializable {
     public final Long passengerCount;
     public final Long expectedCharge;
     public Long paidCharge;
+    public final Boolean settled;
+
 
     public PassengerRecord(Cursor cursor) {
         CursorReader reader = new CursorReader(cursor);
@@ -104,6 +107,7 @@ public class PassengerRecord implements Serializable {
                 .readLong(PassengerRecord.Columns.PASSENGER_COUNT);
         expectedCharge = reader.readLong(Columns.EXPECTED_CHARGE);
         paidCharge = reader.readLong(Columns.PAID_CHARGE);
+        settled = reader.readBoolean(Columns.SETTLED);
     }
 
     public List<String> getUserNotes() {
@@ -210,6 +214,7 @@ public class PassengerRecord implements Serializable {
                 " , r.memo reservation_memo" +
                 " , r.arrival_schedule_id" +
                 " , r.departure_schedule_id" +
+                " , r.settled" +
                 " , u.first_name" +
                 " , u.last_name" +
                 " , u.memo user_memo" +

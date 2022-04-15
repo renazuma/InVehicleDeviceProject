@@ -247,6 +247,8 @@ public class GetOperationSchedulesTask extends SynchronizationTask {
                 + VehicleNotification.Columns.NOTIFICATION_KIND + " = " + VehicleNotification.NotificationKind.EXPECTED_CHARGE_CHANGED
                 + " OR "
                 + VehicleNotification.Columns.NOTIFICATION_KIND + " = " + VehicleNotification.NotificationKind.MEMO_CHANGED
+                + " OR "
+                + VehicleNotification.Columns.NOTIFICATION_KIND + "=" + VehicleNotification.NotificationKind.CREDIT_PAID_CHARGE_CHANGED
                 + ")"
                 + " AND " + VehicleNotification.Columns.SCHEDULE_DOWNLOADED + " = 0 ";
         try (Cursor cursor = database.query(VehicleNotification.TABLE_NAME, null, where, null, null, null, null)) {

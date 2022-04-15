@@ -61,6 +61,7 @@ public class GetVehicleNotificationsTask extends SynchronizationTask {
         boolean existScheduleNotification = false;
         boolean existExpectedChargeChangedNotification = false;
         boolean existMemoChangedNotification = false;
+        boolean existCreditPayedChargeChangedNotification = false;
 
         Log.i(TAG, "Start Notification Data Insert.");
         try {
@@ -76,6 +77,8 @@ public class GetVehicleNotificationsTask extends SynchronizationTask {
                     existExpectedChargeChangedNotification = true;
                 } else if (json.isMemoChangedNotification()) {
                     existMemoChangedNotification = true;
+                } else if(json.isCreditPaidChargeChangedNotification()) {
+                    existCreditPayedChargeChangedNotification = true;
                 }
             }
             database.setTransactionSuccessful();
@@ -94,7 +97,7 @@ public class GetVehicleNotificationsTask extends SynchronizationTask {
             Log.i(TAG, "Schedule Notification voice has been played.");
         }
 
-        if (existScheduleNotification || existExpectedChargeChangedNotification || existMemoChangedNotification) {
+        if (existScheduleNotification || existExpectedChargeChangedNotification || existMemoChangedNotification || existCreditPayedChargeChangedNotification) {
             // スケジュール通知はこの時点では新しい通知を表示しない（スケジュール自体の同期が終わっていない）ため、ここではpublishされない。
             executorService.execute(new GetOperationSchedulesTask(context, database, executorService, true));
             Log.i(TAG, "Schedule sync executor set.");

@@ -20,6 +20,7 @@ public class ReservationJson {
     public final List<PassengerRecordJson> passengerRecords = Lists.newLinkedList();
     public String memo;
     public Integer passengerCount;
+    public  Boolean settled;
 
     public ContentValues toContentValues() {
         ContentValues reservationValues = new ContentValues();
@@ -31,6 +32,7 @@ public class ReservationJson {
                 departureScheduleId);
         reservationValues.put(Reservation.Columns.ARRIVAL_SCHEDULE_ID,
                 arrivalScheduleId);
+        reservationValues.put(Reservation.Columns.SETTLED, settled);
         return reservationValues;
     }
 }
