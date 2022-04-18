@@ -22,8 +22,6 @@ import com.kogasoftware.odt.invehicledevice.BuildConfig;
 import com.kogasoftware.odt.invehicledevice.view.BigToast;
 import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivity;
 
-import java.io.IOException;
-
 /**
  * 自動起動処理
  */
@@ -55,26 +53,13 @@ public class StartupService extends Service {
     private final Runnable checkDeviceAndAlertCallback = new Runnable() {
         @Override
         public void run() {
-            checkDeviceAndAlert();
+            isDeviceReady();
             handler.postDelayed(this, CHECK_DEVICE_INTERVAL_MILLIS);
         }
     };
 
-    public Boolean checkDeviceAndAlert() {
-        // 機内モードは強制的にOFF
-        try {
-            AirplaneModeSetting.set(this, false);
-        } catch (IOException e) {
-            sendBroadcast(new AirplaneModeOnBroadcastIntent());
-            Log.w(TAG, e);
-            return false;
-        }
-
-        return isDeviceReady();
-    }
-
     public Boolean startActivityIfReady() {
-        if (!checkDeviceAndAlert()) {
+        if (!isDeviceReady()) {
             return false;
         }
         if (BuildConfig.DEBUG) {
