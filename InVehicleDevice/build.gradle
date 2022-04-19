@@ -43,7 +43,6 @@ dependencies {
     implementation fileTree(include: '*.jar', dir: 'src/main/libs')
     implementation 'androidx.constraintlayout:constraintlayout:2.1.2'
     androidTestImplementation fileTree(include: '*.jar', dir: 'src/androidTest/libs')
-    implementation project(':play_apk_expansion')
     implementation 'com.google.android.gms:play-services-location:16.0.0'
     implementation "androidx.core:core-ktx:+"
     implementation "com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava"

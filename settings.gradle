@@ -1,2 +1,2 @@
-include ':InVehicleDevice', ':play_apk_expansion', ':play_licensing'
+include ':InVehicleDevice'
 rootProject.name = 'InVehicleDeviceProject'
