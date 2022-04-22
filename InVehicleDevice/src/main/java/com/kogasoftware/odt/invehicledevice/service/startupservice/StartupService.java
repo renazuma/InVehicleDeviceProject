@@ -16,8 +16,9 @@ import android.widget.Toast;
 import com.kogasoftware.odt.invehicledevice.BuildConfig;
 import com.kogasoftware.odt.invehicledevice.view.BigToast;
 
+// TODO: ヘルスチェックはまだ散らばって実装されているので、いずれここに集約する
 /**
- * 自動起動処理
+ *　ヘルスチェックサービス
  */
 public class StartupService extends Service {
     private static final String TAG = StartupService.class.getSimpleName();
