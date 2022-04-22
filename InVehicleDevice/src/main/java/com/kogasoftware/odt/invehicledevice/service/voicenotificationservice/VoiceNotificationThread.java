@@ -1,11 +1,11 @@
-package com.kogasoftware.odt.invehicledevice.service.staticvoiceplayservice;
+package com.kogasoftware.odt.invehicledevice.service.voicenotificationservice;
 
 import android.content.Context;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.util.Log;
 
-import com.kogasoftware.odt.invehicledevice.service.staticvoiceplayservice.voice.Voice;
+import com.kogasoftware.odt.invehicledevice.service.voicenotificationservice.voice.Voice;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Semaphore;
@@ -16,14 +16,14 @@ import java.util.concurrent.Semaphore;
  * Created by tnoda on 2017/06/12.
  */
 
-public class StaticVoicePlayThread extends Thread {
-    private final static String TAG = StaticVoicePlayThread.class.getSimpleName();
+public class VoiceNotificationThread extends Thread {
+    private final static String TAG = VoiceNotificationThread.class.getSimpleName();
 
     private final Context context;
     private final BlockingQueue<Voice> playFiles;
     private final AudioManager audioManager;
 
-    public StaticVoicePlayThread(Context context, BlockingQueue<Voice> playFiles) {
+    public VoiceNotificationThread(Context context, BlockingQueue<Voice> playFiles) {
         this.context = context;
         this.playFiles = playFiles;
         this.audioManager = (AudioManager) context

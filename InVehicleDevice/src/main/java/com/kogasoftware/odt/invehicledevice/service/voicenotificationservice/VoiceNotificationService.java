@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.service.staticvoiceplayservice;
+package com.kogasoftware.odt.invehicledevice.service.voicenotificationservice;
 
 import android.app.Service;
 import android.content.Context;
@@ -6,7 +6,7 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.util.Log;
 
-import com.kogasoftware.odt.invehicledevice.service.staticvoiceplayservice.voice.Voice;
+import com.kogasoftware.odt.invehicledevice.service.voicenotificationservice.voice.Voice;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -16,10 +16,10 @@ import java.util.concurrent.LinkedBlockingQueue;
  * Created by tnoda on 2017/06/12.
  */
 
-public class StaticVoicePlayService extends Service {
+public class VoiceNotificationService extends Service {
     public final static String VOICE_ACTION = "VOICE_ACTION";
     public final static String VOICE_FILE_KEY = "VOICE_FILE_KEY";
-    private final String TAG = StaticVoicePlayService.class.getSimpleName();
+    private final String TAG = VoiceNotificationService.class.getSimpleName();
 
     private Thread playThread;
     private final BlockingQueue<Voice> playFiles = new LinkedBlockingQueue<>();
@@ -32,7 +32,7 @@ public class StaticVoicePlayService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        playThread = new StaticVoicePlayThread(this, playFiles);
+        playThread = new VoiceNotificationThread(this, playFiles);
         playThread.start();
     }
 
@@ -57,7 +57,7 @@ public class StaticVoicePlayService extends Service {
 
     public static void playVoice(Context context, Voice voice) {
         Intent intent = new Intent(VOICE_ACTION, null, context,
-                StaticVoicePlayService.class);
+                VoiceNotificationService.class);
         intent.putExtra(VOICE_FILE_KEY, voice);
         context.startService(intent);
     }

@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.service.staticvoiceplayservice.voice;
+package com.kogasoftware.odt.invehicledevice.service.voicenotificationservice.voice;
 
 import java.io.Serializable;
 

@@ -80,8 +80,8 @@
 			android:process=":StatusSenderService"
 			android:exported="false" />
 		<service
-			android:name=".service.staticvoiceplayservice.StaticVoicePlayService"
-			android:process=":StaticVoicePlayService"
+			android:name=".service.voicenotificationservice.VoiceNotificationService"
+			android:process=":VoiceNotificationService"
 			android:exported="false" />
 	</application>
 </manifest>
