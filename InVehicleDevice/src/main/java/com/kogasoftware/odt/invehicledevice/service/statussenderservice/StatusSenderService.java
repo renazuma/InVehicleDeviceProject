@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.service.serviceunitstatuslogservice;
+package com.kogasoftware.odt.invehicledevice.service.statussenderservice;
 
 import android.annotation.SuppressLint;
 import android.app.Notification;
@@ -38,8 +38,8 @@ import java.util.concurrent.TimeUnit;
  * <p>
  * 「アンドロイド品質ガイドライン」の「FN-S1」に注意する必要がある
  */
-public class ServiceUnitStatusLogService extends Service implements Runnable {
-    private static final String TAG = ServiceUnitStatusLogService.class.getSimpleName();
+public class StatusSenderService extends Service implements Runnable {
+    private static final String TAG = StatusSenderService.class.getSimpleName();
     private final Handler handler = new Handler();
     private GpsLogger gpsLogger;
     private BatteryBroadcastReceiver batteryBroadcastReceiver;

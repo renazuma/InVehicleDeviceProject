@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.service.serviceunitstatuslogservice;
+package com.kogasoftware.odt.invehicledevice.service.statussenderservice;
 
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;

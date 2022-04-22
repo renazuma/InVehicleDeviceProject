@@ -76,8 +76,8 @@
 			android:process=":HealthCheckService"
 			android:exported="false" />
 		<service
-			android:name=".service.serviceunitstatuslogservice.ServiceUnitStatusLogService"
-			android:process=":ServiceUnitStatusLogService"
+			android:name=".service.statussenderservice.StatusSenderService"
+			android:process=":StatusSenderService"
 			android:exported="false" />
 		<service
 			android:name=".service.staticvoiceplayservice.StaticVoicePlayService"

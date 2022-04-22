@@ -11,7 +11,7 @@ import com.kogasoftware.odt.invehicledevice.presenter.InterruptUiPresenter;
 import com.kogasoftware.odt.invehicledevice.presenter.LogSenderPresenter;
 import com.kogasoftware.odt.invehicledevice.presenter.MainUiPresenter;
 import com.kogasoftware.odt.invehicledevice.presenter.PermissionChecker;
-import com.kogasoftware.odt.invehicledevice.presenter.UnitStatusLogSyncPresenter;
+import com.kogasoftware.odt.invehicledevice.presenter.StatusSenderPresenter;
 
 import java.util.List;
 
@@ -29,7 +29,7 @@ public class InVehicleDeviceActivity extends Activity {
     public List<DefaultCharge> defaultCharges; // HACK: DefaultChargesの同期状態を変数で管理するのをやめたい。
 
     private InterruptUiPresenter interruptUiPresenter;
-    private UnitStatusLogSyncPresenter unitStatusLogSyncPresenter;
+    private StatusSenderPresenter statusSenderPresenter;
     private LogSenderPresenter logSenderPresenter;
     private MainUiPresenter mainUiPresenter;
 
@@ -55,8 +55,8 @@ public class InVehicleDeviceActivity extends Activity {
         // Loaderを使用するためには、onStartより前の時点で、一度getLoaderManagerを実行しておく必要がある。
         getLoaderManager();
 
-        unitStatusLogSyncPresenter = new UnitStatusLogSyncPresenter(this);
-        unitStatusLogSyncPresenter.onCreate();
+        statusSenderPresenter = new StatusSenderPresenter(this);
+        statusSenderPresenter.onCreate();
 
         logSenderPresenter = new LogSenderPresenter(this);
         logSenderPresenter.onCreate();
@@ -80,7 +80,7 @@ public class InVehicleDeviceActivity extends Activity {
         super.onDestroy();
         interruptUiPresenter.onDestroy();
         mainUiPresenter.onDestroy();
-        unitStatusLogSyncPresenter.onDestroy();
+        statusSenderPresenter.onDestroy();
         logSenderPresenter.onDestroy();
         destroyed = true;
     }
