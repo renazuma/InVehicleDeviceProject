@@ -111,15 +111,6 @@ public class StartupService extends Service {
                 Log.w(TAG, "intent.getAction() is null");
                 return;
             }
-            if (intent.getAction().equals(Intent.ACTION_PACKAGE_REPLACED)) {
-                String dataString = "package:" + context.getPackageName();
-                if (!intent.getDataString().equals(dataString)) {
-                    Log.v(TAG, "!intent.getDataString().equals(\"" + dataString
-                            + "\")");
-                    return;
-                }
-                Log.i(TAG, "package replaced");
-            }
             context.startService(new Intent(context, StartupService.class));
         }
     }

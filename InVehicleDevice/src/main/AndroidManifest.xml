@@ -60,19 +60,6 @@
 
 		<activity android:name=".view.activity.EmptyActivity" />
 
-		<receiver android:name=".service.startupservice.StartupService$StartupBroadcastReceiver">
-			<intent-filter>
-				<action android:name="android.intent.action.POWER_CONNECTED" />
-				<action android:name="android.intent.action.ACTION_POWER_CONNECTED" />
-			</intent-filter>
-			<intent-filter>
-				<action android:name="android.intent.action.PACKAGE_REPLACED" />
-				<data
-					android:path="com.kogasoftware.odt.invehicledevice"
-					android:scheme="package" />
-			</intent-filter>
-		</receiver>
-
 		<receiver android:name=".service.logservice.LogService$ShutdownBroadcastReceiver">
 			<intent-filter>
 				<action android:name="android.intent.action.ACTION_SHUTDOWN" />
