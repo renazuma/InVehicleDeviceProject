@@ -1,11 +1,7 @@
 package com.kogasoftware.odt.invehicledevice.service.startupservice;
 
-import android.app.Activity;
-import android.app.ActivityManager;
-import android.app.ActivityManager.RunningTaskInfo;
 import android.app.Service;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -19,7 +15,6 @@ import android.widget.Toast;
 
 import com.kogasoftware.odt.invehicledevice.BuildConfig;
 import com.kogasoftware.odt.invehicledevice.view.BigToast;
-import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivity;
 
 /**
  * 自動起動処理
@@ -65,11 +60,6 @@ public class StartupService extends Service {
             Log.i(TAG, "testing");
             return true;
         }
-        Intent startIntent = new Intent(StartupService.this,
-                InVehicleDeviceActivity.class);
-        startIntent.setAction(Intent.ACTION_DEFAULT);
-        startIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(startIntent);
         return true;
     }
 
@@ -90,21 +80,6 @@ public class StartupService extends Service {
                     .show();
             return false;
         }
-
-        ActivityManager activityManager = (ActivityManager) getSystemService(Activity.ACTIVITY_SERVICE);
-        for (RunningTaskInfo runningTaskInfo : activityManager
-                .getRunningTasks(1)) {
-            String packageName = getPackageName();
-            String className = InVehicleDeviceActivity.class.getName();
-            ComponentName topActivity = runningTaskInfo.topActivity;
-            if (topActivity.getPackageName().equals(packageName)
-                    && topActivity.getClassName().equals(className)) {
-                Log.v(TAG, "activity " + InVehicleDeviceActivity.class
-                        + " is running");
-                return false;
-            }
-        }
-
         return true;
     }
 

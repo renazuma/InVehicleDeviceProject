@@ -69,27 +69,6 @@ public class StartupServiceTestCase extends ServiceTestCase<StartupService> {
 		}
 	}
 
-	public void xtestIsDeviceReady_InVehicleDeviceActivityがすでに前面にある場合() {
-		RunningTaskInfo rti = new RunningTaskInfo();
-		rti.topActivity = new ComponentName(getSystemContext(),
-				InVehicleDeviceActivity.class);
-		when(activityManager.getRunningTasks(anyInt())).thenReturn(
-				Lists.<RunningTaskInfo> newArrayList(rti));
-		assertFalse(getService().isDeviceReady());
-
-		rti.topActivity = new ComponentName(getSystemContext(),
-				EmptyActivity.class);
-		assertTrue(getService().isDeviceReady());
-	}
-
-	public void xtestIsDeviceReady_起動条件がそろっている場合() {
-		assertTrue(getService().isDeviceReady());
-		getService().onCreate();
-		assertTrue(getService().startActivityIfReady());
-		// TestUtil.assertShow(getSystemContext(),
-		// InVehicleDeviceActivity.class);
-	}
-
 	public void xtestIsGpsRequired() {
 		assertTrue(StartupService.isGpsRequired(true, "my android"));
 		assertTrue(StartupService.isGpsRequired(true, ""));
