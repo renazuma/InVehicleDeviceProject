@@ -10,9 +10,9 @@ import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.json.VehicleNotificationJson;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.VehicleNotification;
 import com.kogasoftware.odt.invehicledevice.service.voicenotificationservice.VoiceNotificationService;
-import com.kogasoftware.odt.invehicledevice.service.voicenotificationservice.voice.AdminNotificationVoice;
-import com.kogasoftware.odt.invehicledevice.service.voicenotificationservice.voice.ChimeVoice;
-import com.kogasoftware.odt.invehicledevice.service.voicenotificationservice.voice.ScheduleChangeVoice;
+import com.kogasoftware.odt.invehicledevice.service.voicenotificationservice.voice.AdminNotification;
+import com.kogasoftware.odt.invehicledevice.service.voicenotificationservice.voice.Chime;
+import com.kogasoftware.odt.invehicledevice.service.voicenotificationservice.voice.ScheduleChange;
 import com.kogasoftware.odt.invehicledevice.service.voicenotificationservice.voice.Voice;
 
 import org.apache.http.HttpResponse;
@@ -130,8 +130,8 @@ public class GetVehicleNotificationsTask extends SynchronizationTask {
 
     // TODO: 音声再生の細かい処理は本来はcontentProviderにあるべきではないので、クラスを分けるべきかも
     private void playAdminNotificationVoice() {
-        Voice chimeVoice = new ChimeVoice();
-        Voice adminNotificationVoice = new AdminNotificationVoice();
+        Voice chimeVoice = new Chime();
+        Voice adminNotificationVoice = new AdminNotification();
         VoiceNotificationService.playVoice(context, chimeVoice);
         VoiceNotificationService.playVoice(context, adminNotificationVoice);
         VoiceNotificationService.playVoice(context, chimeVoice);
@@ -140,8 +140,8 @@ public class GetVehicleNotificationsTask extends SynchronizationTask {
 
     // TODO: 音声再生の細かい処理は本来はcontentProviderにあるべきではないので、クラスを分けるべきかも
     private void playScheduleNotificationVoice() {
-        Voice chimeVoice = new ChimeVoice();
-        Voice scheduleChange = new ScheduleChangeVoice();
+        Voice chimeVoice = new Chime();
+        Voice scheduleChange = new ScheduleChange();
         VoiceNotificationService.playVoice(context, chimeVoice);
         VoiceNotificationService.playVoice(context, scheduleChange);
         VoiceNotificationService.playVoice(context, chimeVoice);

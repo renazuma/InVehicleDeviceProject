@@ -3,14 +3,14 @@ package com.kogasoftware.odt.invehicledevice.service.voicenotificationservice.vo
 import com.kogasoftware.odt.invehicledevice.R;
 
 /**
- * 運行予定変更音声データクラス
+ * 管理者からの連絡通知音声データクラス
  * Created by tnoda on 2017/06/12.
  */
 
-public class ScheduleChangeVoice implements Voice {
+public class AdminNotification implements Voice {
     @Override
     public int getVoiceFileResId() {
-        return R.raw.schedule_change;
+        return R.raw.admin_notification;
     }
 
     @Override

@@ -7,7 +7,7 @@ import com.kogasoftware.odt.invehicledevice.R;
  * Created by tnoda on 2017/06/12.
  */
 
-public class ChimeVoice implements Voice {
+public class Chime implements Voice {
     @Override
     public int getVoiceFileResId() {
         return R.raw.chime;
