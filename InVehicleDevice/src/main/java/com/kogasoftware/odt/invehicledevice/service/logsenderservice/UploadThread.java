@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.service.logservice;
+package com.kogasoftware.odt.invehicledevice.service.logsenderservice;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -72,9 +72,9 @@ public class UploadThread extends Thread
                 // at com.amazonaws.services.s3.AmazonS3Client.putObject(Unknown
                 // Source)
                 // at
-                // com.kogasoftware.odt.invehicledevice.service.logservice.UploadThread.uploadOneFile(UploadThread.java:75)
+                // com.kogasoftware.odt.invehicledevice.service.logsenderservice.UploadThread.uploadOneFile(UploadThread.java:75)
                 // at
-                // com.kogasoftware.odt.invehicledevice.service.logservice.UploadThread.run(UploadThread.java:106)
+                // com.kogasoftware.odt.invehicledevice.service.logsenderservice.UploadThread.run(UploadThread.java:106)
                 throw new IOException(e);
             }
             succeed = true;

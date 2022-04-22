@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.service.logservice;
+package com.kogasoftware.odt.invehicledevice.service.logsenderservice;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -15,7 +15,7 @@ import java.util.concurrent.BlockingQueue;
 public class SendLogBroadcastReceiver extends BroadcastReceiver {
     private static final String TAG = SendLogBroadcastReceiver.class
             .getSimpleName();
-    public static final String ACTION_SEND_LOG = LogService.class
+    public static final String ACTION_SEND_LOG = LogSenderService.class
             .getSimpleName() + ".ACTION_SEND_LOG";
     public static final String EXTRAS_KEY_LOG_FILE_NAME = "file";
     private final BlockingQueue<File> outputLogFiles;

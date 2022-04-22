@@ -60,7 +60,7 @@
 
 		<activity android:name=".view.activity.EmptyActivity" />
 
-		<receiver android:name=".service.logservice.LogService$ShutdownBroadcastReceiver">
+		<receiver android:name=".service.logsenderservice.LogSenderService$ShutdownBroadcastReceiver">
 			<intent-filter>
 				<action android:name="android.intent.action.ACTION_SHUTDOWN" />
 				<action android:name="android.intent.action.QUICKBOOT_POWEROFF" />
@@ -68,8 +68,8 @@
 		</receiver>
 
 		<service
-			android:name=".service.logservice.LogService"
-			android:process=":LogService"
+			android:name=".service.logsenderservice.LogSenderService"
+			android:process=":LogSenderService"
 			android:exported="false" />
 		<service
 			android:name=".service.healthcheckservice.HealthCheckService"

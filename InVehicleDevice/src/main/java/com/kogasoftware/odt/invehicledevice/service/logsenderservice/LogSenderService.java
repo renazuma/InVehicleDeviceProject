@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.service.logservice;
+package com.kogasoftware.odt.invehicledevice.service.logsenderservice;
 
 import android.annotation.SuppressLint;
 import android.app.Notification;
@@ -30,8 +30,8 @@ import androidx.core.app.NotificationCompat;
 /**
  * ログの管理
  */
-public class LogService extends Service {
-    private static final String TAG = LogService.class.getSimpleName();
+public class LogSenderService extends Service {
+    private static final String TAG = LogSenderService.class.getSimpleName();
     public static final String LOGCAT_FILE_TAG = "_logcat_";
     public static final String DROPBOX_FILE_TAG = "_dropbox_";
     private final BlockingQueue<File> rawLogFiles = new LinkedBlockingQueue<>();
@@ -52,7 +52,7 @@ public class LogService extends Service {
     public static class ShutdownBroadcastReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            context.stopService(new Intent(context, LogService.class));
+            context.stopService(new Intent(context, LogSenderService.class));
         }
     }
 

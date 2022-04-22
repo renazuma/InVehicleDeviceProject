@@ -8,7 +8,7 @@ import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.DefaultC
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.ServiceProvider;
 import com.kogasoftware.odt.invehicledevice.presenter.HealthCheckPresenter;
 import com.kogasoftware.odt.invehicledevice.presenter.InterruptUiPresenter;
-import com.kogasoftware.odt.invehicledevice.presenter.LogSyncPresenter;
+import com.kogasoftware.odt.invehicledevice.presenter.LogSenderPresenter;
 import com.kogasoftware.odt.invehicledevice.presenter.MainUiPresenter;
 import com.kogasoftware.odt.invehicledevice.presenter.PermissionChecker;
 import com.kogasoftware.odt.invehicledevice.presenter.UnitStatusLogSyncPresenter;
@@ -30,7 +30,7 @@ public class InVehicleDeviceActivity extends Activity {
 
     private InterruptUiPresenter interruptUiPresenter;
     private UnitStatusLogSyncPresenter unitStatusLogSyncPresenter;
-    private LogSyncPresenter logSyncPresenter;
+    private LogSenderPresenter logSenderPresenter;
     private MainUiPresenter mainUiPresenter;
 
     // TODO: 不要にしたい
@@ -58,8 +58,8 @@ public class InVehicleDeviceActivity extends Activity {
         unitStatusLogSyncPresenter = new UnitStatusLogSyncPresenter(this);
         unitStatusLogSyncPresenter.onCreate();
 
-        logSyncPresenter = new LogSyncPresenter(this);
-        logSyncPresenter.onCreate();
+        logSenderPresenter = new LogSenderPresenter(this);
+        logSenderPresenter.onCreate();
 
         HealthCheckPresenter healthCheckPresenter = new HealthCheckPresenter(this);
         healthCheckPresenter.onCreate();
@@ -81,7 +81,7 @@ public class InVehicleDeviceActivity extends Activity {
         interruptUiPresenter.onDestroy();
         mainUiPresenter.onDestroy();
         unitStatusLogSyncPresenter.onDestroy();
-        logSyncPresenter.onDestroy();
+        logSenderPresenter.onDestroy();
         destroyed = true;
     }
 

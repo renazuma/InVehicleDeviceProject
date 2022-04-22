@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.service.logservice;
+package com.kogasoftware.odt.invehicledevice.service.logsenderservice;
 
 import android.util.Log;
 
