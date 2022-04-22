@@ -72,8 +72,8 @@
 			android:process=":LogService"
 			android:exported="false" />
 		<service
-			android:name=".service.startupservice.StartupService"
-			android:process=":StartupService"
+			android:name=".service.healthcheckservice.HealthCheckService"
+			android:process=":HealthCheckService"
 			android:exported="false" />
 		<service
 			android:name=".service.serviceunitstatuslogservice.ServiceUnitStatusLogService"

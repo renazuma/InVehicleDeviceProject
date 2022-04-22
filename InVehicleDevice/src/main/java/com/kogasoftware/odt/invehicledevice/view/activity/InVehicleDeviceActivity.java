@@ -6,7 +6,7 @@ import android.os.Bundle;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.DefaultCharge;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.ServiceProvider;
-import com.kogasoftware.odt.invehicledevice.presenter.AutoRestartPresenter;
+import com.kogasoftware.odt.invehicledevice.presenter.HealthCheckPresenter;
 import com.kogasoftware.odt.invehicledevice.presenter.InterruptUiPresenter;
 import com.kogasoftware.odt.invehicledevice.presenter.LogSyncPresenter;
 import com.kogasoftware.odt.invehicledevice.presenter.MainUiPresenter;
@@ -61,8 +61,8 @@ public class InVehicleDeviceActivity extends Activity {
         logSyncPresenter = new LogSyncPresenter(this);
         logSyncPresenter.onCreate();
 
-        AutoRestartPresenter autoRestartPresenter = new AutoRestartPresenter(this);
-        autoRestartPresenter.onCreate();
+        HealthCheckPresenter healthCheckPresenter = new HealthCheckPresenter(this);
+        healthCheckPresenter.onCreate();
 
         // TODO: スケジュール関連のサーバとの定期同期は、画面をバックグラウンドにしても動き続けなければならないため、
         // TODO: contentProviderでジョブを開始している。
