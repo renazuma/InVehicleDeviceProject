@@ -59,13 +59,6 @@ public class StartupServiceTestCase extends ServiceTestCase<StartupService> {
 		assertFalse(getService().isDeviceReady());
 	}
 
-	public void xtestIsDeviceReady_ExternalStorageが無効の場合() {
-		assertFalse(getService().isDeviceReady(Environment.MEDIA_UNMOUNTED));
-		assertFalse(getService().isDeviceReady(Environment.MEDIA_REMOVED));
-		assertFalse(getService().isDeviceReady(Environment.MEDIA_NOFS));
-		assertTrue(getService().isDeviceReady(Environment.MEDIA_MOUNTED));
-	}
-
 	public void xtestIsDeviceReady_GPSが無効の場合() {
 		when(locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))
 				.thenReturn(false);

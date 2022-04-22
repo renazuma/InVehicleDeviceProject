@@ -11,7 +11,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.location.LocationManager;
 import android.os.Build;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.PowerManager;
@@ -75,17 +74,6 @@ public class StartupService extends Service {
     }
 
     public Boolean isDeviceReady() {
-        return isDeviceReady(Environment.getExternalStorageState());
-    }
-
-    public Boolean isDeviceReady(String externalStorageState) {
-        if (!externalStorageState.equals(Environment.MEDIA_MOUNTED)) {
-            Log.i(TAG, "Environment.getExternalStorageState() "
-                    + externalStorageState + " != " + Environment.MEDIA_MOUNTED);
-            BigToast.makeText(this, "SDカードを接続してください", Toast.LENGTH_LONG).show();
-            return false;
-        }
-
         PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
         if (!powerManager.isScreenOn()) {
             Log.i(TAG, "screen off");
