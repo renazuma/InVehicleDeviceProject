@@ -6,12 +6,12 @@ import android.os.Bundle;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.DefaultCharge;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.ServiceProvider;
-import com.kogasoftware.odt.invehicledevice.presenter.AutoRestartPresenter;
+import com.kogasoftware.odt.invehicledevice.presenter.HealthCheckPresenter;
 import com.kogasoftware.odt.invehicledevice.presenter.InterruptUiPresenter;
-import com.kogasoftware.odt.invehicledevice.presenter.LogSyncPresenter;
+import com.kogasoftware.odt.invehicledevice.presenter.LogSenderPresenter;
 import com.kogasoftware.odt.invehicledevice.presenter.MainUiPresenter;
 import com.kogasoftware.odt.invehicledevice.presenter.PermissionChecker;
-import com.kogasoftware.odt.invehicledevice.presenter.UnitStatusLogSyncPresenter;
+import com.kogasoftware.odt.invehicledevice.presenter.StatusSenderPresenter;
 
 import java.util.List;
 
@@ -29,8 +29,8 @@ public class InVehicleDeviceActivity extends Activity {
     public List<DefaultCharge> defaultCharges; // HACK: DefaultChargesの同期状態を変数で管理するのをやめたい。
 
     private InterruptUiPresenter interruptUiPresenter;
-    private UnitStatusLogSyncPresenter unitStatusLogSyncPresenter;
-    private LogSyncPresenter logSyncPresenter;
+    private StatusSenderPresenter statusSenderPresenter;
+    private LogSenderPresenter logSenderPresenter;
     private MainUiPresenter mainUiPresenter;
 
     // TODO: 不要にしたい
@@ -55,14 +55,14 @@ public class InVehicleDeviceActivity extends Activity {
         // Loaderを使用するためには、onStartより前の時点で、一度getLoaderManagerを実行しておく必要がある。
         getLoaderManager();
 
-        unitStatusLogSyncPresenter = new UnitStatusLogSyncPresenter(this);
-        unitStatusLogSyncPresenter.onCreate();
+        statusSenderPresenter = new StatusSenderPresenter(this);
+        statusSenderPresenter.onCreate();
 
-        logSyncPresenter = new LogSyncPresenter(this);
-        logSyncPresenter.onCreate();
+        logSenderPresenter = new LogSenderPresenter(this);
+        logSenderPresenter.onCreate();
 
-        AutoRestartPresenter autoRestartPresenter = new AutoRestartPresenter(this);
-        autoRestartPresenter.onCreate();
+        HealthCheckPresenter healthCheckPresenter = new HealthCheckPresenter(this);
+        healthCheckPresenter.onCreate();
 
         // TODO: スケジュール関連のサーバとの定期同期は、画面をバックグラウンドにしても動き続けなければならないため、
         // TODO: contentProviderでジョブを開始している。
@@ -80,8 +80,8 @@ public class InVehicleDeviceActivity extends Activity {
         super.onDestroy();
         interruptUiPresenter.onDestroy();
         mainUiPresenter.onDestroy();
-        unitStatusLogSyncPresenter.onDestroy();
-        logSyncPresenter.onDestroy();
+        statusSenderPresenter.onDestroy();
+        logSenderPresenter.onDestroy();
         destroyed = true;
     }
 

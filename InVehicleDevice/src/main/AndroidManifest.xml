@@ -60,20 +60,7 @@
 
 		<activity android:name=".view.activity.EmptyActivity" />
 
-		<receiver android:name=".service.startupservice.StartupService$StartupBroadcastReceiver">
-			<intent-filter>
-				<action android:name="android.intent.action.POWER_CONNECTED" />
-				<action android:name="android.intent.action.ACTION_POWER_CONNECTED" />
-			</intent-filter>
-			<intent-filter>
-				<action android:name="android.intent.action.PACKAGE_REPLACED" />
-				<data
-					android:path="com.kogasoftware.odt.invehicledevice"
-					android:scheme="package" />
-			</intent-filter>
-		</receiver>
-
-		<receiver android:name=".service.logservice.LogService$ShutdownBroadcastReceiver">
+		<receiver android:name=".service.logsenderservice.LogSenderService$ShutdownBroadcastReceiver">
 			<intent-filter>
 				<action android:name="android.intent.action.ACTION_SHUTDOWN" />
 				<action android:name="android.intent.action.QUICKBOOT_POWEROFF" />
@@ -81,20 +68,20 @@
 		</receiver>
 
 		<service
-			android:name=".service.logservice.LogService"
-			android:process=":LogService"
+			android:name=".service.logsenderservice.LogSenderService"
+			android:process=":LogSenderService"
 			android:exported="false" />
 		<service
-			android:name=".service.startupservice.StartupService"
-			android:process=":StartupService"
+			android:name=".service.healthcheckservice.HealthCheckService"
+			android:process=":HealthCheckService"
 			android:exported="false" />
 		<service
-			android:name=".service.serviceunitstatuslogservice.ServiceUnitStatusLogService"
-			android:process=":ServiceUnitStatusLogService"
+			android:name=".service.statussenderservice.StatusSenderService"
+			android:process=":StatusSenderService"
 			android:exported="false" />
 		<service
-			android:name=".service.staticvoiceplayservice.StaticVoicePlayService"
-			android:process=":StaticVoicePlayService"
+			android:name=".service.voicenotificationservice.VoiceNotificationService"
+			android:process=":VoiceNotificationService"
 			android:exported="false" />
 	</application>
 </manifest>

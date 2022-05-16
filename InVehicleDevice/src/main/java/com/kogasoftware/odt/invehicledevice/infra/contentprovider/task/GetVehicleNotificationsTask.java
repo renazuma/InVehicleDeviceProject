@@ -9,11 +9,11 @@ import com.google.common.base.Charsets;
 import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.json.VehicleNotificationJson;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.VehicleNotification;
-import com.kogasoftware.odt.invehicledevice.service.staticvoiceplayservice.StaticVoicePlayService;
-import com.kogasoftware.odt.invehicledevice.service.staticvoiceplayservice.voice.AdminNotificationVoice;
-import com.kogasoftware.odt.invehicledevice.service.staticvoiceplayservice.voice.ChimeVoice;
-import com.kogasoftware.odt.invehicledevice.service.staticvoiceplayservice.voice.ScheduleChangeVoice;
-import com.kogasoftware.odt.invehicledevice.service.staticvoiceplayservice.voice.Voice;
+import com.kogasoftware.odt.invehicledevice.service.voicenotificationservice.VoiceNotificationService;
+import com.kogasoftware.odt.invehicledevice.service.voicenotificationservice.voice.AdminNotification;
+import com.kogasoftware.odt.invehicledevice.service.voicenotificationservice.voice.Chime;
+import com.kogasoftware.odt.invehicledevice.service.voicenotificationservice.voice.ScheduleChange;
+import com.kogasoftware.odt.invehicledevice.service.voicenotificationservice.voice.Voice;
 
 import org.apache.http.HttpResponse;
 
@@ -130,21 +130,21 @@ public class GetVehicleNotificationsTask extends SynchronizationTask {
 
     // TODO: 音声再生の細かい処理は本来はcontentProviderにあるべきではないので、クラスを分けるべきかも
     private void playAdminNotificationVoice() {
-        Voice chimeVoice = new ChimeVoice();
-        Voice adminNotificationVoice = new AdminNotificationVoice();
-        StaticVoicePlayService.playVoice(context, chimeVoice);
-        StaticVoicePlayService.playVoice(context, adminNotificationVoice);
-        StaticVoicePlayService.playVoice(context, chimeVoice);
-        StaticVoicePlayService.playVoice(context, adminNotificationVoice);
+        Voice chimeVoice = new Chime();
+        Voice adminNotificationVoice = new AdminNotification();
+        VoiceNotificationService.playVoice(context, chimeVoice);
+        VoiceNotificationService.playVoice(context, adminNotificationVoice);
+        VoiceNotificationService.playVoice(context, chimeVoice);
+        VoiceNotificationService.playVoice(context, adminNotificationVoice);
     }
 
     // TODO: 音声再生の細かい処理は本来はcontentProviderにあるべきではないので、クラスを分けるべきかも
     private void playScheduleNotificationVoice() {
-        Voice chimeVoice = new ChimeVoice();
-        Voice scheduleChange = new ScheduleChangeVoice();
-        StaticVoicePlayService.playVoice(context, chimeVoice);
-        StaticVoicePlayService.playVoice(context, scheduleChange);
-        StaticVoicePlayService.playVoice(context, chimeVoice);
-        StaticVoicePlayService.playVoice(context, scheduleChange);
+        Voice chimeVoice = new Chime();
+        Voice scheduleChange = new ScheduleChange();
+        VoiceNotificationService.playVoice(context, chimeVoice);
+        VoiceNotificationService.playVoice(context, scheduleChange);
+        VoiceNotificationService.playVoice(context, chimeVoice);
+        VoiceNotificationService.playVoice(context, scheduleChange);
     }
 }
