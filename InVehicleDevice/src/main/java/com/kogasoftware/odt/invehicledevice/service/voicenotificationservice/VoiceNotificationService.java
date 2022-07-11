@@ -59,6 +59,13 @@ public class VoiceNotificationService extends Service {
         Intent intent = new Intent(VOICE_ACTION, null, context,
                 VoiceNotificationService.class);
         intent.putExtra(VOICE_FILE_KEY, voice);
-        context.startService(intent);
+
+        // 何かの拍子で、バックグラウンドから音声通知サービスを立ち上げようとして、例外を投げることがある。
+        // 音声通知が無くても処理は続いて欲しいので、例外の場合は握りつぶす。
+        try {
+            context.startService(intent);
+        } catch (IllegalStateException e) {
+            Log.e(VoiceNotificationService.class.getSimpleName(), "unexpected exception", e);
+        }
     }
 }
