@@ -25,7 +25,7 @@ public class OperationPhase implements Serializable {
             return OperationSchedule.Phase.FINISH;
         } else {
             OperationSchedule representativeOS = operationPhase.getCurrentRepresentativeOS();
-            if (representativeOS.arrivedAt == null && representativeOS.departedAt == null) {
+            if (isDrive(currentPhaseOperationSchedules)) {
                 return OperationSchedule.Phase.DRIVE;
             } else if (representativeOS.completeGetOff || representativeOS.getGetOffScheduledPassengerRecords(passengerRecords).isEmpty()) {
                 return OperationSchedule.Phase.PLATFORM_GET_ON;
@@ -33,6 +33,15 @@ public class OperationPhase implements Serializable {
                 return OperationSchedule.Phase.PLATFORM_GET_OFF;
             }
         }
+    }
+
+    private Boolean isDrive(List<OperationSchedule> operationSchedules) {
+        for(OperationSchedule operationSchedule : operationSchedules) {
+            if (operationSchedule.arrivedAt == null && operationSchedule.departedAt == null) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public List<List> getAllPhaseOperationSchedules() {
