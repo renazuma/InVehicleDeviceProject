@@ -36,7 +36,7 @@ public class OperationPhase implements Serializable {
 
     private Boolean isDrive(List<OperationSchedule> operationSchedules) {
         for(OperationSchedule operationSchedule : operationSchedules) {
-            if (operationSchedule.arrivedAt == null && operationSchedule.departedAt == null) {
+            if (operationSchedule.arrivedAt == null) {
                 return true;
             }
         }
