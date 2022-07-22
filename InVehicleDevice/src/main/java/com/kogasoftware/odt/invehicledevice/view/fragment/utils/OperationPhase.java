@@ -24,15 +24,35 @@ public class OperationPhase implements Serializable {
         if (currentPhaseOperationSchedules.isEmpty()) {
             return OperationSchedule.Phase.FINISH;
         } else {
-            OperationSchedule representativeOS = operationPhase.getCurrentRepresentativeOS();
-            if (representativeOS.arrivedAt == null && representativeOS.departedAt == null) {
+            if (isDrive(currentPhaseOperationSchedules)) {
                 return OperationSchedule.Phase.DRIVE;
-            } else if (representativeOS.completeGetOff || representativeOS.getGetOffScheduledPassengerRecords(passengerRecords).isEmpty()) {
+            } else if (isGetOn(currentPhaseOperationSchedules, passengerRecords)) {
                 return OperationSchedule.Phase.PLATFORM_GET_ON;
             } else {
                 return OperationSchedule.Phase.PLATFORM_GET_OFF;
             }
         }
+    }
+
+    private Boolean isDrive(List<OperationSchedule> operationSchedules) {
+        for(OperationSchedule operationSchedule : operationSchedules) {
+            if (operationSchedule.arrivedAt == null) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private Boolean isGetOn(List<OperationSchedule> operationSchedules, List<PassengerRecord> passengerRecords) {
+        if (isDrive(operationSchedules)) {
+            return false;
+        }
+        for(OperationSchedule operationSchedule : operationSchedules) {
+            if (operationSchedule.completeGetOff || operationSchedule.getGetOffScheduledPassengerRecords(passengerRecords).isEmpty()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public List<List> getAllPhaseOperationSchedules() {
