@@ -11,7 +11,7 @@ android {
         testInstrumentationRunner "com.kogasoftware.android.DexMakerInstrumentationTestRunner"
         minSdkVersion 23
         multiDexEnabled true
-        targetSdkVersion 30
+        targetSdkVersion 31
     }
     signingConfigs {
         release {
