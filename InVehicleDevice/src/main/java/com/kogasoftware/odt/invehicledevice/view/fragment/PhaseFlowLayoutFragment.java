@@ -15,9 +15,9 @@ import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.Passenge
 import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivity;
 import com.kogasoftware.odt.invehicledevice.view.fragment.controlbar.ControlBarFragment;
 import com.kogasoftware.odt.invehicledevice.view.fragment.headerbar.HeaderBarFragment;
-import com.kogasoftware.odt.invehicledevice.view.fragment.phasecontent.DrivePhaseFragment;
-import com.kogasoftware.odt.invehicledevice.view.fragment.phasecontent.FinishPhaseFragment;
-import com.kogasoftware.odt.invehicledevice.view.fragment.phasecontent.PlatformPhaseFragment;
+import com.kogasoftware.odt.invehicledevice.view.fragment.phaseflow.DrivePhaseFragment;
+import com.kogasoftware.odt.invehicledevice.view.fragment.phaseflow.FinishPhaseFragment;
+import com.kogasoftware.odt.invehicledevice.view.fragment.phaseflow.PlatformPhaseFragment;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.OperationPhase;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.OperationSchedulesSyncFragmentAbstract;
 
