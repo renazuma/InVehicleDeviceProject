@@ -18,7 +18,7 @@
     <string name="it_returns">戻る</string>
     <string name="it_go_to_next_view">次へ</string>
     <string name="it_returns_to_platform_modal_view">乗降一覧に戻る</string>
-    <string name="map">地図</string>
+    <string name="navi">ナビ</string>
     <string name="memo">メモ</string>
     <string name="next_platform_is">次は</string>
     <string name="no">いいえ</string>

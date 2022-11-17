@@ -26,7 +26,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * 到着ボタン、地図ボタン、運行予定ボタンを表示する領域
+ * 到着ボタン、ナビボタン、運行予定ボタンを表示する領域
  */
 public class ControlBarFragment extends OperationSchedulesSyncFragmentAbstract {
     private static final String TAG = ControlBarFragment.class.getSimpleName();
@@ -166,7 +166,7 @@ public class ControlBarFragment extends OperationSchedulesSyncFragmentAbstract {
         this.operationPhase = new OperationPhase(operationSchedules, passengerRecords);
         final Phase phase = operationPhase.getPhase();
 
-        getView().findViewById(R.id.map_button).setOnClickListener(v -> {
+        getView().findViewById(R.id.navi_button).setOnClickListener(v -> {
             ViewDisabler.disable(v);
             showNavigation(phase);
         });
