@@ -20,7 +20,7 @@ import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.VehicleNotification;
 import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivity;
 import com.kogasoftware.odt.invehicledevice.view.fragment.phaseflow.controlbar.ControlBarFragment;
-import com.kogasoftware.odt.invehicledevice.view.fragment.modal.OperationListFragment;
+import com.kogasoftware.odt.invehicledevice.view.fragment.listflow.modal.OperationListFragment;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.Fragments;
 
 import org.apache.commons.lang3.SystemUtils;
