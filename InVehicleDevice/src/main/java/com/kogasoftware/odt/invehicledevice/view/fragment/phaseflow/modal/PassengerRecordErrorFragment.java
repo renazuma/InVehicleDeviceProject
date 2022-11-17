@@ -17,7 +17,7 @@ import com.kogasoftware.odt.invehicledevice.view.fragment.utils.Fragments;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.OperationPhase;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.OperationSchedulesSyncFragmentAbstract;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.ViewDisabler;
-import com.kogasoftware.odt.invehicledevice.view.fragment.utils.arrayadapter.PassengerRecordErrorArrayAdapter;
+import com.kogasoftware.odt.invehicledevice.view.fragment.phaseflow.utils.arrayadapter.PassengerRecordErrorArrayAdapter;
 
 import java.util.LinkedList;
 import java.util.List;

@@ -19,7 +19,7 @@ import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.Passenge
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.FlickUnneededListView;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.OperationPhase;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.OperationSchedulesSyncFragmentAbstract;
-import com.kogasoftware.odt.invehicledevice.view.fragment.utils.arrayadapter.PassengerRecordArrayAdapter;
+import com.kogasoftware.odt.invehicledevice.view.fragment.phaseflow.utils.arrayadapter.PassengerRecordArrayAdapter;
 
 import org.joda.time.DateTime;
 
