@@ -10,7 +10,7 @@ import android.os.Looper;
 
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.ServiceProvider;
 import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivity;
-import com.kogasoftware.odt.invehicledevice.view.fragment.PhaseFlowLayoutFragment;
+import com.kogasoftware.odt.invehicledevice.view.fragment.phaseflow.PhaseFlowLayoutFragment;
 
 /**
  * ServiceProvider情報を購読し、オペレーション画面を操作するLoaderを操作するクラス

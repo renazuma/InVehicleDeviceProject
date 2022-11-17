@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.view.fragment;
+package com.kogasoftware.odt.invehicledevice.view.fragment.phaseflow;
 
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -13,11 +13,8 @@ import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.Operatio
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.OperationSchedule.Phase;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivity;
-import com.kogasoftware.odt.invehicledevice.view.fragment.controlbar.ControlBarFragment;
-import com.kogasoftware.odt.invehicledevice.view.fragment.headerbar.HeaderBarFragment;
-import com.kogasoftware.odt.invehicledevice.view.fragment.phaseflow.DrivePhaseFragment;
-import com.kogasoftware.odt.invehicledevice.view.fragment.phaseflow.FinishPhaseFragment;
-import com.kogasoftware.odt.invehicledevice.view.fragment.phaseflow.PlatformPhaseFragment;
+import com.kogasoftware.odt.invehicledevice.view.fragment.phaseflow.controlbar.ControlBarFragment;
+import com.kogasoftware.odt.invehicledevice.view.fragment.phaseflow.headerbar.HeaderBarFragment;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.OperationPhase;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.OperationSchedulesSyncFragmentAbstract;
 
