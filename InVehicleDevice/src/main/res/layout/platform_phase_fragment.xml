@@ -12,7 +12,7 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true" >
 
-        <com.kogasoftware.odt.invehicledevice.view.fragment.informationbar.AutoResizeTextView
+        <com.kogasoftware.odt.invehicledevice.view.fragment.headerbar.AutoResizeTextView
             android:id="@+id/now_platform_text_view"
             android:layout_width="0dp"
             android:layout_height="55sp"

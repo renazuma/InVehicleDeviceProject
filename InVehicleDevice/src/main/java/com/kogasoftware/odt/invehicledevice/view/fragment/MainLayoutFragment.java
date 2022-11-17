@@ -14,7 +14,7 @@ import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.Operatio
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivity;
 import com.kogasoftware.odt.invehicledevice.view.fragment.controlbar.ControlBarFragment;
-import com.kogasoftware.odt.invehicledevice.view.fragment.informationbar.InformationBarFragment;
+import com.kogasoftware.odt.invehicledevice.view.fragment.headerbar.HeaderBarFragment;
 import com.kogasoftware.odt.invehicledevice.view.fragment.phasecontent.DrivePhaseFragment;
 import com.kogasoftware.odt.invehicledevice.view.fragment.phasecontent.FinishPhaseFragment;
 import com.kogasoftware.odt.invehicledevice.view.fragment.phasecontent.PlatformPhaseFragment;
@@ -24,7 +24,7 @@ import com.kogasoftware.odt.invehicledevice.view.fragment.utils.OperationSchedul
 import java.util.LinkedList;
 
 /**
- * 順番に運行を進める画面。上部に「InformationBarFragment」右部に「ControlBarFragment」中心に「**PhaseFragment」を配置する
+ * 順番に運行を進める画面。上部に「HeaderBarFragment」右部に「ControlBarFragment」中心に「**PhaseFragment」を配置する
  */
 public class MainLayoutFragment extends OperationSchedulesSyncFragmentAbstract {
 
@@ -50,13 +50,13 @@ public class MainLayoutFragment extends OperationSchedulesSyncFragmentAbstract {
         // トップ画面の右部分のボタンのコンテナフラグメント、ヘッダフラグメントを設定
         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
         fragmentTransaction.add(R.id.control_bar_fragment_container, ControlBarFragment.newInstance());
-        fragmentTransaction.add(R.id.information_bar_fragment_container, InformationBarFragment.newInstance());
+        fragmentTransaction.add(R.id.header_bar_fragment_container, HeaderBarFragment.newInstance());
         fragmentTransaction.commitAllowingStateLoss();
     }
 
 
     // 運行スケジュールが新しく同期される度に、運行メイン画面を最新化する
-    // TODO: control_fragmentやinformation_fragmentに合わせるのであれば、phase表示をコントロールする別クラスで用意し、ここはコンテナに徹するべきでは？
+    // TODO: control_fragmentやheader_fragmentに合わせるのであれば、phase表示をコントロールする別クラスで用意し、ここはコンテナに徹するべきでは？
     // TODO: もしくは、fragmentTransactionのメソッドは、コンテナを管理するこのクラスで実行するという方針？
     // TODO: phaseコンテナがメインコンテンツ部分だという事が分かりにくいので、名前を変えたい。
     @Override
