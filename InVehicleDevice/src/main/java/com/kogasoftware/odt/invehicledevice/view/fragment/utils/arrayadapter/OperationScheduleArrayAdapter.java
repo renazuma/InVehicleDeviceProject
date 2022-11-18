@@ -370,7 +370,7 @@ public class OperationScheduleArrayAdapter
 
     private void setOperationScheduleRowView(int position, View convertView) {
         List<OperationSchedule> operationSchedules = getItem(position);
-        OperationSchedule representativeOS = (OperationSchedule) operationSchedules.get(0);
+        OperationSchedule representativeOS = operationSchedules.get(0);
 
         convertView.setTag(operationSchedules);
 
@@ -474,8 +474,8 @@ public class OperationScheduleArrayAdapter
             return true;
         }
 
-        OperationSchedule previousOS = (OperationSchedule) ((List) getItem(position - 1)).get(0);
-        OperationSchedule currentOS = (OperationSchedule) ((List) getItem(position)).get(0);
+        OperationSchedule previousOS = (OperationSchedule) getItem(position - 1).get(0);
+        OperationSchedule currentOS = (OperationSchedule) getItem(position).get(0);
 
         return !currentOS.platformId.equals(previousOS.platformId);
     }
@@ -485,8 +485,8 @@ public class OperationScheduleArrayAdapter
             return false;
         }
 
-        OperationSchedule currentOS = (OperationSchedule) ((List) getItem(position)).get(0);
-        OperationSchedule nextOS = (OperationSchedule) ((List) getItem(position + 1)).get(0);
+        OperationSchedule currentOS = (OperationSchedule) getItem(position).get(0);
+        OperationSchedule nextOS = (OperationSchedule) getItem(position + 1).get(0);
 
         return !currentOS.platformId.equals(nextOS.platformId);
     }
