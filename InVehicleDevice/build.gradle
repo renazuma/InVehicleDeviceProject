@@ -4,14 +4,14 @@ apply plugin: 'com.android.application'
 def VERSION_CODE = 20022
 
 android {
-    compileSdkVersion 32
+    compileSdkVersion 33
     defaultConfig {
         versionCode VERSION_CODE
         versionName computeVersionName(VERSION_CODE)
         testInstrumentationRunner "com.kogasoftware.android.DexMakerInstrumentationTestRunner"
         minSdkVersion 23
         multiDexEnabled true
-        targetSdkVersion 30
+        targetSdkVersion 31
     }
     signingConfigs {
         release {
