@@ -28,7 +28,7 @@
 
     <LinearLayout
         android:id="@+id/flick_unneeded_list_view_scroll_pane"
-        android:layout_width="130dp"
+        android:layout_width="70dp"
         android:layout_height="fill_parent"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
