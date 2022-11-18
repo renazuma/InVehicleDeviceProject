@@ -52,7 +52,7 @@ public class GetVehicleNotificationsTask extends SynchronizationTask {
                 return;
             }
             save(vehicleNotifications);
-        };
+        }
     };
 
 
