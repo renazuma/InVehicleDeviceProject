@@ -51,7 +51,7 @@ public class ControlBarFragment extends OperationSchedulesSyncFragmentAbstract {
     }
 
     // 表示メソッド
-    public void showNavigation(Phase phase) {
+    private void showNavigation(Phase phase) {
         if (!isAdded()) {
             return;
         }
@@ -67,7 +67,7 @@ public class ControlBarFragment extends OperationSchedulesSyncFragmentAbstract {
         }
     }
 
-    public void showOperationScheduleListFragment() {
+    private void showOperationScheduleListFragment() {
         if (!isAdded()) {
             return;
         }
@@ -75,7 +75,7 @@ public class ControlBarFragment extends OperationSchedulesSyncFragmentAbstract {
         Fragments.showModalFragment(getFragmentManager(), OperationListFragment.newInstance(true), OPERATION_LIST_FRAGMENT_TAG);
     }
 
-    public void showArrivalCheckFragment() {
+    private void showArrivalCheckFragment() {
 
         if (!isAdded()) {
             return;
@@ -91,7 +91,7 @@ public class ControlBarFragment extends OperationSchedulesSyncFragmentAbstract {
                 .commitAllowingStateLoss();
     }
 
-    public void showDepartureCheckFragment(Phase phase) {
+    private void showDepartureCheckFragment(Phase phase) {
         if (!isAdded()) {
             return;
         }
