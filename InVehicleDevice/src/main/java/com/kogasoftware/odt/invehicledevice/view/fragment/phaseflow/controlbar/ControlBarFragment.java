@@ -33,7 +33,6 @@ public class ControlBarFragment extends OperationSchedulesSyncFragmentAbstract {
     public static final String OPERATION_LIST_FRAGMENT_TAG = ControlBarFragment.class
             + "/" + OperationSchedulesSyncFragmentAbstract.class;
     private ContentResolver contentResolver;
-    private Button mapButton;
     private OperationPhase operationPhase;
 
     public static ControlBarFragment newInstance() {
@@ -49,14 +48,6 @@ public class ControlBarFragment extends OperationSchedulesSyncFragmentAbstract {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         contentResolver = getActivity().getContentResolver();
-        mapButton = getView().findViewById(R.id.map_button);
-        Button operationScheduleListButton = getView().findViewById(R.id.operation_schedule_list_button);
-
-        // TODO: 運行予定ボタンの定義。地図やphaseボタンと異なり、特別な引数や文字の変更が無いから、ここで定義されているが、わかりにくい。
-        operationScheduleListButton.setOnClickListener(v -> {
-            ViewDisabler.disable(v);
-            showOperationScheduleListFragment();
-        });
     }
 
     // 表示メソッド
@@ -167,7 +158,7 @@ public class ControlBarFragment extends OperationSchedulesSyncFragmentAbstract {
         return false;
     }
 
-    // 画面右部のボタンの、地図ボタン、phase変更ボタン（到着しました等）を定義する
+    // 運行が更新された際に画面右部のボタンの定義をする
     @Override
     protected void onSchedulesRefresh(
             final LinkedList<OperationSchedule> operationSchedules,
@@ -175,9 +166,14 @@ public class ControlBarFragment extends OperationSchedulesSyncFragmentAbstract {
         this.operationPhase = new OperationPhase(operationSchedules, passengerRecords);
         final Phase phase = operationPhase.getPhase();
 
-        mapButton.setOnClickListener(v -> {
+        getView().findViewById(R.id.map_button).setOnClickListener(v -> {
             ViewDisabler.disable(v);
             showNavigation(phase);
+        });
+
+        getView().findViewById(R.id.operation_schedule_list_button).setOnClickListener(v -> {
+            ViewDisabler.disable(v);
+            showOperationScheduleListFragment();
         });
 
         Button changePhaseButton = getView().findViewById(R.id.change_phase_button);
