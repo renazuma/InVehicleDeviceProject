@@ -30,14 +30,14 @@ public class TopViewLoader {
     }
 
     public void initLoader() {
-        inVehicleDeviceActivity.getLoaderManager().initLoader(LOADER_ID, null, callbacks);
+        inVehicleDeviceActivity.getLoaderManager().initLoader(LOADER_ID, null, topViewCallbacks);
     }
 
     public void destroyLoader() {
         inVehicleDeviceActivity.getLoaderManager().destroyLoader(LOADER_ID);
     }
 
-    private final LoaderManager.LoaderCallbacks<Cursor> callbacks = new LoaderManager.LoaderCallbacks<Cursor>() {
+    private final LoaderManager.LoaderCallbacks<Cursor> topViewCallbacks = new LoaderManager.LoaderCallbacks<Cursor>() {
         @Override
         public Loader<Cursor> onCreateLoader(int id, Bundle args) {
             return new CursorLoader(inVehicleDeviceActivity, ServiceProvider.CONTENT.URI, null, null, null, null);
