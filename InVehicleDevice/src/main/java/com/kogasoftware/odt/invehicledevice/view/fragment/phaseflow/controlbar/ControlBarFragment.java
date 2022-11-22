@@ -1,6 +1,9 @@
 package com.kogasoftware.odt.invehicledevice.view.fragment.phaseflow.controlbar;
 
+import static android.view.View.VISIBLE;
+
 import android.content.ContentResolver;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -13,6 +16,7 @@ import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.OperationSchedule.Phase;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.PassengerRecord;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.ServiceProvider;
 import com.kogasoftware.odt.invehicledevice.view.fragment.modal.MapFragment;
 import com.kogasoftware.odt.invehicledevice.view.fragment.phaseflow.modal.ArrivalCheckFragment;
 import com.kogasoftware.odt.invehicledevice.view.fragment.phaseflow.modal.DepartureCheckFragment;
@@ -180,7 +184,15 @@ public class ControlBarFragment extends OperationSchedulesSyncFragmentAbstract {
             showNavigation(phase);
         });
 
-        getView().findViewById(R.id.map_button).setOnClickListener(v -> {
+        Button mapButton = getView().findViewById(R.id.map_button);
+
+        Cursor serviceProviderCursor = getContext()
+            .getContentResolver()
+            .query(ServiceProvider.CONTENT.URI, null, null, null, null);
+        if (serviceProviderCursor.moveToFirst() && (new ServiceProvider(serviceProviderCursor)).zenrinMaps) {
+            mapButton.setVisibility(VISIBLE);
+        }
+        mapButton.setOnClickListener(v -> {
           ViewDisabler.disable(v);
           showMapFragment();
         });
