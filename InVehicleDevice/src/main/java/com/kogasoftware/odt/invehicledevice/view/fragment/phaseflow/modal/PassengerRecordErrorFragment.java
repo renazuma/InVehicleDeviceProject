@@ -95,7 +95,7 @@ public class PassengerRecordErrorFragment extends OperationSchedulesSyncFragment
     }
 
     @Override
-    protected void onOperationSchedulesAndPassengerRecordsLoadFinished(
+    protected void onSchedulesRefresh(
             final LinkedList<OperationSchedule> operationSchedules,
             final LinkedList<PassengerRecord> passengerRecords) {
 

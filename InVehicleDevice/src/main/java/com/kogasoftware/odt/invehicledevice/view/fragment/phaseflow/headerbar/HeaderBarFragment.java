@@ -189,7 +189,7 @@ public class HeaderBarFragment extends OperationSchedulesSyncFragmentAbstract {
     }
 
     @Override
-    protected void onOperationSchedulesAndPassengerRecordsLoadFinished(
+    protected void onSchedulesRefresh(
             LinkedList<OperationSchedule> operationSchedules,
             LinkedList<PassengerRecord> passengerRecords) {
 

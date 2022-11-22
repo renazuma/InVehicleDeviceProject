@@ -57,7 +57,7 @@ public class PhaseFlowLayoutFragment extends OperationSchedulesSyncFragmentAbstr
     // TODO: もしくは、fragmentTransactionのメソッドは、コンテナを管理するこのクラスで実行するという方針？
     // TODO: phaseコンテナがメインコンテンツ部分だという事が分かりにくいので、名前を変えたい。
     @Override
-    protected void onOperationSchedulesAndPassengerRecordsLoadFinished(
+    protected void onSchedulesRefresh(
             LinkedList<OperationSchedule> operationSchedules,
             LinkedList<PassengerRecord> passengerRecords, Boolean phaseChanged) {
         OperationPhase operationPhase = new OperationPhase(operationSchedules, passengerRecords);
