@@ -119,6 +119,7 @@
         android:id="@+id/operation_list_map_button"
         android:layout_width="70sp"
         android:layout_height="60sp"
+        android:visibility="gone"
         android:layout_toLeftOf="@+id/operation_list_navi_button"
         android:layout_marginRight="2dp"
         android:text="@string/map"

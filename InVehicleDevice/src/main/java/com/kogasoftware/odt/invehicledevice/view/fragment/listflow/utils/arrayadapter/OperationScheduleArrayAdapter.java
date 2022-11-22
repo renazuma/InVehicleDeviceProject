@@ -4,6 +4,7 @@ import android.app.Fragment;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -24,11 +25,14 @@ import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.PassengerRecord;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.ServiceProvider;
 import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivity;
 import com.kogasoftware.odt.invehicledevice.view.fragment.modal.ChargeEditFragment;
+import com.kogasoftware.odt.invehicledevice.view.fragment.modal.MapFragment;
 import com.kogasoftware.odt.invehicledevice.view.fragment.modal.PassengerRecordMemoFragment;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.FragmentUtils;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.ScheduleUtil;
+import com.kogasoftware.odt.invehicledevice.view.fragment.utils.ViewDisabler;
 
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
@@ -344,6 +348,14 @@ public class OperationScheduleArrayAdapter
     protected final OnClickListener onMapButtonClickListener = new OnClickListener() {
         @Override
         public void onClick(View view) {
+            ViewDisabler.disable(view);
+            FragmentUtils.showModal(fragment.getFragmentManager(), MapFragment.newInstance());
+        }
+    };
+
+    protected final OnClickListener onNaviButtonClickListener = new OnClickListener() {
+        @Override
+        public void onClick(View view) {
             Object tag = view.getTag();
             if (!(tag instanceof OperationSchedule)) {
                 return;
@@ -380,6 +392,8 @@ public class OperationScheduleArrayAdapter
         ((TextView) convertView.findViewById(R.id.platform_name)).setText(representativeOS.name);
 
         setPlatformAddressView(convertView, representativeOS);
+
+        setMapButtonView(convertView);
 
         setNaviButtonView(convertView, representativeOS);
 
@@ -418,10 +432,21 @@ public class OperationScheduleArrayAdapter
         }
     }
 
-    private void setNaviButtonView(View convertView, OperationSchedule representativeOS) {
-        Button mapButton = convertView.findViewById(R.id.operation_list_navi_button);
-        mapButton.setTag(representativeOS);
+    private void setMapButtonView(View convertView) {
+        Button mapButton = convertView.findViewById(R.id.operation_list_map_button);
+        Cursor serviceProviderCursor = getContext()
+            .getContentResolver()
+            .query(ServiceProvider.CONTENT.URI, null, null, null, null);
+        if (serviceProviderCursor.moveToFirst() && (new ServiceProvider(serviceProviderCursor)).zenrinMaps) {
+            mapButton.setVisibility(View.VISIBLE);
+        }
         mapButton.setOnClickListener(onMapButtonClickListener);
+    }
+
+    private void setNaviButtonView(View convertView, OperationSchedule representativeOS) {
+        Button naviButton = convertView.findViewById(R.id.operation_list_navi_button);
+        naviButton.setTag(representativeOS);
+        naviButton.setOnClickListener(onNaviButtonClickListener);
     }
 
     @Nullable
