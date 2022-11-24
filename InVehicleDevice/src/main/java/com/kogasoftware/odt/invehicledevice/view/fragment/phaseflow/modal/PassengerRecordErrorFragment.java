@@ -12,7 +12,7 @@ import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.OperationSchedule.Phase;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.PassengerRecord;
-import com.kogasoftware.odt.invehicledevice.view.fragment.utils.FlickUnneededListView;
+import com.kogasoftware.odt.invehicledevice.view.fragment.listflow.utils.FlickUnneededListView;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.Fragments;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.OperationPhase;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.OperationSchedulesSyncFragmentAbstract;

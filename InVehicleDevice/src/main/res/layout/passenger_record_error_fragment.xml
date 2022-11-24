@@ -6,7 +6,7 @@
     style="@style/ModalView.Layout"
     tools:context=".view.activity.EmptyActivity" >
 
-    <com.kogasoftware.odt.invehicledevice.view.fragment.utils.FlickUnneededListView
+    <com.kogasoftware.odt.invehicledevice.view.fragment.listflow.utils.FlickUnneededListView
         android:id="@+id/error_reservation_list_view"
         style="@style/ModalView.Content"
         android:layout_width="match_parent"

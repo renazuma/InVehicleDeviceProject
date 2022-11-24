@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.view.fragment.utils;
+package com.kogasoftware.odt.invehicledevice.view.fragment.listflow.utils;
 
 import android.content.Context;
 import android.graphics.Color;

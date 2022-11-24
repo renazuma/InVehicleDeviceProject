@@ -19,9 +19,9 @@ import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.Operatio
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.VehicleNotification;
 import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivity;
-import com.kogasoftware.odt.invehicledevice.view.fragment.utils.FlickUnneededListView;
+import com.kogasoftware.odt.invehicledevice.view.fragment.listflow.utils.FlickUnneededListView;
+import com.kogasoftware.odt.invehicledevice.view.fragment.listflow.utils.arrayadapter.OperationScheduleArrayAdapter;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.Fragments;
-import com.kogasoftware.odt.invehicledevice.view.fragment.utils.arrayadapter.OperationScheduleArrayAdapter;
 
 import java.util.concurrent.TimeUnit;
 

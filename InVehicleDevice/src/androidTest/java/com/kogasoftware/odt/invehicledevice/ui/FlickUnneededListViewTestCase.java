@@ -6,7 +6,7 @@ import android.widget.Button;
 
 import com.google.common.base.Throwables;
 import com.kogasoftware.odt.invehicledevice.R;
-import com.kogasoftware.odt.invehicledevice.view.fragment.utils.FlickUnneededListView;
+import com.kogasoftware.odt.invehicledevice.view.fragment.listflow.utils.FlickUnneededListView;
 import com.kogasoftware.odt.invehicledevice.view.activity.EmptyActivity;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.SoloUtils;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.TestUtils;
