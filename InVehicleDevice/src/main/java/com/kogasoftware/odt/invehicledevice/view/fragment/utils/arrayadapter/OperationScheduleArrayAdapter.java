@@ -76,7 +76,7 @@ public class OperationScheduleArrayAdapter
             this.currentEvent = event;
 
             Object operationSchedules = operationScheduleRowView.getTag();
-            if (List.class.isInstance(operationSchedules)) {
+            if (operationSchedules instanceof List) {
                 return onTouch();
             } else {
                 Log.e(TAG, "\"" + view + "\".getTag() (" + operationSchedules + ") is not instanceof " + List.class);
@@ -93,7 +93,7 @@ public class OperationScheduleArrayAdapter
             } else if (isNotTargetEvent()) {
                 isEventComplete = false;
             } else {
-                isEventComplete = currentEvent.getAction() == MotionEvent.ACTION_CANCEL ? true : onTap();
+                isEventComplete = currentEvent.getAction() == MotionEvent.ACTION_CANCEL || onTap();
                 // updateを検知して画面更新はされるが、タップ時と若干のラグが出るため、手動で対象行だけの修正を入れている。
                 setOperationScheduleRowBackground(operationScheduleRowView);
             }
@@ -211,7 +211,7 @@ public class OperationScheduleArrayAdapter
             this.currentEvent = event;
 
             Object passengerRecordRowTag = view.getTag();
-            if (PassengerRecordRowTag.class.isInstance(passengerRecordRowTag)) {
+            if (passengerRecordRowTag instanceof PassengerRecordRowTag) {
                 return onTouch();
             } else {
                 Log.e(TAG, "\"" + view + "\".getTag() (" + passengerRecordRowTag + ") is not instanceof " + PassengerRecordRowTag.class);
@@ -228,7 +228,7 @@ public class OperationScheduleArrayAdapter
             } else if (isNotTargetEvent()) {
                 isEventComplete = false;
             } else {
-                isEventComplete = currentEvent.getAction() == MotionEvent.ACTION_CANCEL ? true : onTap();
+                isEventComplete = currentEvent.getAction() == MotionEvent.ACTION_CANCEL || onTap();
                 // updateを検知して画面更新はされるが、タップ時と若干のラグが出るため、手動で対象行だけの修正を入れている。
                 setPassengerRecordsRowBackground(passengerRecordRowView);
             }
@@ -370,7 +370,7 @@ public class OperationScheduleArrayAdapter
 
     private void setOperationScheduleRowView(int position, View convertView) {
         List<OperationSchedule> operationSchedules = getItem(position);
-        OperationSchedule representativeOS = OperationSchedule.class.cast(operationSchedules.get(0));
+        OperationSchedule representativeOS = operationSchedules.get(0);
 
         convertView.setTag(operationSchedules);
 
@@ -474,10 +474,10 @@ public class OperationScheduleArrayAdapter
             return true;
         }
 
-        OperationSchedule previousOS = OperationSchedule.class.cast(List.class.cast(getItem(position - 1)).get(0));
-        OperationSchedule currentOS = OperationSchedule.class.cast(List.class.cast(getItem(position)).get(0));
+        OperationSchedule previousOS = (OperationSchedule) getItem(position - 1).get(0);
+        OperationSchedule currentOS = (OperationSchedule) getItem(position).get(0);
 
-        return currentOS.platformId.equals(previousOS.platformId) ? false : true;
+        return !currentOS.platformId.equals(previousOS.platformId);
     }
 
     private boolean isDepartureEstimateViewEnable(int position) {
@@ -485,10 +485,10 @@ public class OperationScheduleArrayAdapter
             return false;
         }
 
-        OperationSchedule currentOS = OperationSchedule.class.cast(List.class.cast(getItem(position)).get(0));
-        OperationSchedule nextOS = OperationSchedule.class.cast(List.class.cast(getItem(position + 1)).get(0));
+        OperationSchedule currentOS = (OperationSchedule) getItem(position).get(0);
+        OperationSchedule nextOS = (OperationSchedule) getItem(position + 1).get(0);
 
-        return currentOS.platformId.equals(nextOS.platformId) ? false : true;
+        return !currentOS.platformId.equals(nextOS.platformId);
     }
 
     private void setOperationRowPassengerCount(int position, View convertView) {
@@ -577,14 +577,14 @@ public class OperationScheduleArrayAdapter
 
         // 支払料金
         if (passengerRecord.paidCharge != null) {
-            paidChargeView.setText(passengerRecord.settled? "カード決済" : passengerRecord.paidCharge.toString() + "円");
+            paidChargeView.setText(passengerRecord.settled? "カード決済" : passengerRecord.paidCharge + "円");
             paidChargeView.setVisibility(View.VISIBLE);
         }
 
         // 予定料金
         if (getOn) {
             if (passengerRecord.expectedCharge != null) {
-                expectedChargeView.setText(passengerRecord.expectedCharge.toString() + "円");
+                expectedChargeView.setText(passengerRecord.expectedCharge + "円");
                 expectedChargeView.setVisibility(View.VISIBLE);
             }
         } else {
