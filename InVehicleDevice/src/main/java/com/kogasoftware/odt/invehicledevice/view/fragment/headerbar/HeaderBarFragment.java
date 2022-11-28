@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.view.fragment.informationbar;
+package com.kogasoftware.odt.invehicledevice.view.fragment.headerbar;
 
 import android.app.Activity;
 import android.graphics.Color;
@@ -36,15 +36,15 @@ import java.util.Locale;
 /**
  * 時刻やバッテリー状況などを表示する領域
  */
-public class InformationBarFragment extends OperationSchedulesSyncFragmentAbstract {
+public class HeaderBarFragment extends OperationSchedulesSyncFragmentAbstract {
     private static final int UPDATE_TIME_INTERVAL_MILLIS = 3000;
     private static final int OPERATION_SCHEDULES_LOADER_ID = 1;
     private static final int PASSENGER_RECORDS_LOADER_ID = 2;
 
     private Handler handler;
 
-    public static InformationBarFragment newInstance() {
-        return new InformationBarFragment();
+    public static HeaderBarFragment newInstance() {
+        return new HeaderBarFragment();
     }
 
     private final Runnable updateTime = new Runnable() {
@@ -97,7 +97,7 @@ public class InformationBarFragment extends OperationSchedulesSyncFragmentAbstra
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.information_bar_fragment, container, false);
+        return inflater.inflate(R.layout.header_bar_fragment, container, false);
     }
 
     @Override

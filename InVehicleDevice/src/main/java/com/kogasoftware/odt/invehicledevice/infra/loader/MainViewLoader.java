@@ -10,7 +10,7 @@ import android.os.Looper;
 
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.ServiceProvider;
 import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivity;
-import com.kogasoftware.odt.invehicledevice.view.fragment.MainLayoutFragment;
+import com.kogasoftware.odt.invehicledevice.view.fragment.PhaseFlowLayoutFragment;
 
 /**
  * ServiceProvider情報を購読し、オペレーション画面を操作するLoaderを操作するクラス
@@ -49,10 +49,10 @@ public class MainViewLoader {
 
             if (cursor.moveToFirst()) {
                 inVehicleDeviceActivity.setServiceProvider(new ServiceProvider(cursor));
-                mainUIHandler.post(() -> MainLayoutFragment.showModal(inVehicleDeviceActivity));
+                mainUIHandler.post(() -> PhaseFlowLayoutFragment.showModal(inVehicleDeviceActivity));
             } else {
                 inVehicleDeviceActivity.setServiceProvider(null);
-                mainUIHandler.post(() -> MainLayoutFragment.hideModal(inVehicleDeviceActivity));
+                mainUIHandler.post(() -> PhaseFlowLayoutFragment.hideModal(inVehicleDeviceActivity));
             }
         }
 

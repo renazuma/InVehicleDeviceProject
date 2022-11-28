@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.view.fragment.informationbar;
+package com.kogasoftware.odt.invehicledevice.view.fragment.headerbar;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
