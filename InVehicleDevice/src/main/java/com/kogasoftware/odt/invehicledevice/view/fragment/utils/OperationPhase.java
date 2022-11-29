@@ -55,10 +55,10 @@ public class OperationPhase implements Serializable {
         return false;
     }
 
-    public List<List> getOperationSchedulesSortedPerPlatform() {
+    public static List<List> getOperationSchedulesSortedPerPlatform(List<OperationSchedule> operationSchedules, List<PassengerRecord> passengerRecords) {
         List<List> phaseOperationSchedulesList = Lists.newLinkedList();
 
-        for (List<OperationSchedule> samePlatformOperationSchedules : getOperationScheduleListSamePlatformChunk()) {
+        for (List<OperationSchedule> samePlatformOperationSchedules : getOperationScheduleListSamePlatformChunk(operationSchedules, passengerRecords)) {
             List<OperationSchedule> arrivalOperationSchedules = Lists.newArrayList();
             List<OperationSchedule> departureOperationSchedules = Lists.newArrayList();
 
@@ -82,7 +82,7 @@ public class OperationPhase implements Serializable {
         return phaseOperationSchedulesList;
     }
 
-    private LinkedList<List> getOperationScheduleListSamePlatformChunk() {
+    private static LinkedList<List> getOperationScheduleListSamePlatformChunk(List<OperationSchedule> operationSchedules, List<PassengerRecord> passengerRecords) {
 
         boolean first = true;
         OperationSchedule previousOS = null;
@@ -104,7 +104,7 @@ public class OperationPhase implements Serializable {
     }
 
     public List<OperationSchedule> getCurrentOperationSchedules() {
-        List<List> phaseOperationSchedulesList = getOperationSchedulesSortedPerPlatform();
+        List<List> phaseOperationSchedulesList = getOperationSchedulesSortedPerPlatform(operationSchedules, passengerRecords);
         List<OperationSchedule> currentPhaseOperationSchedules = Lists.newArrayList();
 
         for (List<OperationSchedule> phaseOperationSchedules : phaseOperationSchedulesList) {
@@ -135,7 +135,7 @@ public class OperationPhase implements Serializable {
     }
 
     public List<OperationSchedule> getNextOperationSchedules() {
-        List<List> phaseOperationSchedulesList = getOperationSchedulesSortedPerPlatform();
+        List<List> phaseOperationSchedulesList = getOperationSchedulesSortedPerPlatform(operationSchedules, passengerRecords);
         List<OperationSchedule> nextPhaseOperationSchedules = Lists.newArrayList();
 
         for (int i = 0; i < phaseOperationSchedulesList.size() - 1; i++) {
