@@ -19,7 +19,7 @@ import android.widget.TextView;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.VehicleNotification;
 import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivity;
-import com.kogasoftware.odt.invehicledevice.view.fragment.controlbar.ControlBarFragment;
+import com.kogasoftware.odt.invehicledevice.view.fragment.phaseflow.controlbar.ControlBarFragment;
 import com.kogasoftware.odt.invehicledevice.view.fragment.modal.OperationListFragment;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.Fragments;
 

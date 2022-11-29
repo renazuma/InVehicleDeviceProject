@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.view.fragment.controlbar;
+package com.kogasoftware.odt.invehicledevice.view.fragment.phaseflow.controlbar;
 
 import android.content.ContentResolver;
 import android.graphics.Color;
@@ -13,10 +13,10 @@ import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.OperationSchedule.Phase;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.PassengerRecord;
-import com.kogasoftware.odt.invehicledevice.view.fragment.modal.ArrivalCheckFragment;
-import com.kogasoftware.odt.invehicledevice.view.fragment.modal.DepartureCheckFragment;
+import com.kogasoftware.odt.invehicledevice.view.fragment.phaseflow.modal.ArrivalCheckFragment;
+import com.kogasoftware.odt.invehicledevice.view.fragment.phaseflow.modal.DepartureCheckFragment;
 import com.kogasoftware.odt.invehicledevice.view.fragment.modal.OperationListFragment;
-import com.kogasoftware.odt.invehicledevice.view.fragment.modal.PassengerRecordErrorFragment;
+import com.kogasoftware.odt.invehicledevice.view.fragment.phaseflow.modal.PassengerRecordErrorFragment;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.Fragments;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.OperationPhase;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.OperationSchedulesSyncFragmentAbstract;

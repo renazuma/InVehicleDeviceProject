@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.view.fragment.modal;
+package com.kogasoftware.odt.invehicledevice.view.fragment.phaseflow.modal;
 
 import android.app.Fragment;
 import android.content.ContentResolver;

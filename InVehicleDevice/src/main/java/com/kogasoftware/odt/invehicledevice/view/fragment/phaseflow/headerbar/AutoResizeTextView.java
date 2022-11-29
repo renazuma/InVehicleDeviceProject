@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.view.fragment.headerbar;
+package com.kogasoftware.odt.invehicledevice.view.fragment.phaseflow.headerbar;
 // "http://stackoverflow.com/questions/5033012/auto-scale-textview-text-to-fit-within-bounds"
 
 import android.content.Context;

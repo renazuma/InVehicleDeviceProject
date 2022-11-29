@@ -1,4 +1,4 @@
-package com.kogasoftware.odt.invehicledevice.view.fragment.utils.arrayadapter;
+package com.kogasoftware.odt.invehicledevice.view.fragment.phaseflow.utils.arrayadapter;
 
 import android.app.Fragment;
 import android.content.ContentResolver;
