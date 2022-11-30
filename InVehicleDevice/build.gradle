@@ -9,7 +9,7 @@ android {
         versionCode VERSION_CODE
         versionName computeVersionName(VERSION_CODE)
         testInstrumentationRunner "com.kogasoftware.android.DexMakerInstrumentationTestRunner"
-        minSdkVersion 23
+        minSdkVersion 24
         multiDexEnabled true
         targetSdkVersion 31
     }
