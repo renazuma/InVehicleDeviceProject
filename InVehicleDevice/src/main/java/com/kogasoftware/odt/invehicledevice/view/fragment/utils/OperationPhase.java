@@ -5,7 +5,6 @@ import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.Operatio
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.PassengerRecord;
 
 import java.io.Serializable;
-import java.util.LinkedList;
 import java.util.List;
 
 public class OperationPhase implements Serializable {
@@ -55,56 +54,8 @@ public class OperationPhase implements Serializable {
         return false;
     }
 
-    public static List<List> getOperationSchedulesSortedPerPlatform(List<OperationSchedule> operationSchedules, List<PassengerRecord> passengerRecords) {
-        List<List> phaseOperationSchedulesList = Lists.newLinkedList();
-
-        for (List<OperationSchedule> samePlatformOperationSchedules : getOperationScheduleListSamePlatformChunk(operationSchedules, passengerRecords)) {
-            List<OperationSchedule> arrivalOperationSchedules = Lists.newArrayList();
-            List<OperationSchedule> departureOperationSchedules = Lists.newArrayList();
-
-            for (OperationSchedule operationSchedule : samePlatformOperationSchedules) {
-                for (PassengerRecord passengerRecord : passengerRecords) {
-                    if (passengerRecord.departureScheduleId.equals(operationSchedule.id) && !departureOperationSchedules.contains((operationSchedule))) {
-                        departureOperationSchedules.add(operationSchedule);
-                    } else if (passengerRecord.arrivalScheduleId.equals(operationSchedule.id) && !arrivalOperationSchedules.contains((operationSchedule))) {
-                        arrivalOperationSchedules.add(operationSchedule);
-                    }
-                }
-            }
-
-            if (arrivalOperationSchedules.size() > 0) {
-                phaseOperationSchedulesList.add(arrivalOperationSchedules);
-            }
-            if (departureOperationSchedules.size() > 0) {
-                phaseOperationSchedulesList.add(departureOperationSchedules);
-            }
-        }
-        return phaseOperationSchedulesList;
-    }
-
-    private static LinkedList<List> getOperationScheduleListSamePlatformChunk(List<OperationSchedule> operationSchedules, List<PassengerRecord> passengerRecords) {
-
-        boolean first = true;
-        OperationSchedule previousOS = null;
-
-        LinkedList<List> platformOrderOperationScheduleLists = Lists.newLinkedList();
-
-        for (OperationSchedule currentOS : operationSchedules) {
-            if (first || !previousOS.platformId.equals(currentOS.platformId)) {
-                List<OperationSchedule> samePlatformOperationSchedules = Lists.newArrayList();
-                samePlatformOperationSchedules.add(currentOS);
-                platformOrderOperationScheduleLists.add(samePlatformOperationSchedules);
-                first = false;
-            } else {
-                platformOrderOperationScheduleLists.getLast().add(currentOS);
-            }
-            previousOS = currentOS;
-        }
-        return platformOrderOperationScheduleLists;
-    }
-
     public List<OperationSchedule> getCurrentOperationSchedules() {
-        List<List> phaseOperationSchedulesList = getOperationSchedulesSortedPerPlatform(operationSchedules, passengerRecords);
+        List<List> phaseOperationSchedulesList = ScheduleUtil.getOperationSchedulesSortedPerPlatform(operationSchedules, passengerRecords);
         List<OperationSchedule> currentPhaseOperationSchedules = Lists.newArrayList();
 
         for (List<OperationSchedule> phaseOperationSchedules : phaseOperationSchedulesList) {
@@ -135,7 +86,7 @@ public class OperationPhase implements Serializable {
     }
 
     public List<OperationSchedule> getNextOperationSchedules() {
-        List<List> phaseOperationSchedulesList = getOperationSchedulesSortedPerPlatform(operationSchedules, passengerRecords);
+        List<List> phaseOperationSchedulesList = ScheduleUtil.getOperationSchedulesSortedPerPlatform(operationSchedules, passengerRecords);
         List<OperationSchedule> nextPhaseOperationSchedules = Lists.newArrayList();
 
         for (int i = 0; i < phaseOperationSchedulesList.size() - 1; i++) {
