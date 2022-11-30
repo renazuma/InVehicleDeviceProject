@@ -1,8 +1,9 @@
-package com.kogasoftware.odt.invehicledevice.view.fragment.utils;
+package com.kogasoftware.odt.invehicledevice.view.fragment.phaseflow.utils;
 
 import com.google.common.collect.Lists;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.PassengerRecord;
+import com.kogasoftware.odt.invehicledevice.view.fragment.utils.ScheduleUtil;
 
 import java.io.Serializable;
 import java.util.List;
