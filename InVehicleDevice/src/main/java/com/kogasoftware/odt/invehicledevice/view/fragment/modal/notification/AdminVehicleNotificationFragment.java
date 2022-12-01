@@ -98,7 +98,7 @@ public class AdminVehicleNotificationFragment extends Fragment {
                 return;
             }
 
-            Fragments.showModalFragment(
+            Fragments.showModal(
                     fragmentManager,
                     AdminVehicleNotificationFragment.newInstance(vehicleNotification),
                     tag);

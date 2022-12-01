@@ -72,7 +72,7 @@ public class ControlBarFragment extends OperationSchedulesSyncFragmentAbstract {
             return;
         }
 
-        Fragments.showModalFragment(getFragmentManager(), OperationListFragment.newInstance(true), OPERATION_LIST_FRAGMENT_TAG);
+        Fragments.showModal(getFragmentManager(), OperationListFragment.newInstance(true), OPERATION_LIST_FRAGMENT_TAG);
     }
 
     private void showArrivalCheckFragment() {
@@ -101,7 +101,7 @@ public class ControlBarFragment extends OperationSchedulesSyncFragmentAbstract {
         }
 
         if (existPassengerRecordError(phase)) {
-            Fragments.showModalFragment(getFragmentManager(), PassengerRecordErrorFragment.newInstance(operationPhase));
+            Fragments.showModal(getFragmentManager(), PassengerRecordErrorFragment.newInstance(operationPhase));
         } else if (phase.equals(Phase.PLATFORM_GET_OFF)) {
             List<PassengerRecord> getOnPassengerRecords = Lists.newArrayList();
             for (OperationSchedule operationSchedule : operationPhase.getCurrentOperationSchedules()) {
@@ -109,7 +109,7 @@ public class ControlBarFragment extends OperationSchedulesSyncFragmentAbstract {
             }
 
             if (getOnPassengerRecords.isEmpty()) {
-                Fragments.showModalFragment(getFragmentManager(), DepartureCheckFragment.newInstance(operationPhase));
+                Fragments.showModal(getFragmentManager(), DepartureCheckFragment.newInstance(operationPhase));
             } else {
                 for (OperationSchedule operationSchedule : operationPhase.getCurrentOperationSchedules()) {
                     operationSchedule.completeGetOff = true;
@@ -124,7 +124,7 @@ public class ControlBarFragment extends OperationSchedulesSyncFragmentAbstract {
                 }.start();
             }
         } else {
-            Fragments.showModalFragment(getFragmentManager(), DepartureCheckFragment.newInstance(operationPhase));
+            Fragments.showModal(getFragmentManager(), DepartureCheckFragment.newInstance(operationPhase));
         }
     }
 

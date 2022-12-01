@@ -163,7 +163,7 @@ public class ScheduleVehicleNotificationFragment extends Fragment
             if (oldFragment != null) {
                 Fragments.hide(oldFragment);
             }
-            Fragments.showModalFragment(fragmentManager,
+            Fragments.showModal(fragmentManager,
                     OperationListFragment.newInstance(true),
                     ControlBarFragment.OPERATION_LIST_FRAGMENT_TAG);
         });
@@ -195,7 +195,7 @@ public class ScheduleVehicleNotificationFragment extends Fragment
             return;
         }
 
-        Fragments.showModalFragment(fragmentManager, ScheduleVehicleNotificationFragment.newInstance(true), FRAGMENT_TAG);
+        Fragments.showModal(fragmentManager, ScheduleVehicleNotificationFragment.newInstance(true), FRAGMENT_TAG);
 
         Log.i(ScheduleVehicleNotificationFragment.class.getSimpleName(), "Schedule Notification fragment displayed.");
     }

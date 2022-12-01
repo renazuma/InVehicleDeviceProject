@@ -70,7 +70,7 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
             // 料金設定ページに遷移するパターン。他のケースと動きが大きく異なるのでこのパターンだけ別扱いにしている。
             // HACK: その他のパターンも整理し直して、シンプルに直すべき。
             if (isChargeEditPattern(passengerRecord)) {
-                Fragments.showModalFragment(fragment.getFragmentManager(),
+                Fragments.showModal(fragment.getFragmentManager(),
                         ChargeEditFragment.newInstance(operationSchedule.id, passengerRecord.id));
                 return;
             }
@@ -161,7 +161,7 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
             }
 
             PassengerRecord passengerRecord = (PassengerRecord) tag;
-            Fragments.showModalFragment(fragment.getFragmentManager(), PassengerRecordMemoFragment.newInstance(passengerRecord));
+            Fragments.showModal(fragment.getFragmentManager(), PassengerRecordMemoFragment.newInstance(passengerRecord));
         }
     };
 
