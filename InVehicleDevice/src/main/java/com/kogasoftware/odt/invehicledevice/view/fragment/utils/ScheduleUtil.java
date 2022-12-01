@@ -9,8 +9,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class ScheduleUtil implements Serializable {
-    public static List<List> getOperationSchedulesSortedPerPlatform(List<OperationSchedule> operationSchedules, List<PassengerRecord> passengerRecords) {
-        List<List> phaseOperationSchedulesList = Lists.newLinkedList();
+    public static List<List<OperationSchedule>> getOperationSchedulesSortedPerPlatform(List<OperationSchedule> operationSchedules, List<PassengerRecord> passengerRecords) {
+        List<List<OperationSchedule>> phaseOperationSchedulesList = Lists.newLinkedList();
 
         for (List<OperationSchedule> samePlatformOperationSchedules : getOperationScheduleListSamePlatformChunk(operationSchedules, passengerRecords)) {
             List<OperationSchedule> arrivalOperationSchedules = Lists.newArrayList();
@@ -36,12 +36,12 @@ public class ScheduleUtil implements Serializable {
         return phaseOperationSchedulesList;
     }
 
-    private static LinkedList<List> getOperationScheduleListSamePlatformChunk(List<OperationSchedule> operationSchedules, List<PassengerRecord> passengerRecords) {
+    private static LinkedList<List<OperationSchedule>> getOperationScheduleListSamePlatformChunk(List<OperationSchedule> operationSchedules, List<PassengerRecord> passengerRecords) {
 
         boolean first = true;
         OperationSchedule previousOS = null;
 
-        LinkedList<List> platformOrderOperationScheduleLists = Lists.newLinkedList();
+        LinkedList<List<OperationSchedule>> platformOrderOperationScheduleLists = Lists.newLinkedList();
 
         for (OperationSchedule currentOS : operationSchedules) {
             if (first || !previousOS.platformId.equals(currentOS.platformId)) {
