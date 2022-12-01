@@ -41,11 +41,11 @@ public class ArrivalCheckFragment extends Fragment {
         TextView commentTextView = view.findViewById(R.id.arrival_check_comment_text_view);
 
         Button closeButton = view.findViewById(R.id.arrival_check_close_button);
-        closeButton.setOnClickListener(v -> Fragments.hide(ArrivalCheckFragment.this));
+        closeButton.setOnClickListener(v -> Fragments.hideModal(ArrivalCheckFragment.this));
 
         Button arrivalButton = view.findViewById(R.id.arrival_button);
         arrivalButton.setOnClickListener(view1 -> {
-            Fragments.hide(ArrivalCheckFragment.this);
+            Fragments.hideModal(ArrivalCheckFragment.this);
             Thread tt = new Thread() {
                 @Override
                 public void run() {

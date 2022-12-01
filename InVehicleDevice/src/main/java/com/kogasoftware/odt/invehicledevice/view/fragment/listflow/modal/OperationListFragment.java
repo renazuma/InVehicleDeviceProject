@@ -146,7 +146,7 @@ public class OperationListFragment extends Fragment {
 
         // 戻るボタン（スケジュールのみ）
         final Button closeButton = view.findViewById(R.id.operation_list_close_button);
-        closeButton.setOnClickListener(v -> Fragments.hide(OperationListFragment.this));
+        closeButton.setOnClickListener(v -> Fragments.hideModal(OperationListFragment.this));
         if (closeable) {
             closeButton.setVisibility(View.VISIBLE);
         } else {

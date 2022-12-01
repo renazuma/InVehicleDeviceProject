@@ -69,7 +69,7 @@ public class ChargeEditFragment extends OperationSchedulesSyncFragmentAbstract {
 
         final PassengerRecord passengerRecord = getById(passengerRecords, passengerRecordId);
         if (passengerRecord == null) {
-            Fragments.hide(this);
+            Fragments.hideModal(this);
             return;
         }
 
@@ -148,10 +148,10 @@ public class ChargeEditFragment extends OperationSchedulesSyncFragmentAbstract {
                 }
             }.start();
             contentResolver.notifyChange(PassengerRecord.CONTENT.URI, null);
-            Fragments.hide(ChargeEditFragment.this);
+            Fragments.hideModal(ChargeEditFragment.this);
         });
 
-        quitChargeButtonView.setOnClickListener(v -> Fragments.hide(ChargeEditFragment.this));
+        quitChargeButtonView.setOnClickListener(v -> Fragments.hideModal(ChargeEditFragment.this));
     }
 
     private static PassengerRecord getById(List<PassengerRecord> passengerRecords, Long id) {

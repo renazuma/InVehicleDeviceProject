@@ -19,7 +19,7 @@ public class Fragments {
         return fragmentTransaction;
     }
 
-    public static void hide(final Fragment fragment, Handler handler) {
+    public static void hideModal(final Fragment fragment, Handler handler) {
         handler.post(() -> {
             if (!fragment.isAdded()) {
                 return;
@@ -30,8 +30,8 @@ public class Fragments {
         });
     }
 
-    public static void hide(Fragment fragment) {
-        hide(fragment, new Handler());
+    public static void hideModal(Fragment fragment) {
+        hideModal(fragment, new Handler());
     }
 
     public static void showModal(FragmentManager fragmentManager, Fragment fragment, String tag) {

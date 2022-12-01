@@ -140,7 +140,7 @@ public class ScheduleVehicleNotificationFragment extends Fragment
                     onComplete.run();
                     if (isAdded()) {
                         Fragments
-                                .hide(ScheduleVehicleNotificationFragment.this);
+                                .hideModal(ScheduleVehicleNotificationFragment.this);
                     }
                 });
             }
@@ -161,7 +161,7 @@ public class ScheduleVehicleNotificationFragment extends Fragment
             Fragment oldFragment = fragmentManager
                     .findFragmentByTag(ControlBarFragment.OPERATION_LIST_FRAGMENT_TAG);
             if (oldFragment != null) {
-                Fragments.hide(oldFragment);
+                Fragments.hideModal(oldFragment);
             }
             Fragments.showModal(fragmentManager,
                     OperationListFragment.newInstance(true),

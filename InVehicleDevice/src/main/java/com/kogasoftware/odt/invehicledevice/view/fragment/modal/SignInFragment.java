@@ -209,7 +209,7 @@ public class SignInFragment
 
         // トークンが取得済みかつfirstLoadではない場合に、画面を隠す
         if (cursor.getString(cursor.getColumnIndexOrThrow("authentication_token")) != null && !firstLoad) {
-            Fragments.hide(this);
+            Fragments.hideModal(this);
         }
 
         // データが存在する場合の初期表示

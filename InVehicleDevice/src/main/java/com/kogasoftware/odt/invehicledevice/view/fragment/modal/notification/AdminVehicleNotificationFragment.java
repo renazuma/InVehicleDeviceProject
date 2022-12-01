@@ -79,7 +79,7 @@ public class AdminVehicleNotificationFragment extends Fragment {
             public void run() {
                 contentResolver.insert(VehicleNotification.CONTENT.URI,
                         vehicleNotification.toContentValues());
-                Fragments.hide(AdminVehicleNotificationFragment.this,
+                Fragments.hideModal(AdminVehicleNotificationFragment.this,
                         handler);
             }
         }.start();

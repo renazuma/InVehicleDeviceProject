@@ -58,7 +58,7 @@ public class DepartureCheckFragment extends Fragment {
         }
 
         Button closeButton = view.findViewById(R.id.departure_check_close_button);
-        closeButton.setOnClickListener(v -> Fragments.hide(DepartureCheckFragment.this));
+        closeButton.setOnClickListener(v -> Fragments.hideModal(DepartureCheckFragment.this));
         if (phase == Phase.PLATFORM_GET_OFF) {
             closeButton.setText("降車一覧に戻る");
         } else {
@@ -66,7 +66,7 @@ public class DepartureCheckFragment extends Fragment {
         }
 
         departureButton.setOnClickListener(v -> {
-            Fragments.hide(DepartureCheckFragment.this);
+            Fragments.hideModal(DepartureCheckFragment.this);
             Thread tt = new Thread() {
                 @Override
                 public void run() {
