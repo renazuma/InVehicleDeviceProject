@@ -30,7 +30,7 @@
             android:textSize="22sp" />
     </RelativeLayout>
 
-    <com.kogasoftware.odt.invehicledevice.view.fragment.utils.FlickUnneededListView
+    <com.kogasoftware.odt.invehicledevice.view.fragment.listflow.utils.FlickUnneededListView
         android:id="@+id/reservation_list_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
