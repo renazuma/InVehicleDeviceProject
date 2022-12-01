@@ -30,7 +30,6 @@ import org.apache.http.HttpResponse;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -61,10 +60,9 @@ public class GetOperationSchedulesTask extends SynchronizationTask {
         List<PassengerRecordJson> passengerRecords = Lists.newLinkedList();
         List<OperationRecordJson> operationRecords = Lists.newLinkedList();
         List<PlatformJson> platforms = Lists.newLinkedList();
-        Collections.sort(operationSchedules,
-                (l, r) -> ComparisonChain.start()
-                        .compare(l.arrivalEstimate, r.arrivalEstimate)
-                        .compare(l.id, r.id).result());
+        operationSchedules.sort((l, r) -> ComparisonChain.start()
+                .compare(l.arrivalEstimate, r.arrivalEstimate)
+                .compare(l.id, r.id).result());
 
         // 各モデルを配列に展開する
         for (OperationScheduleJson operationSchedule : operationSchedules) {

@@ -29,7 +29,6 @@ import com.kogasoftware.odt.invehicledevice.view.fragment.utils.ViewDisabler;
 
 import org.joda.time.DateTime;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.WeakHashMap;
@@ -277,7 +276,7 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
     public void update(List<PassengerRecord> passengerRecords) {
         clear();
         List<PassengerRecord> sortedPassengerRecords = Lists.newArrayList(passengerRecords);
-        Collections.sort(sortedPassengerRecords, PassengerRecord.DEFAULT_COMPARATOR);
+        sortedPassengerRecords.sort(PassengerRecord.DEFAULT_COMPARATOR);
         for (PassengerRecord passengerRecord : sortedPassengerRecords) {
             add(passengerRecord);
         }
