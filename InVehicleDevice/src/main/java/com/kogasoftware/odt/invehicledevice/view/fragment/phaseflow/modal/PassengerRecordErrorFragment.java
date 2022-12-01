@@ -13,7 +13,7 @@ import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.Operatio
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.OperationSchedule.Phase;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.view.fragment.listflow.utils.FlickUnneededListView;
-import com.kogasoftware.odt.invehicledevice.view.fragment.utils.Fragments;
+import com.kogasoftware.odt.invehicledevice.view.fragment.utils.FragmentUtils;
 import com.kogasoftware.odt.invehicledevice.view.fragment.phaseflow.utils.OperationPhase;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.OperationSchedulesSyncFragmentAbstract;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.ViewDisabler;
@@ -56,7 +56,7 @@ public class PassengerRecordErrorFragment extends OperationSchedulesSyncFragment
         operationSchedules = operationPhase.getCurrentOperationSchedules();
         View view = getView();
         closeButton = view.findViewById(R.id.get_off_check_close_button);
-        closeButton.setOnClickListener(v -> Fragments.hideModal(PassengerRecordErrorFragment.this));
+        closeButton.setOnClickListener(v -> FragmentUtils.hideModal(PassengerRecordErrorFragment.this));
         FlickUnneededListView errorUserListView = view.findViewById(R.id.error_reservation_list_view);
         completeWithErrorButton = view.findViewById(R.id.complete_with_error_button);
         adapter = new PassengerRecordErrorArrayAdapter(this, operationSchedules);
@@ -91,7 +91,7 @@ public class PassengerRecordErrorFragment extends OperationSchedulesSyncFragment
             }
         }.start();
 
-        Fragments.hideModal(this);
+        FragmentUtils.hideModal(this);
     }
 
     @Override
@@ -111,7 +111,7 @@ public class PassengerRecordErrorFragment extends OperationSchedulesSyncFragment
             }
         }
         if (!newOperationPhase.isExistCurrent() || !existSameId) {
-            Fragments.hideModal(this);
+            FragmentUtils.hideModal(this);
             return;
         }
 

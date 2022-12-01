@@ -27,7 +27,7 @@ import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.Passenge
 import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivity;
 import com.kogasoftware.odt.invehicledevice.view.fragment.modal.ChargeEditFragment;
 import com.kogasoftware.odt.invehicledevice.view.fragment.modal.PassengerRecordMemoFragment;
-import com.kogasoftware.odt.invehicledevice.view.fragment.utils.Fragments;
+import com.kogasoftware.odt.invehicledevice.view.fragment.utils.FragmentUtils;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.ScheduleUtil;
 
 import org.apache.commons.lang3.StringUtils;
@@ -256,7 +256,7 @@ public class OperationScheduleArrayAdapter
             // 料金設定ページに遷移するパターン。他のケースと動きが大きく異なるのでこのパターンだけ別扱いにしている。
             // HACK: その他のパターンも整理し直して、シンプルに直すべき。
             if (defaultChargeCnt > 0 && passengerRecord.getOnTime == null && !passengerRecord.settled) {
-                Fragments.showModal(fragment.getFragmentManager(),
+                FragmentUtils.showModal(fragment.getFragmentManager(),
                         ChargeEditFragment.newInstance(operationSchedule.id, passengerRecord.id));
                 return false;
             }
@@ -337,7 +337,7 @@ public class OperationScheduleArrayAdapter
             if (fragment.getFragmentManager() == null) {
                 return;
             }
-            Fragments.showModal(fragment.getFragmentManager(), PassengerRecordMemoFragment.newInstance(passengerRecord));
+            FragmentUtils.showModal(fragment.getFragmentManager(), PassengerRecordMemoFragment.newInstance(passengerRecord));
         }
     };
 

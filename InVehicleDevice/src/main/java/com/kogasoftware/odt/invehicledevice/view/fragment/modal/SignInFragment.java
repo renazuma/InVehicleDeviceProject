@@ -38,7 +38,7 @@ import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.InVehicleDevice;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.task.SignInErrorBroadcastIntent;
 import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivity;
-import com.kogasoftware.odt.invehicledevice.view.fragment.utils.Fragments;
+import com.kogasoftware.odt.invehicledevice.view.fragment.utils.FragmentUtils;
 
 import java.util.List;
 import java.util.Locale;
@@ -209,7 +209,7 @@ public class SignInFragment
 
         // トークンが取得済みかつfirstLoadではない場合に、画面を隠す
         if (cursor.getString(cursor.getColumnIndexOrThrow("authentication_token")) != null && !firstLoad) {
-            Fragments.hideModal(this);
+            FragmentUtils.hideModal(this);
         }
 
         // データが存在する場合の初期表示
@@ -286,6 +286,6 @@ public class SignInFragment
             return;
         }
 
-        Fragments.showModal(fragmentManager, SignInFragment.newInstance(), FRAGMENT_TAG);
+        FragmentUtils.showModal(fragmentManager, SignInFragment.newInstance(), FRAGMENT_TAG);
     }
 }

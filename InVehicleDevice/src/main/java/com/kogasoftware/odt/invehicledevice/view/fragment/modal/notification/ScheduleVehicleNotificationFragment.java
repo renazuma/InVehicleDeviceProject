@@ -21,7 +21,7 @@ import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.VehicleN
 import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivity;
 import com.kogasoftware.odt.invehicledevice.view.fragment.phaseflow.controlbar.ControlBarFragment;
 import com.kogasoftware.odt.invehicledevice.view.fragment.listflow.modal.OperationListFragment;
-import com.kogasoftware.odt.invehicledevice.view.fragment.utils.Fragments;
+import com.kogasoftware.odt.invehicledevice.view.fragment.utils.FragmentUtils;
 
 import org.apache.commons.lang3.SystemUtils;
 import org.joda.time.DateTime;
@@ -139,7 +139,7 @@ public class ScheduleVehicleNotificationFragment extends Fragment
                 handler.post(() -> {
                     onComplete.run();
                     if (isAdded()) {
-                        Fragments
+                        FragmentUtils
                                 .hideModal(ScheduleVehicleNotificationFragment.this);
                     }
                 });
@@ -161,9 +161,9 @@ public class ScheduleVehicleNotificationFragment extends Fragment
             Fragment oldFragment = fragmentManager
                     .findFragmentByTag(ControlBarFragment.OPERATION_LIST_FRAGMENT_TAG);
             if (oldFragment != null) {
-                Fragments.hideModal(oldFragment);
+                FragmentUtils.hideModal(oldFragment);
             }
-            Fragments.showModal(fragmentManager,
+            FragmentUtils.showModal(fragmentManager,
                     OperationListFragment.newInstance(true),
                     ControlBarFragment.OPERATION_LIST_FRAGMENT_TAG);
         });
@@ -195,7 +195,7 @@ public class ScheduleVehicleNotificationFragment extends Fragment
             return;
         }
 
-        Fragments.showModal(fragmentManager, ScheduleVehicleNotificationFragment.newInstance(true), FRAGMENT_TAG);
+        FragmentUtils.showModal(fragmentManager, ScheduleVehicleNotificationFragment.newInstance(true), FRAGMENT_TAG);
 
         Log.i(ScheduleVehicleNotificationFragment.class.getSimpleName(), "Schedule Notification fragment displayed.");
     }

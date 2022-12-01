@@ -11,7 +11,7 @@ import android.widget.Button;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.OperationSchedule.Phase;
-import com.kogasoftware.odt.invehicledevice.view.fragment.utils.Fragments;
+import com.kogasoftware.odt.invehicledevice.view.fragment.utils.FragmentUtils;
 import com.kogasoftware.odt.invehicledevice.view.fragment.phaseflow.utils.OperationPhase;
 
 import org.joda.time.DateTime;
@@ -58,7 +58,7 @@ public class DepartureCheckFragment extends Fragment {
         }
 
         Button closeButton = view.findViewById(R.id.departure_check_close_button);
-        closeButton.setOnClickListener(v -> Fragments.hideModal(DepartureCheckFragment.this));
+        closeButton.setOnClickListener(v -> FragmentUtils.hideModal(DepartureCheckFragment.this));
         if (phase == Phase.PLATFORM_GET_OFF) {
             closeButton.setText("降車一覧に戻る");
         } else {
@@ -66,7 +66,7 @@ public class DepartureCheckFragment extends Fragment {
         }
 
         departureButton.setOnClickListener(v -> {
-            Fragments.hideModal(DepartureCheckFragment.this);
+            FragmentUtils.hideModal(DepartureCheckFragment.this);
             Thread tt = new Thread() {
                 @Override
                 public void run() {

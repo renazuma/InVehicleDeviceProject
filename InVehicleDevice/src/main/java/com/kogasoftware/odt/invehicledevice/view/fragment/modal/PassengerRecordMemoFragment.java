@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.PassengerRecord;
-import com.kogasoftware.odt.invehicledevice.view.fragment.utils.Fragments;
+import com.kogasoftware.odt.invehicledevice.view.fragment.utils.FragmentUtils;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
@@ -29,7 +29,7 @@ public class PassengerRecordMemoFragment extends Fragment {
                 .getSerializable(PASSENGER_RECORD_KEY);
         Button closeButton = view
                 .findViewById(R.id.passenger_record_memo_close_button);
-        closeButton.setOnClickListener(v -> Fragments.hideModal(PassengerRecordMemoFragment.this));
+        closeButton.setOnClickListener(v -> FragmentUtils.hideModal(PassengerRecordMemoFragment.this));
         TextView titleTextView = view
                 .findViewById(R.id.memo_title_text_view);
         StringBuilder title = new StringBuilder();

@@ -21,7 +21,7 @@ import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.VehicleN
 import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivity;
 import com.kogasoftware.odt.invehicledevice.view.fragment.listflow.utils.FlickUnneededListView;
 import com.kogasoftware.odt.invehicledevice.view.fragment.listflow.utils.arrayadapter.OperationScheduleArrayAdapter;
-import com.kogasoftware.odt.invehicledevice.view.fragment.utils.Fragments;
+import com.kogasoftware.odt.invehicledevice.view.fragment.utils.FragmentUtils;
 
 import java.util.concurrent.TimeUnit;
 
@@ -146,7 +146,7 @@ public class OperationListFragment extends Fragment {
 
         // 戻るボタン（スケジュールのみ）
         final Button closeButton = view.findViewById(R.id.operation_list_close_button);
-        closeButton.setOnClickListener(v -> Fragments.hideModal(OperationListFragment.this));
+        closeButton.setOnClickListener(v -> FragmentUtils.hideModal(OperationListFragment.this));
         if (closeable) {
             closeButton.setVisibility(View.VISIBLE);
         } else {
