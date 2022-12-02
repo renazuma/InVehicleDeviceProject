@@ -2,7 +2,7 @@ package com.kogasoftware.odt.invehicledevice.presenter;
 
 import com.kogasoftware.odt.invehicledevice.infra.loader.DefaultChargeLoader;
 import com.kogasoftware.odt.invehicledevice.infra.loader.TopViewLoader;
-import com.kogasoftware.odt.invehicledevice.infra.loader.onCreateSignInLoader;
+import com.kogasoftware.odt.invehicledevice.infra.loader.OnCreateSignInLoader;
 import com.kogasoftware.odt.invehicledevice.presenter.mainui.OnCreateDataSync;
 import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivity;
 
@@ -12,13 +12,13 @@ import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivit
 
 public class MainUiPresenter {
 
-    private final onCreateSignInLoader onCreateSignInLoader;
+    private final OnCreateSignInLoader onCreateSignInLoader;
     private final TopViewLoader topViewLoader;
     private final DefaultChargeLoader defaultChargeLoader;
     private final OnCreateDataSync onCreateDataSync;
 
     public MainUiPresenter(InVehicleDeviceActivity inVehicleDeviceActivity) {
-        this.onCreateSignInLoader = new onCreateSignInLoader(inVehicleDeviceActivity);
+        this.onCreateSignInLoader = new OnCreateSignInLoader(inVehicleDeviceActivity);
         this.topViewLoader = new TopViewLoader(inVehicleDeviceActivity);
         this.defaultChargeLoader = new DefaultChargeLoader(inVehicleDeviceActivity);
         this.onCreateDataSync = new OnCreateDataSync(inVehicleDeviceActivity);
