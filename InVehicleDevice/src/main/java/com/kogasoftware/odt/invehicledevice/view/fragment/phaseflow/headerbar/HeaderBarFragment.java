@@ -116,7 +116,7 @@ public class HeaderBarFragment extends OperationSchedulesSyncFragmentAbstract {
         handler.post(networkAlert);
     }
 
-    private void updateView() {
+    private void redraw() {
         View view = getView();
 
         view.setBackgroundColor(getPhaseColor());
@@ -189,12 +189,12 @@ public class HeaderBarFragment extends OperationSchedulesSyncFragmentAbstract {
     }
 
     @Override
-    protected void onOperationSchedulesAndPassengerRecordsLoadFinished(
+    protected void onSchedulesRefresh(
             LinkedList<OperationSchedule> operationSchedules,
             LinkedList<PassengerRecord> passengerRecords) {
 
         this.operationPhase = new OperationPhase(operationSchedules, passengerRecords);
 
-        updateView();
+        redraw();
     }
 }

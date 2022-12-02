@@ -125,7 +125,7 @@ public class PlatformPhaseFragment extends OperationSchedulesSyncFragmentAbstrac
     }
 
     @Override
-    protected void onOperationSchedulesAndPassengerRecordsLoadFinished(
+    protected void onSchedulesRefresh(
             LinkedList<OperationSchedule> newOperationSchedules,
             LinkedList<PassengerRecord> newPassengerRecords,
             Boolean phaseChanged) {
