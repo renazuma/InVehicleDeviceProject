@@ -55,7 +55,7 @@ public class OperationPhase implements Serializable {
         return false;
     }
 
-    public List<List> getAllPhaseOperationSchedules() {
+    public List<List> getOperationSchedulesSortedPerPlatform() {
         List<List> phaseOperationSchedulesList = Lists.newLinkedList();
 
         for (List<OperationSchedule> samePlatformOperationSchedules : getOperationScheduleListSamePlatformChunk()) {
@@ -104,7 +104,7 @@ public class OperationPhase implements Serializable {
     }
 
     public List<OperationSchedule> getCurrentOperationSchedules() {
-        List<List> phaseOperationSchedulesList = getAllPhaseOperationSchedules();
+        List<List> phaseOperationSchedulesList = getOperationSchedulesSortedPerPlatform();
         List<OperationSchedule> currentPhaseOperationSchedules = Lists.newArrayList();
 
         for (List<OperationSchedule> phaseOperationSchedules : phaseOperationSchedulesList) {
@@ -135,7 +135,7 @@ public class OperationPhase implements Serializable {
     }
 
     public List<OperationSchedule> getNextOperationSchedules() {
-        List<List> phaseOperationSchedulesList = getAllPhaseOperationSchedules();
+        List<List> phaseOperationSchedulesList = getOperationSchedulesSortedPerPlatform();
         List<OperationSchedule> nextPhaseOperationSchedules = Lists.newArrayList();
 
         for (int i = 0; i < phaseOperationSchedulesList.size() - 1; i++) {
