@@ -6,6 +6,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import com.squareup.moshi.Moshi
+import org.json.JSONObject
 import java.io.IOException
 
 class MapApi(val userId: String, val password: String, val serviceId: String) {
@@ -15,10 +16,49 @@ class MapApi(val userId: String, val password: String, val serviceId: String) {
     fun imageUrl(width: Int, height: Int, zoom: Int, latitude: String, longitude: String): String {
 
         val (aid: String, kid: String, zisLmtinf) = getAuthInfo()
+        val userFigure: String = userFigureRequest()
 
-        val url =  "https://test-api.zip-site.com/api/zips/general/map?width=$width&height=$height&center=$longitude%2C$latitude&zoom=$zoom&zis_authtype=aid&zis_lmtinf=$zisLmtinf&zis_zips_authkey=$kid&zis_aid=$aid"
+        val url = "https://test-api.zip-site.com/api/zips/general/map" +
+                "?width=$width" +
+                "&height=$height" +
+                "&center=$longitude%2C$latitude" +
+                "&zoom=$zoom" +
+                "&zis_authtype=aid" +
+                "&zis_lmtinf=$zisLmtinf" +
+                "&zis_zips_authkey=$kid" +
+                "&zis_aid=$aid" +
+                "&user_figure=$userFigure"
+
         Log.i(TAG, "url: $url")
+
         return url
+    }
+
+    private fun userFigureRequest(): String {
+        val platformIconNo = 41109
+        val vehicleIconNo = 42301
+
+        val userFigureMap = mapOf(
+            "type" to "FeatureCollection",
+            "features" to listOf(
+                mapOf(
+                    "type" to "Feature",
+                    "geometry" to mapOf(
+                        "type" to "Point",
+                        "coordinates" to listOf(139.797995, 35.715386)),
+                    "properties" to mapOf("icon" to platformIconNo.toString())
+                ),
+                mapOf(
+                    "type" to "Feature",
+                    "geometry" to mapOf(
+                        "type" to "Point",
+                        "coordinates" to listOf(139.797993, 35.715492)),
+                    "properties" to mapOf("icon" to vehicleIconNo.toString())
+                )
+            )
+        )
+
+        return JSONObject(userFigureMap).toString()
     }
 
     private fun getAuthInfo(): Triple<String, String, String> {
