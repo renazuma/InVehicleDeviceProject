@@ -18,7 +18,7 @@ import com.kogasoftware.odt.invehicledevice.view.fragment.phaseflow.modal.Depart
 import com.kogasoftware.odt.invehicledevice.view.fragment.listflow.modal.OperationListFragment;
 import com.kogasoftware.odt.invehicledevice.view.fragment.phaseflow.modal.PassengerRecordErrorFragment;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.Fragments;
-import com.kogasoftware.odt.invehicledevice.view.fragment.utils.OperationPhase;
+import com.kogasoftware.odt.invehicledevice.view.fragment.phaseflow.utils.OperationPhase;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.OperationSchedulesSyncFragmentAbstract;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.ViewDisabler;
 

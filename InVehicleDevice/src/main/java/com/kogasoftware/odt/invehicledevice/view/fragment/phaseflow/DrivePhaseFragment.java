@@ -14,7 +14,7 @@ import androidx.annotation.Nullable;
 
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.OperationSchedule;
-import com.kogasoftware.odt.invehicledevice.view.fragment.utils.OperationPhase;
+import com.kogasoftware.odt.invehicledevice.view.fragment.phaseflow.utils.OperationPhase;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
