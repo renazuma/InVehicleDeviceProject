@@ -19,7 +19,6 @@ import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.PassengerRecord;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -143,7 +142,7 @@ public class PassengerRecordErrorArrayAdapter extends ArrayAdapter<PassengerReco
     public void update(List<PassengerRecord> passengerRecords) {
         clear();
         List<PassengerRecord> sortedPassengerRecord = Lists.newArrayList(passengerRecords);
-        Collections.sort(sortedPassengerRecord, PassengerRecord.DEFAULT_COMPARATOR);
+        sortedPassengerRecord.sort(PassengerRecord.DEFAULT_COMPARATOR);
         for (PassengerRecord passengerRecord : sortedPassengerRecord) {
             add(passengerRecord);
         }

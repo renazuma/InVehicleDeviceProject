@@ -29,7 +29,6 @@ import com.kogasoftware.odt.invehicledevice.view.fragment.utils.ViewDisabler;
 
 import org.joda.time.DateTime;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.WeakHashMap;
@@ -71,7 +70,7 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
             // 料金設定ページに遷移するパターン。他のケースと動きが大きく異なるのでこのパターンだけ別扱いにしている。
             // HACK: その他のパターンも整理し直して、シンプルに直すべき。
             if (isChargeEditPattern(passengerRecord)) {
-                Fragments.showModalFragment(fragment.getFragmentManager(),
+                Fragments.showModal(fragment.getFragmentManager(),
                         ChargeEditFragment.newInstance(operationSchedule.id, passengerRecord.id));
                 return;
             }
@@ -162,7 +161,7 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
             }
 
             PassengerRecord passengerRecord = (PassengerRecord) tag;
-            Fragments.showModalFragment(fragment.getFragmentManager(), PassengerRecordMemoFragment.newInstance(passengerRecord));
+            Fragments.showModal(fragment.getFragmentManager(), PassengerRecordMemoFragment.newInstance(passengerRecord));
         }
     };
 
@@ -277,7 +276,7 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
     public void update(List<PassengerRecord> passengerRecords) {
         clear();
         List<PassengerRecord> sortedPassengerRecords = Lists.newArrayList(passengerRecords);
-        Collections.sort(sortedPassengerRecords, PassengerRecord.DEFAULT_COMPARATOR);
+        sortedPassengerRecords.sort(PassengerRecord.DEFAULT_COMPARATOR);
         for (PassengerRecord passengerRecord : sortedPassengerRecords) {
             add(passengerRecord);
         }

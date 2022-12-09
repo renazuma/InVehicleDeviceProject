@@ -88,7 +88,7 @@ public class PhaseFlowLayoutFragment extends OperationSchedulesSyncFragmentAbstr
     }
 
     // 実運用画面の表示
-    // TODO: 共通処理のshowModalFragmentと、customAnimation以外は変わらない。共通処理を使っていないのはそこが理由なのかを確認。
+    // TODO: 共通処理のshowModalと、customAnimation以外は変わらない。共通処理を使っていないのはそこが理由なのかを確認。
     // TODO: 既存に合わせるためにstaticにしている。出来れば変えたい。
     public static void showModal(InVehicleDeviceActivity inVehicleDeviceActivity) {
         if (inVehicleDeviceActivity.destroyed) {

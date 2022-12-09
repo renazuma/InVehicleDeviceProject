@@ -146,7 +146,7 @@ public class HeaderBarFragment extends OperationSchedulesSyncFragmentAbstract {
             return;
         }
 
-        Fragments.showModalFragment(
+        Fragments.showModal(
                 getFragmentManager(),
                 PlatformMemoFragment.newInstance(operationPhase.getCurrentRepresentativeOS()));
     }

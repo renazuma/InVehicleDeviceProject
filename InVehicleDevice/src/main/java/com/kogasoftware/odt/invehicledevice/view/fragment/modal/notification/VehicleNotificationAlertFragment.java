@@ -76,6 +76,6 @@ public class VehicleNotificationAlertFragment extends Fragment {
         }
 
         // TODO: 画面上に表示するだけなので、Modalではないのでは？
-        Fragments.showModalFragment(fragmentManager, VehicleNotificationAlertFragment.newInstance(), FRAGMENT_TAG);
+        Fragments.showModal(fragmentManager, VehicleNotificationAlertFragment.newInstance(), FRAGMENT_TAG);
     }
 }

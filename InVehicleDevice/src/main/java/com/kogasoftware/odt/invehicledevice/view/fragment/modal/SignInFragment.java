@@ -286,6 +286,6 @@ public class SignInFragment
             return;
         }
 
-        Fragments.showModalFragment(fragmentManager, SignInFragment.newInstance(), FRAGMENT_TAG);
+        Fragments.showModal(fragmentManager, SignInFragment.newInstance(), FRAGMENT_TAG);
     }
 }
