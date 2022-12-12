@@ -26,6 +26,7 @@ import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.ServiceP
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.ServiceUnitStatusLog;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.User;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.VehicleNotification;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.ZenrinMapsAccount;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.task.GetOperationSchedulesTask;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.task.GetServiceProviderTask;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.task.GetVehicleNotificationsTask;
@@ -58,7 +59,7 @@ public class InVehicleDeviceContentProvider extends ContentProvider {
                 PassengerRecord.CONTENT, Platform.CONTENT, Reservation.CONTENT,
                 ServiceProvider.CONTENT, ServiceUnitStatusLog.CONTENT,
                 User.CONTENT, VehicleNotification.CONTENT,
-                DefaultCharge.CONTENT}) {
+                DefaultCharge.CONTENT, ZenrinMapsAccount.CONTENT}) {
             content.addTo(MATCHER);
         }
     }
@@ -164,6 +165,9 @@ public class InVehicleDeviceContentProvider extends ContentProvider {
                         selectionArgs, sortOrder);
             case DefaultCharge.TABLE_CODE:
                 return DefaultCharge.query(this, projection, selection,
+                        selectionArgs, sortOrder);
+            case ZenrinMapsAccount.TABLE_CODE:
+                return ZenrinMapsAccount.query(this, projection, selection,
                         selectionArgs, sortOrder);
             default:
                 throw new IllegalArgumentException("Unknown uri: " + uri);
