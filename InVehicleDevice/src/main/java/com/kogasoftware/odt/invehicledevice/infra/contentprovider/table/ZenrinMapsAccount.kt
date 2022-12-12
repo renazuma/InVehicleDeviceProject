@@ -1,5 +1,6 @@
 package com.kogasoftware.odt.invehicledevice.infra.contentprovider.table
 
+import android.content.ContentResolver
 import android.database.Cursor
 import android.provider.BaseColumns
 import com.kogasoftware.android.CursorReader
@@ -39,6 +40,24 @@ class ZenrinMapsAccount(cursor: Cursor?) {
             val cursor = contentProvider.database.query(TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder)
             cursor.setNotificationUri(contentProvider.context!!.contentResolver, CONTENT.URI)
             return cursor
+        }
+
+        fun getAccountData(contentResolver: ContentResolver): Triple<String, String, String> {
+            var userId: String = "";
+            var password: String = "";
+            var serviceId: String = "";
+
+            val c: Cursor? = contentResolver.query(ZenrinMapsAccount.CONTENT.URI, null, null, null, null)
+            val userIdIndex: Int? = c?.getColumnIndex(ZenrinMapsAccount.Columns.USER_ID)
+            val passwordIndex: Int? = c?.getColumnIndex(ZenrinMapsAccount.Columns.PASSWORD)
+            val serviceIdIndex: Int? = c?.getColumnIndex(ZenrinMapsAccount.Columns.SERVICE_ID)
+            if (userIdIndex != null && passwordIndex != null && serviceIdIndex != null && c.moveToFirst()) {
+                userId = c.getString(userIdIndex)
+                password = c.getString(passwordIndex)
+                serviceId = c.getString(serviceIdIndex)
+            }
+            c?.close()
+            return Triple(userId, password, serviceId)
         }
     }
 }
