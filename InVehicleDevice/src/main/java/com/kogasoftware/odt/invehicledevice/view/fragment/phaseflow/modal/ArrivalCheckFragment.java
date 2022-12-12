@@ -12,7 +12,7 @@ import android.widget.TextView;
 
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.OperationSchedule;
-import com.kogasoftware.odt.invehicledevice.view.fragment.utils.Fragments;
+import com.kogasoftware.odt.invehicledevice.view.fragment.utils.FragmentUtils;
 import com.kogasoftware.odt.invehicledevice.view.fragment.phaseflow.utils.OperationPhase;
 
 import org.joda.time.DateTime;
@@ -41,11 +41,11 @@ public class ArrivalCheckFragment extends Fragment {
         TextView commentTextView = view.findViewById(R.id.arrival_check_comment_text_view);
 
         Button closeButton = view.findViewById(R.id.arrival_check_close_button);
-        closeButton.setOnClickListener(v -> Fragments.hide(ArrivalCheckFragment.this));
+        closeButton.setOnClickListener(v -> FragmentUtils.hideModal(ArrivalCheckFragment.this));
 
         Button arrivalButton = view.findViewById(R.id.arrival_button);
         arrivalButton.setOnClickListener(view1 -> {
-            Fragments.hide(ArrivalCheckFragment.this);
+            FragmentUtils.hideModal(ArrivalCheckFragment.this);
             Thread tt = new Thread() {
                 @Override
                 public void run() {

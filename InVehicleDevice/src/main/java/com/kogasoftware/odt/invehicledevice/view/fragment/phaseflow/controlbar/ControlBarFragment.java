@@ -17,7 +17,7 @@ import com.kogasoftware.odt.invehicledevice.view.fragment.phaseflow.modal.Arriva
 import com.kogasoftware.odt.invehicledevice.view.fragment.phaseflow.modal.DepartureCheckFragment;
 import com.kogasoftware.odt.invehicledevice.view.fragment.listflow.modal.OperationListFragment;
 import com.kogasoftware.odt.invehicledevice.view.fragment.phaseflow.modal.PassengerRecordErrorFragment;
-import com.kogasoftware.odt.invehicledevice.view.fragment.utils.Fragments;
+import com.kogasoftware.odt.invehicledevice.view.fragment.utils.FragmentUtils;
 import com.kogasoftware.odt.invehicledevice.view.fragment.phaseflow.utils.OperationPhase;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.OperationSchedulesSyncFragmentAbstract;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.ViewDisabler;
@@ -72,7 +72,7 @@ public class ControlBarFragment extends OperationSchedulesSyncFragmentAbstract {
             return;
         }
 
-        Fragments.showModal(getFragmentManager(), OperationListFragment.newInstance(true), OPERATION_LIST_FRAGMENT_TAG);
+        FragmentUtils.showModal(getFragmentManager(), OperationListFragment.newInstance(true), OPERATION_LIST_FRAGMENT_TAG);
     }
 
     private void showArrivalCheckFragment() {
@@ -101,7 +101,7 @@ public class ControlBarFragment extends OperationSchedulesSyncFragmentAbstract {
         }
 
         if (existPassengerRecordError(phase)) {
-            Fragments.showModal(getFragmentManager(), PassengerRecordErrorFragment.newInstance(operationPhase));
+            FragmentUtils.showModal(getFragmentManager(), PassengerRecordErrorFragment.newInstance(operationPhase));
         } else if (phase.equals(Phase.PLATFORM_GET_OFF)) {
             List<PassengerRecord> getOnPassengerRecords = Lists.newArrayList();
             for (OperationSchedule operationSchedule : operationPhase.getCurrentOperationSchedules()) {
@@ -109,7 +109,7 @@ public class ControlBarFragment extends OperationSchedulesSyncFragmentAbstract {
             }
 
             if (getOnPassengerRecords.isEmpty()) {
-                Fragments.showModal(getFragmentManager(), DepartureCheckFragment.newInstance(operationPhase));
+                FragmentUtils.showModal(getFragmentManager(), DepartureCheckFragment.newInstance(operationPhase));
             } else {
                 for (OperationSchedule operationSchedule : operationPhase.getCurrentOperationSchedules()) {
                     operationSchedule.completeGetOff = true;
@@ -124,7 +124,7 @@ public class ControlBarFragment extends OperationSchedulesSyncFragmentAbstract {
                 }.start();
             }
         } else {
-            Fragments.showModal(getFragmentManager(), DepartureCheckFragment.newInstance(operationPhase));
+            FragmentUtils.showModal(getFragmentManager(), DepartureCheckFragment.newInstance(operationPhase));
         }
     }
 

@@ -17,7 +17,7 @@ import com.kogasoftware.odt.invehicledevice.view.fragment.modal.SignInFragment;
  * 車載器情報は誤ったデータでもDBに保存されるため、このローダは、インストール直後のデータが空の場合にしか通らない。
  **/
 
-public class onCreateSignInLoader {
+public class OnCreateSignInLoader {
 
     // TODO:InVehicleDeviceActivity配下で一意である必要がある。Activityクラスで管理した方が良い？
     // TODO: SignInFragmentとLOADER_IDが同じ。という事は、これはActivityクラスで起動derでSignInj
@@ -25,7 +25,7 @@ public class onCreateSignInLoader {
 
     private final InVehicleDeviceActivity inVehicleDeviceActivity;
 
-    public onCreateSignInLoader(InVehicleDeviceActivity inVehicleDeviceActivity) {
+    public OnCreateSignInLoader(InVehicleDeviceActivity inVehicleDeviceActivity) {
         // TODO:Activityを使いまわすのは良くない気がする。別の方法があれば変えたい。
         this.inVehicleDeviceActivity = inVehicleDeviceActivity;
     }

@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivity;
-import com.kogasoftware.odt.invehicledevice.view.fragment.utils.Fragments;
+import com.kogasoftware.odt.invehicledevice.view.fragment.utils.FragmentUtils;
 
 /**
  * 通知受信時のびっくりマーク
@@ -76,6 +76,6 @@ public class VehicleNotificationAlertFragment extends Fragment {
         }
 
         // TODO: 画面上に表示するだけなので、Modalではないのでは？
-        Fragments.showModal(fragmentManager, VehicleNotificationAlertFragment.newInstance(), FRAGMENT_TAG);
+        FragmentUtils.showModal(fragmentManager, VehicleNotificationAlertFragment.newInstance(), FRAGMENT_TAG);
     }
 }

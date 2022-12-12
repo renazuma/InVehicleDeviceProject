@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.OperationSchedule;
-import com.kogasoftware.odt.invehicledevice.view.fragment.utils.Fragments;
+import com.kogasoftware.odt.invehicledevice.view.fragment.utils.FragmentUtils;
 
 /**
  * 乗降場メモ表示画面
@@ -26,7 +26,7 @@ public class PlatformMemoFragment extends Fragment {
                 .getSerializable(OPERATION_SCHEDULE_KEY);
         Button closeButton = view
                 .findViewById(R.id.platform_memo_close_button);
-        closeButton.setOnClickListener(v -> Fragments.hide(PlatformMemoFragment.this));
+        closeButton.setOnClickListener(v -> FragmentUtils.hideModal(PlatformMemoFragment.this));
         TextView platformMemoTextView = view
                 .findViewById(R.id.platform_memo_text_view);
         platformMemoTextView.setText(operationSchedule.memo);

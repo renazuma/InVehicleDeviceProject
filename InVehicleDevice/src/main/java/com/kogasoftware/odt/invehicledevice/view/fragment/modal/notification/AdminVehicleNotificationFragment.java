@@ -13,7 +13,7 @@ import android.widget.TextView;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.VehicleNotification;
 import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivity;
-import com.kogasoftware.odt.invehicledevice.view.fragment.utils.Fragments;
+import com.kogasoftware.odt.invehicledevice.view.fragment.utils.FragmentUtils;
 
 import org.joda.time.DateTime;
 
@@ -79,7 +79,7 @@ public class AdminVehicleNotificationFragment extends Fragment {
             public void run() {
                 contentResolver.insert(VehicleNotification.CONTENT.URI,
                         vehicleNotification.toContentValues());
-                Fragments.hide(AdminVehicleNotificationFragment.this,
+                FragmentUtils.hideModal(AdminVehicleNotificationFragment.this,
                         handler);
             }
         }.start();
@@ -98,7 +98,7 @@ public class AdminVehicleNotificationFragment extends Fragment {
                 return;
             }
 
-            Fragments.showModal(
+            FragmentUtils.showModal(
                     fragmentManager,
                     AdminVehicleNotificationFragment.newInstance(vehicleNotification),
                     tag);

@@ -19,7 +19,7 @@ import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.Passenge
 import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivity;
 import com.kogasoftware.odt.invehicledevice.view.fragment.modal.PlatformMemoFragment;
 import com.kogasoftware.odt.invehicledevice.view.fragment.modal.SignInFragment;
-import com.kogasoftware.odt.invehicledevice.view.fragment.utils.Fragments;
+import com.kogasoftware.odt.invehicledevice.view.fragment.utils.FragmentUtils;
 import com.kogasoftware.odt.invehicledevice.view.fragment.phaseflow.utils.OperationPhase;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.OperationSchedulesSyncFragmentAbstract;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.ViewDisabler;
@@ -146,7 +146,7 @@ public class HeaderBarFragment extends OperationSchedulesSyncFragmentAbstract {
             return;
         }
 
-        Fragments.showModal(
+        FragmentUtils.showModal(
                 getFragmentManager(),
                 PlatformMemoFragment.newInstance(operationPhase.getCurrentRepresentativeOS()));
     }

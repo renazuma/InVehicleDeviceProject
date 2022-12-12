@@ -17,7 +17,7 @@ import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.DefaultC
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivity;
-import com.kogasoftware.odt.invehicledevice.view.fragment.utils.Fragments;
+import com.kogasoftware.odt.invehicledevice.view.fragment.utils.FragmentUtils;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.OperationSchedulesSyncFragmentAbstract;
 
 import org.apache.commons.lang3.StringUtils;
@@ -69,7 +69,7 @@ public class ChargeEditFragment extends OperationSchedulesSyncFragmentAbstract {
 
         final PassengerRecord passengerRecord = getById(passengerRecords, passengerRecordId);
         if (passengerRecord == null) {
-            Fragments.hide(this);
+            FragmentUtils.hideModal(this);
             return;
         }
 
@@ -148,10 +148,10 @@ public class ChargeEditFragment extends OperationSchedulesSyncFragmentAbstract {
                 }
             }.start();
             contentResolver.notifyChange(PassengerRecord.CONTENT.URI, null);
-            Fragments.hide(ChargeEditFragment.this);
+            FragmentUtils.hideModal(ChargeEditFragment.this);
         });
 
-        quitChargeButtonView.setOnClickListener(v -> Fragments.hide(ChargeEditFragment.this));
+        quitChargeButtonView.setOnClickListener(v -> FragmentUtils.hideModal(ChargeEditFragment.this));
     }
 
     private static PassengerRecord getById(List<PassengerRecord> passengerRecords, Long id) {
