@@ -24,17 +24,21 @@ import kotlin.math.roundToInt
  * 地図表示画面
  */
 class MapFragment : Fragment() {
-    val zoom = 20
-
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        val (userId, password, serviceId) = ZenrinMapsAccount.getAccountData(context.contentResolver)
-        val (vehicleLatitude, vehicleLongitude) = ServiceUnitStatusLog.getLatestLocation(context.contentResolver)
-        val (platformLatitude, platformLongitude) = OperationSchedule.getNextPlatformLocation(context.contentResolver)
+        drawMap()
+    }
+
+    private fun drawMap() {
+        val zoom = 20
+
         val imageView = view!!.findViewById<ImageView>(R.id.map_image)
 
         val (width, height) = imageSizePair()
+        val (userId, password, serviceId) = ZenrinMapsAccount.getAccountData(context.contentResolver)
+        val (vehicleLatitude, vehicleLongitude) = ServiceUnitStatusLog.getLatestLocation(context.contentResolver)
+        val (platformLatitude, platformLongitude) = OperationSchedule.getNextPlatformLocation(context.contentResolver)
 
         try {
 
