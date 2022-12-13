@@ -29,6 +29,10 @@ class MapFragment : Fragment() {
 
         drawMap()
 
+        view!!.findViewById<View>(R.id.reload_map_button).setOnClickListener { v: View? ->
+            drawMap()
+        }
+
         view!!.findViewById<Button>(R.id.quit_map_button).setOnClickListener { v: View? ->
             hideModal(this@MapFragment)
         }
