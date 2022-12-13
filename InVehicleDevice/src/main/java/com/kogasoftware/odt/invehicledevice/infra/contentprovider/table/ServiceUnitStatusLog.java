@@ -1,11 +1,15 @@
 package com.kogasoftware.odt.invehicledevice.infra.contentprovider.table;
 
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.provider.BaseColumns;
+import android.util.Pair;
 
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.InVehicleDeviceContentProvider;
+
+import org.apache.commons.lang3.ObjectUtils;
 
 /**
  * ServiceUnitStatusLogテーブル
@@ -53,5 +57,26 @@ public class ServiceUnitStatusLog {
             database.endTransaction();
         }
         return affected;
+    }
+
+    public static Cursor query(InVehicleDeviceContentProvider contentProvider, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
+        Cursor cursor = contentProvider.getDatabase().query(ServiceUnitStatusLog.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
+        cursor.setNotificationUri(contentProvider.getContext().getContentResolver(), ServiceUnitStatusLog.CONTENT.URI);
+        return cursor;
+    }
+
+    public static Pair<String, String> getLatestLocation(ContentResolver contentResolver) {
+        String latitude = "";
+        String longitude = "";
+
+        Cursor c = contentResolver.query(ServiceUnitStatusLog.CONTENT.URI, null, null, null, null);
+        Integer latIndex = c.getColumnIndex(ServiceUnitStatusLog.Columns.LATITUDE);
+        Integer longIndex = c.getColumnIndex(ServiceUnitStatusLog.Columns.LONGITUDE);
+        if (latIndex != null && longIndex != null && c.moveToLast()) {
+            latitude = c.getString(latIndex);
+            longitude = c.getString(longIndex);
+        }
+        c.close();
+        return new Pair(latitude, longitude);
     }
 }

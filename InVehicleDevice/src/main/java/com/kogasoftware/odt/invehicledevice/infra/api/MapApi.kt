@@ -12,11 +12,11 @@ class MapApi(val userId: String, val password: String, val serviceId: String) {
     val DEVICE_FLAG = "1"
 
     @Throws(InterruptedException::class, IOException::class)
-    fun imageUrl(width: Int, height: Int, zoom: Int, center: String): String {
+    fun imageUrl(width: Int, height: Int, zoom: Int, latitude: String, longitude: String): String {
 
         val (aid: String, kid: String, zisLmtinf) = getAuthInfo()
 
-        val url =  "https://test-api.zip-site.com/api/zips/general/map?width=$width&height=$height&center=$center&zoom=$zoom&zis_authtype=aid&zis_lmtinf=$zisLmtinf&zis_zips_authkey=$kid&zis_aid=$aid"
+        val url =  "https://test-api.zip-site.com/api/zips/general/map?width=$width&height=$height&center=$longitude%2C$latitude&zoom=$zoom&zis_authtype=aid&zis_lmtinf=$zisLmtinf&zis_zips_authkey=$kid&zis_aid=$aid"
         Log.i(TAG, "url: $url")
         return url
     }
