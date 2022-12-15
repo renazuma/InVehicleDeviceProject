@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.base.Charsets;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.DefaultCharge;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.ServiceProvider;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.ZenrinMapsAccount;
 
 import org.apache.http.HttpResponse;
 
@@ -88,6 +89,17 @@ public class GetServiceProviderTask extends SynchronizationTask {
                     default_charge_values.put(DefaultCharge.Columns.VALUE, default_charge_node.path("value").asInt());
                     database.insertOrThrow(DefaultCharge.TABLE_NAME, null, default_charge_values);
                 }
+            }
+
+            database.delete(ZenrinMapsAccount.TABLE_NAME, null, null);
+            JsonNode zenrinMapsAccountNode = node.path("zenrin_maps_account");
+            if (!zenrinMapsAccountNode.isNull()) {
+                ContentValues zenrinMapsAccountValues = new ContentValues();
+                zenrinMapsAccountValues.put(ZenrinMapsAccount.Columns._ID, zenrinMapsAccountNode.path("id").asInt());
+                zenrinMapsAccountValues.put(ZenrinMapsAccount.Columns.USER_ID, zenrinMapsAccountNode.path("user_id").asText());
+                zenrinMapsAccountValues.put(ZenrinMapsAccount.Columns.PASSWORD, zenrinMapsAccountNode.path("password").asText());
+                zenrinMapsAccountValues.put(ZenrinMapsAccount.Columns.SERVICE_ID, zenrinMapsAccountNode.path("service_id").asText());
+                database.insertOrThrow(ZenrinMapsAccount.TABLE_NAME, null, zenrinMapsAccountValues);
             }
 
             database.setTransactionSuccessful();
