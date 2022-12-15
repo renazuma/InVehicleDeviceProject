@@ -20,6 +20,7 @@ public class ServiceProvider {
         public static final String LOG_ACCESS_KEY_ID_AWS = "log_access_key_id_aws";
         public static final String LOG_SECRET_ACCESS_KEY_AWS = "log_secret_access_key_aws";
         public static final String CAR_NAVIGATION_APP = "car_navigation_app";
+        public static final String ZENRIN_MAPS = "zenrin_maps";
     }
 
     public final Long id;
@@ -27,6 +28,7 @@ public class ServiceProvider {
     public final String logSecretAccessKeyAws;
     public final String logAccessKeyIdAws;
     public final String carNavigationApp;
+    public final Boolean zenrinMaps;
 
     public ServiceProvider(Cursor cursor) {
         CursorReader reader = new CursorReader(cursor);
@@ -35,6 +37,7 @@ public class ServiceProvider {
         logAccessKeyIdAws = reader.readString(ServiceProvider.Columns.LOG_ACCESS_KEY_ID_AWS);
         logSecretAccessKeyAws = reader.readString(ServiceProvider.Columns.LOG_SECRET_ACCESS_KEY_AWS);
         carNavigationApp = reader.readString(Columns.CAR_NAVIGATION_APP);
+        zenrinMaps = reader.readBoolean(Columns.ZENRIN_MAPS);
     }
 
     public static Cursor query(InVehicleDeviceContentProvider contentProvider, String[] projection, String selection, String[] selectionArgs, String sortOrder) {

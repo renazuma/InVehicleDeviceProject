@@ -160,5 +160,8 @@
     <item>
       ALTER TABLE reservations ADD settled INTEGER NOT NULL DEFAULT 0
     </item>
+    <item>
+      ALTER TABLE service_providers ADD zenrin_maps INTEGER NOT NULL DEFAULT 0
+    </item>
   </string-array>
 </resources>
