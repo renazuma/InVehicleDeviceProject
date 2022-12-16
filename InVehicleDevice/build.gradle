@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'org.jetbrains.kotlin.android'
 
 // リリース用APKを作る際に、バージョンコードをインクリメントするコミットを積むこと
 def VERSION_CODE = 20022
@@ -37,14 +38,22 @@ android {
     lint {
         abortOnError false
     }
+    buildFeatures {
+        viewBinding true
+    }
 }
 
 dependencies {
     implementation fileTree(include: '*.jar', dir: 'src/main/libs')
     implementation 'androidx.constraintlayout:constraintlayout:2.1.2'
+    implementation 'androidx.appcompat:appcompat:1.5.1'
+    implementation 'com.google.android.material:material:1.7.0'
+    implementation 'androidx.annotation:annotation:1.5.0'
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.5.1'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1'
     androidTestImplementation fileTree(include: '*.jar', dir: 'src/androidTest/libs')
     implementation 'com.google.android.gms:play-services-location:16.0.0'
-    implementation "androidx.core:core-ktx:+"
+    implementation 'androidx.core:core-ktx:1.9.0'
     implementation "com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava"
 }
 
