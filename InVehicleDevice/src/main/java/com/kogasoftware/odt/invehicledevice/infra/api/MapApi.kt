@@ -16,7 +16,7 @@ class MapApi(val userId: String, val password: String, val serviceId: String) {
     fun imageUrl(width: Int, height: Int, zoom: Int, latitude: String, longitude: String): String {
 
         val (aid: String, kid: String, zisLmtinf) = getAuthInfo()
-        val userFigure: String = userFigureRequest()
+        val userFigure: String = userFigureRequest(latitude, longitude)
 
         val url = "https://test-api.zip-site.com/api/zips/general/map" +
                 "?width=$width" +
@@ -34,7 +34,7 @@ class MapApi(val userId: String, val password: String, val serviceId: String) {
         return url
     }
 
-    private fun userFigureRequest(): String {
+    private fun userFigureRequest(latitude: String, longitude: String): String {
         val platformIconNo = 41109
         val vehicleIconNo = 42301
 
@@ -52,7 +52,7 @@ class MapApi(val userId: String, val password: String, val serviceId: String) {
                     "type" to "Feature",
                     "geometry" to mapOf(
                         "type" to "Point",
-                        "coordinates" to listOf(139.797993, 35.715492)),
+                        "coordinates" to listOf(longitude.toDouble(), latitude.toDouble())),
                     "properties" to mapOf("icon" to vehicleIconNo.toString())
                 )
             )
