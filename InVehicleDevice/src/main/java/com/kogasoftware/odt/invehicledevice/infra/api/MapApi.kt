@@ -13,15 +13,21 @@ class MapApi(val userId: String, val password: String, val serviceId: String) {
     val DEVICE_FLAG = "1"
 
     @Throws(InterruptedException::class, IOException::class)
-    fun imageUrl(width: Int, height: Int, zoom: Int, latitude: String, longitude: String): String {
+    fun imageUrl(width: Int,
+                 height: Int,
+                 zoom: Int,
+                 vehicleLatitude: String,
+                 vehicleLongitude: String,
+                 platformLatitude: String,
+                 platformLongitude: String): String {
 
         val (aid: String, kid: String, zisLmtinf) = getAuthInfo()
-        val userFigure: String = userFigureRequest(latitude, longitude)
+        val userFigure: String = userFigureRequest(vehicleLatitude, vehicleLongitude, platformLatitude, platformLongitude)
 
         val url = "https://test-api.zip-site.com/api/zips/general/map" +
                 "?width=$width" +
                 "&height=$height" +
-                "&center=$longitude%2C$latitude" +
+                "&center=$vehicleLongitude%2C$vehicleLatitude" +
                 "&zoom=$zoom" +
                 "&zis_authtype=aid" +
                 "&zis_lmtinf=$zisLmtinf" +
@@ -34,7 +40,12 @@ class MapApi(val userId: String, val password: String, val serviceId: String) {
         return url
     }
 
-    private fun userFigureRequest(latitude: String, longitude: String): String {
+    private fun userFigureRequest(
+            vehicleLatitude: String,
+            vehicleLongitude: String,
+            platformLatitude: String,
+            platformLongitude: String): String {
+
         val platformIconNo = 41109
         val vehicleIconNo = 42301
 
@@ -45,14 +56,14 @@ class MapApi(val userId: String, val password: String, val serviceId: String) {
                     "type" to "Feature",
                     "geometry" to mapOf(
                         "type" to "Point",
-                        "coordinates" to listOf(139.797995, 35.715386)),
+                        "coordinates" to listOf(platformLongitude.toDouble(), platformLatitude.toDouble())),
                     "properties" to mapOf("icon" to platformIconNo.toString())
                 ),
                 mapOf(
                     "type" to "Feature",
                     "geometry" to mapOf(
                         "type" to "Point",
-                        "coordinates" to listOf(longitude.toDouble(), latitude.toDouble())),
+                        "coordinates" to listOf(vehicleLongitude.toDouble(), vehicleLatitude.toDouble())),
                     "properties" to mapOf("icon" to vehicleIconNo.toString())
                 )
             )

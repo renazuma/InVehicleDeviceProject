@@ -14,6 +14,7 @@ import androidx.core.util.component2
 import com.kogasoftware.odt.invehicledevice.R
 import com.kogasoftware.odt.invehicledevice.infra.api.MapApi
 import com.bumptech.glide.Glide
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.OperationSchedule
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.ServiceUnitStatusLog
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.ZenrinMapsAccount
 import java.io.IOException
@@ -29,15 +30,15 @@ class MapFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
 
         val (userId, password, serviceId) = ZenrinMapsAccount.getAccountData(context.contentResolver)
-        val (latitude: String, longitude: String) = ServiceUnitStatusLog.getLatestLocation(context.contentResolver)
-
+        val (vehicleLatitude, vehicleLongitude) = ServiceUnitStatusLog.getLatestLocation(context.contentResolver)
+        val (platformLatitude, platformLongitude) = OperationSchedule.getNextPlatformLocation(context.contentResolver)
         val imageView = view!!.findViewById<ImageView>(R.id.map_image)
 
         val (width, height) = imageSizePair()
 
         try {
 
-            val mapUrl = MapApi(userId, password, serviceId).imageUrl(width, height, zoom, latitude, longitude)
+            val mapUrl = MapApi(userId, password, serviceId).imageUrl(width, height, zoom, vehicleLatitude, vehicleLongitude, platformLatitude, platformLongitude)
             Glide.with(view!!).load(mapUrl).into(imageView)
         } catch (e: InterruptedException) {
             e.printStackTrace()
