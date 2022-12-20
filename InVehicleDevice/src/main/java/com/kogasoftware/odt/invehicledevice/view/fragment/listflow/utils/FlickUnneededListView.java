@@ -152,8 +152,7 @@ public class FlickUnneededListView extends FrameLayout
                 return;
             }
         }
-        if (Build.VERSION.SDK_INT >= 16 /* TODO きれいな実装にする */
-                && adjust == Adjust.UPPER && position > 0) {
+        if (adjust == Adjust.UPPER && position > 0) {
             adjust = Adjust.NONE;
             listView.smoothScrollToPosition(position - 1);
         } else {
@@ -170,8 +169,7 @@ public class FlickUnneededListView extends FrameLayout
                 return;
             }
         }
-        if (Build.VERSION.SDK_INT >= 16 /* TODO きれいな実装にする */
-                && adjust == Adjust.LOWER && position + 1 < listView.getCount()) {
+        if (adjust == Adjust.LOWER && position + 1 < listView.getCount()) {
             adjust = Adjust.NONE;
             listView.smoothScrollToPosition(position + 1);
         } else {
