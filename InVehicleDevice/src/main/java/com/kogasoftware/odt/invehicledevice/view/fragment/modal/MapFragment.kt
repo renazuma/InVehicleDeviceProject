@@ -11,6 +11,8 @@ import android.view.*
 import android.widget.*
 import androidx.core.util.component1
 import androidx.core.util.component2
+import androidx.swiperefreshlayout.widget.CircularProgressDrawable
+import androidx.swiperefreshlayout.widget.CircularProgressDrawable.LARGE
 import com.kogasoftware.odt.invehicledevice.R
 import com.kogasoftware.odt.invehicledevice.infra.api.MapApi
 import com.bumptech.glide.Glide
@@ -51,7 +53,10 @@ class MapFragment : Fragment() {
         try {
 
             val mapUrl = MapApi(userId, password, serviceId).imageUrl(width, height, zoom, vehicleLatitude, vehicleLongitude, platformLatitude, platformLongitude)
-            Glide.with(view!!).load(mapUrl).into(imageView)
+            Glide.with(view!!)
+                .load(mapUrl)
+                .placeholder(circularProgressDrawable())
+                .into(imageView)
         } catch (e: InterruptedException) {
             e.printStackTrace()
         } catch (e: IOException) {
@@ -61,6 +66,15 @@ class MapFragment : Fragment() {
         view!!.findViewById<Button>(R.id.quit_map_button).setOnClickListener { v: View? ->
             hideModal(this@MapFragment)
         }
+    }
+
+    private fun circularProgressDrawable(): CircularProgressDrawable {
+        val drawable = CircularProgressDrawable(context);
+        drawable.setStyle(LARGE)
+        drawable.centerRadius = 30f
+        drawable.strokeWidth = 5f
+        drawable.start()
+        return drawable
     }
 
     private fun imageSizePair(): Pair<Int, Int> {
