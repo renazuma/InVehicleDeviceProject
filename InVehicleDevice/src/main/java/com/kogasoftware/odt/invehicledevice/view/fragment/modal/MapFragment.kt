@@ -2,20 +2,29 @@ package com.kogasoftware.odt.invehicledevice.view.fragment.modal
 
 import android.app.Fragment
 import android.content.Context.WINDOW_SERVICE
+import android.graphics.Bitmap
 import android.graphics.Insets
 import android.graphics.Point
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
 import android.os.Build
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.FragmentUtils.hideModal
 import android.os.Bundle
 import android.view.*
+import android.view.ViewGroup.LayoutParams.MATCH_PARENT
+import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.*
 import androidx.core.util.component1
 import androidx.core.util.component2
 import androidx.swiperefreshlayout.widget.CircularProgressDrawable
-import androidx.swiperefreshlayout.widget.CircularProgressDrawable.LARGE
+import androidx.swiperefreshlayout.widget.CircularProgressDrawable.*
 import com.kogasoftware.odt.invehicledevice.R
 import com.kogasoftware.odt.invehicledevice.infra.api.MapApi
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.OperationSchedule
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.ServiceUnitStatusLog
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.ZenrinMapsAccount
@@ -56,6 +65,8 @@ class MapFragment : Fragment() {
             Glide.with(view!!)
                 .load(mapUrl)
                 .placeholder(circularProgressDrawable())
+                .error(requestErrorDrawable())
+                .listener(requestListener(imageView))
                 .into(imageView)
         } catch (e: InterruptedException) {
             e.printStackTrace()
@@ -75,6 +86,52 @@ class MapFragment : Fragment() {
         drawable.strokeWidth = 5f
         drawable.start()
         return drawable
+    }
+
+    private fun requestErrorDrawable(): Drawable {
+        val deviceHeight =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                val windowMetrics: WindowMetrics = activity.windowManager.currentWindowMetrics
+                val insets: Insets = windowMetrics.windowInsets.getInsetsIgnoringVisibility(WindowInsets.Type.systemBars())
+
+                windowMetrics.bounds.height() - insets.bottom
+            } else {
+                val windowManager: WindowManager = activity.getSystemService(WINDOW_SERVICE) as WindowManager
+                val disp: Display = windowManager.defaultDisplay
+                val realSize = Point();
+                disp.getRealSize(realSize)
+
+                realSize.y
+            }
+
+        val imageHeight = deviceHeight / 8
+        // HACK: 動的にする程の事でもないので、オリジナル画像の縦横比を直接指定して横のサイズを作っている。
+        val imageWidth = (imageHeight * 0.844).toInt()
+
+        val original = resources.getDrawable(R.drawable.request_error)
+        return BitmapDrawable(
+            resources,
+            Bitmap.createScaledBitmap(
+                (original as BitmapDrawable).bitmap,
+                imageWidth,
+                imageHeight,
+                true
+            )
+        )
+    }
+
+    private fun requestListener(imageView: ImageView) = object : RequestListener<Drawable> {
+        override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean): Boolean {
+            imageView.layoutParams.width = WRAP_CONTENT
+            imageView.layoutParams.height = WRAP_CONTENT
+            return false
+        }
+
+        override fun onResourceReady(e: Drawable?, model: Any?, target: Target<Drawable>?, isFirstResource: DataSource?, p4: Boolean): Boolean {
+            imageView.layoutParams.width = MATCH_PARENT
+            imageView.layoutParams.height = MATCH_PARENT
+            return false
+        }
     }
 
     private fun imageSizePair(): Pair<Int, Int> {
