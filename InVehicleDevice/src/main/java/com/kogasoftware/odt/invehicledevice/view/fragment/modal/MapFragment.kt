@@ -1,7 +1,7 @@
 package com.kogasoftware.odt.invehicledevice.view.fragment.modal
 
 import android.app.Fragment
-import android.content.Context.WINDOW_SERVICE
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Insets
 import android.graphics.Point
@@ -54,14 +54,23 @@ class MapFragment : Fragment() {
 
         val imageView = view!!.findViewById<ImageView>(R.id.map_image)
 
-        val (width, height) = imageSizePair()
-        val (userId, password, serviceId) = ZenrinMapsAccount.getAccountData(context.contentResolver)
-        val (vehicleLatitude, vehicleLongitude) = ServiceUnitStatusLog.getLatestLocation(context.contentResolver)
-        val (platformLatitude, platformLongitude) = OperationSchedule.getNextPlatformLocation(context.contentResolver)
+        var mapUrl = ""
 
         try {
+            val (width, height) = imageSizePair()
+            val (userId, password, serviceId) = ZenrinMapsAccount.getAccountData(context.contentResolver)
+            val (vehicleLatitude, vehicleLongitude) = ServiceUnitStatusLog.getLatestLocation(context.contentResolver)
+            val (platformLatitude, platformLongitude) = OperationSchedule.getNextPlatformLocation(context.contentResolver)
 
-            val mapUrl = MapApi(userId, password, serviceId).imageUrl(width, height, zoom, vehicleLatitude, vehicleLongitude, platformLatitude, platformLongitude)
+            mapUrl = MapApi(userId, password, serviceId).imageUrl(width, height, zoom, vehicleLatitude, vehicleLongitude, platformLatitude, platformLongitude)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            imageView.layoutParams.width = WRAP_CONTENT
+            imageView.layoutParams.height = WRAP_CONTENT
+            imageView.setImageDrawable(requestErrorDrawable())
+        }
+
+        try {
             Glide.with(view!!)
                 .load(mapUrl)
                 .placeholder(circularProgressDrawable())
@@ -96,7 +105,7 @@ class MapFragment : Fragment() {
 
                 windowMetrics.bounds.height() - insets.bottom
             } else {
-                val windowManager: WindowManager = activity.getSystemService(WINDOW_SERVICE) as WindowManager
+                val windowManager: WindowManager = activity.getSystemService(Context.WINDOW_SERVICE) as WindowManager
                 val disp: Display = windowManager.defaultDisplay
                 val realSize = Point();
                 disp.getRealSize(realSize)
@@ -144,7 +153,7 @@ class MapFragment : Fragment() {
                 val height = windowMetrics.bounds.height() - insets.bottom
                 height.toFloat() / width
             } else {
-                val windowManager: WindowManager = activity.getSystemService(WINDOW_SERVICE) as WindowManager
+                val windowManager: WindowManager = activity.getSystemService(Context.WINDOW_SERVICE) as WindowManager
                 val disp: Display = windowManager.defaultDisplay
                 val realSize = Point();
                 disp.getRealSize(realSize)
