@@ -56,10 +56,6 @@ class MapFragment : Fragment() {
                 .error(requestErrorDrawable())
                 .listener(requestListener(imageView))
                 .into(imageView)
-        } catch (e: InterruptedException) {
-            e.printStackTrace()
-        } catch (e: IOException) {
-            e.printStackTrace()
         } catch (e: Exception) {
             e.printStackTrace()
             imageView.layoutParams.width = WRAP_CONTENT
