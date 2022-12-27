@@ -47,29 +47,11 @@ class MapFragment : Fragment() {
     }
 
     private fun drawMap() {
-        val zoom = 20
-
         val imageView = view!!.findViewById<ImageView>(R.id.map_image)
-
-        var mapUrl = ""
-
-        try {
-            val (width, height) = imageSizePair()
-            val (userId, password, serviceId) = ZenrinMapsAccount.getAccountData(context.contentResolver)
-            val (vehicleLatitude, vehicleLongitude) = ServiceUnitStatusLog.getLatestLocation(context.contentResolver)
-            val (platformLatitude, platformLongitude) = OperationSchedule.getNextPlatformLocation(context.contentResolver)
-
-            mapUrl = MapApi(userId, password, serviceId).imageUrl(width, height, zoom, vehicleLatitude, vehicleLongitude, platformLatitude, platformLongitude)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            imageView.layoutParams.width = WRAP_CONTENT
-            imageView.layoutParams.height = WRAP_CONTENT
-            imageView.setImageDrawable(requestErrorDrawable())
-        }
 
         try {
             Glide.with(view!!)
-                .load(mapUrl)
+                .load(mapUrl())
                 .placeholder(circularProgressDrawable())
                 .error(requestErrorDrawable())
                 .listener(requestListener(imageView))
@@ -78,11 +60,28 @@ class MapFragment : Fragment() {
             e.printStackTrace()
         } catch (e: IOException) {
             e.printStackTrace()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            imageView.layoutParams.width = WRAP_CONTENT
+            imageView.layoutParams.height = WRAP_CONTENT
+            imageView.setImageDrawable(requestErrorDrawable())
         }
 
         view!!.findViewById<Button>(R.id.quit_map_button).setOnClickListener { v: View? ->
             hideModal(this@MapFragment)
         }
+    }
+
+    private fun mapUrl(): String {
+        val zoom = 20
+
+        val (width, height) = imageSizePair()
+        val (userId, password, serviceId) = ZenrinMapsAccount.getAccountData(context.contentResolver)
+        val (vehicleLatitude, vehicleLongitude) = ServiceUnitStatusLog.getLatestLocation(context.contentResolver)
+        val (platformLatitude, platformLongitude) = OperationSchedule.getNextPlatformLocation(context.contentResolver)
+
+        return MapApi(userId, password, serviceId)
+            .imageUrl(width, height, zoom, vehicleLatitude, vehicleLongitude, platformLatitude, platformLongitude)
     }
 
     private fun circularProgressDrawable(): CircularProgressDrawable {
