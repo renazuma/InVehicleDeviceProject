@@ -51,7 +51,7 @@
         android:layout_width="75sp"
         android:layout_height="60sp"
         android:layout_alignParentTop="true"
-        android:layout_toLeftOf="@+id/operation_list_map_button"
+        android:layout_toLeftOf="@+id/operation_list_navi_button"
         android:orientation="vertical" >
 
         <TextView
@@ -116,13 +116,13 @@
         android:visibility="gone" />
 
     <Button
-        android:id="@+id/operation_list_map_button"
+        android:id="@+id/operation_list_navi_button"
         android:layout_width="70sp"
         android:layout_height="60sp"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
         android:layout_marginRight="2dp"
-        android:text="@string/map"
+        android:text="@string/navi"
         android:textSize="22sp" />
 
 </RelativeLayout>

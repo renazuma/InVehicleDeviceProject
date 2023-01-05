@@ -121,7 +121,7 @@ public class OperationSchedule implements Serializable {
             context.startActivity(intent);
         } catch (ActivityNotFoundException e) {
             BigToast.makeText(context,
-                    serviceProvider.carNavigationApp + "が存在しないため、地図を表示できません",
+                    serviceProvider.carNavigationApp + "が存在しないため、ナビゲーションを表示できません",
                     Toast.LENGTH_LONG).show();
         }
     }

@@ -381,7 +381,7 @@ public class OperationScheduleArrayAdapter
 
         setPlatformAddressView(convertView, representativeOS);
 
-        setMapButtonView(convertView, representativeOS);
+        setNaviButtonView(convertView, representativeOS);
 
         setOperationScheduleRowBackground(convertView);
 
@@ -418,8 +418,8 @@ public class OperationScheduleArrayAdapter
         }
     }
 
-    private void setMapButtonView(View convertView, OperationSchedule representativeOS) {
-        Button mapButton = convertView.findViewById(R.id.operation_list_map_button);
+    private void setNaviButtonView(View convertView, OperationSchedule representativeOS) {
+        Button mapButton = convertView.findViewById(R.id.operation_list_navi_button);
         mapButton.setTag(representativeOS);
         mapButton.setOnClickListener(onMapButtonClickListener);
     }
