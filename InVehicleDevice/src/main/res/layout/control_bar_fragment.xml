@@ -19,6 +19,18 @@
         android:text="@string/navi" />
 
     <Button
+        android:id="@+id/map_button"
+        style="@style/ControlBarFragment.Button"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="1"
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="2dp"
+        android:background="@drawable/custom_button"
+        android:textColor="@drawable/custom_button_text_color"
+        android:text="@string/map" />
+
+    <Button
         android:id="@+id/operation_schedule_list_button"
         style="@style/ControlBarFragment.Button"
         android:layout_width="match_parent"
