@@ -13,6 +13,7 @@ import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.OperationSchedule.Phase;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.PassengerRecord;
+import com.kogasoftware.odt.invehicledevice.view.fragment.modal.MapFragment;
 import com.kogasoftware.odt.invehicledevice.view.fragment.phaseflow.modal.ArrivalCheckFragment;
 import com.kogasoftware.odt.invehicledevice.view.fragment.phaseflow.modal.DepartureCheckFragment;
 import com.kogasoftware.odt.invehicledevice.view.fragment.listflow.modal.OperationListFragment;
@@ -26,7 +27,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * 到着ボタン、ナビボタン、運行予定ボタンを表示する領域
+ * 到着ボタン、ナビボタン、地図ボタン、運行予定ボタンを表示する領域
  */
 public class ControlBarFragment extends OperationSchedulesSyncFragmentAbstract {
     private static final String TAG = ControlBarFragment.class.getSimpleName();
@@ -65,6 +66,14 @@ public class ControlBarFragment extends OperationSchedulesSyncFragmentAbstract {
                 operationPhase.getNextRepresentativeOS().startNavigation(getActivity());
             }
         }
+    }
+
+    private void showMapFragment() {
+        if (!isAdded()) {
+            return;
+        }
+
+        FragmentUtils.showModal(getFragmentManager(), new MapFragment());
     }
 
     private void showOperationScheduleListFragment() {
@@ -169,6 +178,11 @@ public class ControlBarFragment extends OperationSchedulesSyncFragmentAbstract {
         getView().findViewById(R.id.navi_button).setOnClickListener(v -> {
             ViewDisabler.disable(v);
             showNavigation(phase);
+        });
+
+        getView().findViewById(R.id.map_button).setOnClickListener(v -> {
+          ViewDisabler.disable(v);
+          showMapFragment();
         });
 
         getView().findViewById(R.id.operation_schedule_list_button).setOnClickListener(v -> {

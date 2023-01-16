@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- 地図表示画面 -->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/ModalView.Layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+      <ImageView
+          android:id="@+id/map_image"
+          android:layout_weight="1"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:src="@drawable/get_on" />
+
+      <LinearLayout
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_alignParentBottom="true"
+          android:paddingBottom="10dp"
+          android:paddingTop="10dp" >
+
+          <Button
+            android:id="@+id/quit_map_button"
+            style="@style/ModalView.Button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_margin="5dp"
+            android:background="@drawable/custom_button"
+            android:text="戻る"
+            android:textColor="@drawable/custom_button_text_color"
+            android:textSize="30sp" />
+
+          <Button
+            style="@style/ModalView.Button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_margin="5dp"
+            android:background="@drawable/custom_button"
+            android:text="更新"
+            android:textColor="@drawable/custom_button_text_color"
+            android:textSize="30sp" />
+
+      </LinearLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>
