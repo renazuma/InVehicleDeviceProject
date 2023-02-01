@@ -244,7 +244,7 @@ public class SignInFragment
         dismissAllDialogs();
         ProgressDialog progressDialog = new ProgressDialog(getActivity());
         progressDialog.setMessage(Html
-                .fromHtml(getString(R.string.checking_connection_config)));
+                .fromHtml(getString(R.string.checking_connection_config), Html.FROM_HTML_MODE_COMPACT));
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progressDialog.show();
         dialogs.add(progressDialog);
