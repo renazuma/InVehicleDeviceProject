@@ -17,6 +17,7 @@ import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.Operatio
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.OperationSchedule.Phase;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.ServiceProvider;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.ZenrinMapsAccount;
 import com.kogasoftware.odt.invehicledevice.view.fragment.modal.MapFragment;
 import com.kogasoftware.odt.invehicledevice.view.fragment.phaseflow.modal.ArrivalCheckFragment;
 import com.kogasoftware.odt.invehicledevice.view.fragment.phaseflow.modal.DepartureCheckFragment;
@@ -189,7 +190,12 @@ public class ControlBarFragment extends OperationSchedulesSyncFragmentAbstract {
         Cursor serviceProviderCursor = getContext()
             .getContentResolver()
             .query(ServiceProvider.CONTENT.URI, null, null, null, null);
-        if (serviceProviderCursor.moveToFirst() && (new ServiceProvider(serviceProviderCursor)).zenrinMaps) {
+
+        Cursor zenrinMapsAccountCursor = getContext()
+            .getContentResolver()
+            .query(ZenrinMapsAccount.CONTENT.URI, null, null, null, null);
+
+        if (serviceProviderCursor.moveToFirst() && (new ServiceProvider(serviceProviderCursor)).zenrinMaps && zenrinMapsAccountCursor.moveToFirst()) {
             mapButton.setVisibility(VISIBLE);
         }
         mapButton.setOnClickListener(v -> {

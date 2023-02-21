@@ -26,6 +26,7 @@ import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.OperationSchedule;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.PassengerRecord;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.ServiceProvider;
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.ZenrinMapsAccount;
 import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivity;
 import com.kogasoftware.odt.invehicledevice.view.fragment.modal.ChargeEditFragment;
 import com.kogasoftware.odt.invehicledevice.view.fragment.modal.MapFragment;
@@ -437,7 +438,12 @@ public class OperationScheduleArrayAdapter
         Cursor serviceProviderCursor = getContext()
             .getContentResolver()
             .query(ServiceProvider.CONTENT.URI, null, null, null, null);
-        if (serviceProviderCursor.moveToFirst() && (new ServiceProvider(serviceProviderCursor)).zenrinMaps) {
+
+        Cursor zenrinMapsAccountCursor = getContext()
+                .getContentResolver()
+                .query(ZenrinMapsAccount.CONTENT.URI, null, null, null, null);
+
+        if (serviceProviderCursor.moveToFirst() && (new ServiceProvider(serviceProviderCursor)).zenrinMaps && zenrinMapsAccountCursor.moveToFirst()) {
             mapButton.setVisibility(View.VISIBLE);
         }
         mapButton.setOnClickListener(onMapButtonClickListener);
