@@ -8,11 +8,8 @@ import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import com.squareup.moshi.Moshi
 import java.io.IOException
 
-class MapApi {
-    var USER_ID = "G1W9OKqx"
-    var PASSWORD = "7dQhnH6O"
-    var SERVICE_ID = "50000001"
-    var DEVICE_FLAG = "1"
+class MapApi(val userId: String, val password: String, val serviceId: String) {
+    val DEVICE_FLAG = "1"
 
     @Throws(InterruptedException::class, IOException::class)
     fun imageUrl(width: Int, height: Int, zoom: Int, center: String): String {
@@ -29,7 +26,7 @@ class MapApi {
         val mapApi = mapApiInterface()
 
         // HACK: 同期処理をするとAndroidのメイン処理自体にその間待ちが入る（多分）ので、出来ればAPIの実行は非同期にしたい
-        val authInfo = mapApi.login(USER_ID, PASSWORD, SERVICE_ID, DEVICE_FLAG).execute()
+        val authInfo = mapApi.login(userId, password, serviceId, DEVICE_FLAG).execute()
         val aid: String = authInfo.body()!!.result["aid"].toString()
         val kid: String = authInfo.body()!!.result["kid"].toString()
         Log.i(TAG, "aid: $aid")

@@ -12,6 +12,7 @@ import android.widget.*
 import com.kogasoftware.odt.invehicledevice.R
 import com.kogasoftware.odt.invehicledevice.infra.api.MapApi
 import com.bumptech.glide.Glide
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.ZenrinMapsAccount
 import java.io.IOException
 import kotlin.math.roundToInt
 
@@ -24,13 +25,16 @@ class MapFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+
+        val (userId, password, serviceId) = ZenrinMapsAccount.getAccountData(context.contentResolver)
+
         val imageView = view!!.findViewById<ImageView>(R.id.map_image)
 
         val (width, height) = imageSizePair()
 
         try {
 
-            var mapUrl: String = MapApi().imageUrl(width, height, zoom, center)
+            val mapUrl = MapApi(userId, password, serviceId).imageUrl(width, height, zoom, center)
             Glide.with(view!!).load(mapUrl).into(imageView)
         } catch (e: InterruptedException) {
             e.printStackTrace()

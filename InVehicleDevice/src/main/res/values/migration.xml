@@ -163,5 +163,13 @@
     <item>
       ALTER TABLE service_providers ADD zenrin_maps INTEGER NOT NULL DEFAULT 0
     </item>
+    <item>
+      CREATE TABLE zenrin_maps_accounts (
+        $(id) INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT
+        , user_id TEXT NOT NULL
+        , password TEXT NOT NULL
+        , service_id TEXT NOT NULL
+      )
+    </item>
   </string-array>
 </resources>
