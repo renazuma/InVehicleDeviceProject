@@ -10,6 +10,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.provider.BaseColumns;
+import android.util.Pair;
 import android.widget.Toast;
 
 import com.google.common.collect.Lists;
@@ -51,6 +52,8 @@ public class OperationSchedule implements Serializable {
         public static final String DEPARTED_AT = "departed_at";
         public static final String COMPLETE_GET_OFF = "complete_get_off";
         public static final String OPERATION_DATE = "operation_date";
+        public static final String LATITUDE = "latitude";
+        public static final String LONGITUDE = "longitude";
     }
 
     public final Long id;
@@ -246,4 +249,20 @@ public class OperationSchedule implements Serializable {
         return cursor;
     }
 
+    public static Pair<String, String> getNextPlatformLocation(ContentResolver contentResolver) {
+        String latitude = "";
+        String longitude = "";
+
+        Cursor cursor = contentResolver.query(OperationSchedule.CONTENT.URI, null, null, null, null);
+
+        OperationSchedule nextOperationSchedule =
+                OperationSchedule.getAll(cursor).stream().filter(os ->
+                    os.arrivedAt == null).findFirst().get();
+        if (nextOperationSchedule != null) {
+            latitude = nextOperationSchedule.latitude.toString();
+            longitude = nextOperationSchedule.longitude.toString();
+        }
+        cursor.close();
+        return new Pair(latitude, longitude);
+    }
 }

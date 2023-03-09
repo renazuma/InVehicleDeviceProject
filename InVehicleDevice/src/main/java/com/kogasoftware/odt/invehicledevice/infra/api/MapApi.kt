@@ -1,61 +1,117 @@
 package com.kogasoftware.odt.invehicledevice.infra.api
 
 import android.util.Log
-import kotlin.Throws
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
+import org.json.JSONObject
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
-import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
-import com.squareup.moshi.Moshi
 import java.io.IOException
 
 class MapApi(val userId: String, val password: String, val serviceId: String) {
     val DEVICE_FLAG = "1"
 
     @Throws(InterruptedException::class, IOException::class)
-    fun imageUrl(width: Int, height: Int, zoom: Int, center: String): String {
+    fun imageUrl(width: Int,
+                 height: Int,
+                 zoom: Int,
+                 vehicleLatitude: String,
+                 vehicleLongitude: String,
+                 platformLatitude: String,
+                 platformLongitude: String): String {
 
         val (aid: String, kid: String, zisLmtinf) = getAuthInfo()
+        val userFigure: String = userFigureRequest(vehicleLatitude, vehicleLongitude, platformLatitude, platformLongitude)
 
-        val url =  "https://test-api.zip-site.com/api/zips/general/map?width=$width&height=$height&center=$center&zoom=$zoom&zis_authtype=aid&zis_lmtinf=$zisLmtinf&zis_zips_authkey=$kid&zis_aid=$aid"
+        val url = "https://test-api.zip-site.com/api/zips/general/map" +
+                "?width=$width" +
+                "&height=$height" +
+                "&center=$vehicleLongitude%2C$vehicleLatitude" +
+                "&zoom=$zoom" +
+                "&zis_authtype=aid" +
+                "&zis_lmtinf=$zisLmtinf" +
+                "&zis_zips_authkey=$kid" +
+                "&zis_aid=$aid" +
+                "&user_figure=$userFigure"
+
         Log.i(TAG, "url: $url")
+
         return url
     }
 
-    private fun getAuthInfo(): Triple<String, String, String> {
+    private fun userFigureRequest(
+            vehicleLatitude: String,
+            vehicleLongitude: String,
+            platformLatitude: String,
+            platformLongitude: String): String {
 
-        val mapApi = mapApiInterface()
+        val platformIconNo = 41109
+        val vehicleIconNo = 42301
 
-        // HACK: 同期処理をするとAndroidのメイン処理自体にその間待ちが入る（多分）ので、出来ればAPIの実行は非同期にしたい
-        val authInfo = mapApi.login(userId, password, serviceId, DEVICE_FLAG).execute()
-        val aid: String = authInfo.body()!!.result["aid"].toString()
-        val kid: String = authInfo.body()!!.result["kid"].toString()
-        Log.i(TAG, "aid: $aid")
-        Log.i(TAG, "kid: $kid")
+        val userFigureMap = mapOf(
+            "type" to "FeatureCollection",
+            "features" to listOf(
+                mapOf(
+                    "type" to "Feature",
+                    "geometry" to mapOf(
+                        "type" to "Point",
+                        "coordinates" to listOf(platformLongitude.toDouble(), platformLatitude.toDouble())),
+                    "properties" to mapOf("icon" to platformIconNo.toString())
+                ),
+                mapOf(
+                    "type" to "Feature",
+                    "geometry" to mapOf(
+                        "type" to "Point",
+                        "coordinates" to listOf(vehicleLongitude.toDouble(), vehicleLatitude.toDouble())),
+                    "properties" to mapOf("icon" to vehicleIconNo.toString())
+                )
+            )
+        )
 
-        val items: Map<*, *> = authInfo.body()!!.result["items"] as Map<*, *>
-        val funcList = items["func"] as List<Map<*, *>>
-        val mapFunc = funcList.filter { func ->
-            func["id"] == "0007" && func["subid"] == "0001"
-        }.first()
-
-        val areaCode = mapFunc["areaCode"]
-        val funcInfo = mapFunc["funcInfo"]
-
-        val zisLmtinf = "$areaCode,$funcInfo"
-
-        Log.i(TAG, "areaCode: $areaCode")
-        Log.i(TAG, "funcInfo: $funcInfo")
-        Log.i(TAG, "zisLmtinf: $zisLmtinf")
-
-        logout(mapApi, aid)
-
-        return Triple(aid, kid, zisLmtinf)
+        return JSONObject(userFigureMap).toString()
     }
 
-    private fun logout(mapApi: MapApiInterface, aid: String) {
-        val logout = mapApi.logout(aid)
-        val logoutInfo = logout.execute()
-        Log.i(TAG, "logout: " + logoutInfo.body()!!.status["text"])
+    private fun getAuthInfo(): Triple<String, String, String> {
+        val mapApi = mapApiInterface()
+
+        val loginInfo = runBlocking {
+            withContext(CoroutineScope(Dispatchers.Default).coroutineContext) {
+                mapApi.login(userId, password, serviceId, DEVICE_FLAG).result
+            }
+        }
+
+        val aid: String = loginInfo!!["aid"].toString()
+        Log.i(TAG, "aid: $aid")
+
+        runBlocking {
+            withContext(CoroutineScope(Dispatchers.Default).coroutineContext) {
+                mapApi.logout(aid).status
+            }
+        }
+
+          val kid: String = loginInfo!!["kid"].toString()
+          Log.i(TAG, "kid: $kid")
+
+          val items: Map<*, *> = loginInfo!!["items"] as Map<*, *>
+          val funcList = items["func"] as List<Map<*, *>>
+          val mapFunc = funcList.filter { func ->
+              func["id"] == "0007" && func["subid"] == "0001"
+          }.first()
+
+          val areaCode = mapFunc["areaCode"]
+          val funcInfo = mapFunc["funcInfo"]
+
+          val zisLmtinf = "$areaCode,$funcInfo"
+
+          Log.i(TAG, "areaCode: $areaCode")
+          Log.i(TAG, "funcInfo: $funcInfo")
+          Log.i(TAG, "zisLmtinf: $zisLmtinf")
+
+        return Triple(aid, kid, zisLmtinf)
     }
 
     private fun mapApiInterface(): MapApiInterface {

@@ -169,6 +169,9 @@ public class InVehicleDeviceContentProvider extends ContentProvider {
             case ZenrinMapsAccount.TABLE_CODE:
                 return ZenrinMapsAccount.query(this, projection, selection,
                         selectionArgs, sortOrder);
+            case ServiceUnitStatusLog.TABLE_CODE:
+                return ServiceUnitStatusLog.query(this, projection, selection,
+                        selectionArgs, sortOrder);
             default:
                 throw new IllegalArgumentException("Unknown uri: " + uri);
         }
