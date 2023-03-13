@@ -28,6 +28,10 @@ class MapFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
 
         drawMap()
+
+        view!!.findViewById<Button>(R.id.quit_map_button).setOnClickListener { v: View? ->
+            hideModal(this@MapFragment)
+        }
     }
 
     private fun drawMap() {
