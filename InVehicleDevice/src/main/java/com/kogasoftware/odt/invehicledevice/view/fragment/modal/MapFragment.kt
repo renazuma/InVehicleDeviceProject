@@ -1,13 +1,9 @@
 package com.kogasoftware.odt.invehicledevice.view.fragment.modal
 
 import android.app.Fragment
-import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.Insets
-import android.graphics.Point
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
-import android.os.Build
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.FragmentUtils.hideModal
 import android.os.Bundle
 import android.view.*
@@ -28,6 +24,7 @@ import com.bumptech.glide.request.target.Target
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.OperationSchedule
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.ServiceUnitStatusLog
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.ZenrinMapsAccount
+import com.kogasoftware.odt.invehicledevice.view.fragment.utils.FragmentUtils.deviceSize
 import java.io.IOException
 import kotlin.math.roundToInt
 
@@ -98,20 +95,7 @@ class MapFragment : Fragment() {
     }
 
     private fun requestErrorDrawable(): Drawable {
-        val deviceHeight =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                val windowMetrics: WindowMetrics = activity.windowManager.currentWindowMetrics
-                val insets: Insets = windowMetrics.windowInsets.getInsetsIgnoringVisibility(WindowInsets.Type.systemBars())
-
-                windowMetrics.bounds.height() - insets.bottom
-            } else {
-                val windowManager: WindowManager = activity.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-                val disp: Display = windowManager.defaultDisplay
-                val realSize = Point();
-                disp.getRealSize(realSize)
-
-                realSize.y
-            }
+        val (_, deviceHeight) = deviceSize(this)
 
         val imageHeight = deviceHeight / 8
         // HACK: 動的にする程の事でもないので、オリジナル画像の縦横比を直接指定して横のサイズを作っている。
@@ -144,24 +128,8 @@ class MapFragment : Fragment() {
     }
 
     private fun imageSizePair(): Pair<Int, Int> {
-        val deviceRatio: Float =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                val windowMetrics: WindowMetrics = activity.windowManager.currentWindowMetrics
-                val insets: Insets = windowMetrics.windowInsets.getInsetsIgnoringVisibility(WindowInsets.Type.systemBars())
-
-                val width = windowMetrics.bounds.width()
-                val height = windowMetrics.bounds.height() - insets.bottom
-                height.toFloat() / width
-            } else {
-                val windowManager: WindowManager = activity.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-                val disp: Display = windowManager.defaultDisplay
-                val realSize = Point();
-                disp.getRealSize(realSize)
-
-                val width = realSize.x
-                val height = realSize.y
-                height.toFloat() / width
-            }
+        val (deviceWidth, deviceHeight) = deviceSize(this)
+        val deviceRatio = deviceHeight.toFloat() / deviceWidth
 
         val width = 640
         // height は 下部ボタンの分だけ短くしているが、ボタン部分のサイズは dp 指定で、heightはピクセルなので、ボタンと正確に対応はしていない。
