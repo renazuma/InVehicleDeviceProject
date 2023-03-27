@@ -1,12 +1,15 @@
 package com.kogasoftware.odt.invehicledevice.infra.api
 
 import android.util.Log
+import com.kogasoftware.odt.invehicledevice.BuildConfig
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import org.json.JSONObject
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
@@ -117,8 +120,21 @@ class MapApi(val userId: String, val password: String, val serviceId: String) {
     private fun mapApiInterface(): MapApiInterface {
         val moshi: Moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
 
+        val loggingInterceptor = HttpLoggingInterceptor().apply {
+            level = if (BuildConfig.DEBUG) {
+                HttpLoggingInterceptor.Level.BODY
+            } else {
+                HttpLoggingInterceptor.Level.NONE
+            }
+        }
+
+        val okHttpClient = OkHttpClient.Builder()
+                .addInterceptor(loggingInterceptor)
+                .build()
+
         val retrofit = Retrofit.Builder()
             .baseUrl("https://test-api.zip-site.com/api/")
+            .client(okHttpClient)
             .addConverterFactory(MoshiConverterFactory.create(moshi))
             .build()
 
