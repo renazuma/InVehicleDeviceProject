@@ -203,6 +203,11 @@ public class ControlBarFragment extends OperationSchedulesSyncFragmentAbstract {
           showMapFragment();
         });
 
+        mapButton.setEnabled(false);
+        if (phase.equals(Phase.DRIVE)) {
+            mapButton.setEnabled(true);
+        }
+
         getView().findViewById(R.id.operation_schedule_list_button).setOnClickListener(v -> {
             ViewDisabler.disable(v);
             showOperationScheduleListFragment();
