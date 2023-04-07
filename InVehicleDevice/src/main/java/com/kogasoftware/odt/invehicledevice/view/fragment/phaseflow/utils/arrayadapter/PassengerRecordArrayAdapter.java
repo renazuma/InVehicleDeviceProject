@@ -221,26 +221,51 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
         }
     }
 
-    private void setRowDefaultBackgroundColor(View convertView, PassengerRecord passengerRecord) {
-        OperationSchedule operationSchedule = getTargetOperationSchedule(passengerRecord);
+    public enum ScheduleStatus {
+        SELECTED_GET_OFF,
+        GET_OFF,
+        SELECTED_GET_ON,
+        GET_ON,
+        NONE
+    }
 
-        int color_code = 0;
+    private ScheduleStatus getScheduleStatus(PassengerRecord passengerRecord) {
+        OperationSchedule operationSchedule = getTargetOperationSchedule(passengerRecord);
         if (operationSchedule.id.equals(passengerRecord.arrivalScheduleId)) {
             if (passengerRecord.getOffTime != null) {
-                color_code = ContextCompat.getColor(fragment.getContext(), R.color.selected_get_off_row);
+                return ScheduleStatus.SELECTED_GET_OFF;
             } else {
-                color_code = ContextCompat.getColor(fragment.getContext(), R.color.get_off_row);
+                return ScheduleStatus.GET_OFF;
             }
         } else if (operationSchedule.id.equals(passengerRecord.departureScheduleId)) {
             if (passengerRecord.getOnTime != null) {
-                color_code = ContextCompat.getColor(fragment.getContext(), R.color.selected_get_on_row);
+                return ScheduleStatus.SELECTED_GET_ON;
             } else {
-                color_code = ContextCompat.getColor(fragment.getContext(), R.color.get_on_row);
+                return ScheduleStatus.GET_ON;
             }
-        } else {
-            Log.e(TAG, "unexpected PassengerRecord: " + passengerRecord);
         }
-        convertView.setBackgroundColor(color_code);
+        return ScheduleStatus.NONE;
+    }
+
+    private void setRowDefaultBackgroundColor(View convertView, PassengerRecord passengerRecord) {
+        int colorCode = 0;
+        switch (getScheduleStatus(passengerRecord)) {
+            case SELECTED_GET_OFF:
+                colorCode = ContextCompat.getColor(fragment.getContext(), R.color.selected_get_off_row);
+                break;
+            case GET_OFF:
+                colorCode = ContextCompat.getColor(fragment.getContext(), R.color.get_off_row);
+                break;
+            case SELECTED_GET_ON:
+                colorCode = ContextCompat.getColor(fragment.getContext(), R.color.selected_get_on_row);
+                break;
+            case GET_ON:
+                colorCode = ContextCompat.getColor(fragment.getContext(), R.color.get_on_row);
+                break;
+            default:
+                Log.e(TAG, "unexpected PassengerRecord: " + passengerRecord);
+        }
+        convertView.setBackgroundColor(colorCode);
     }
 
     private void setMemoButtonView(View convertView, PassengerRecord passengerRecord) {
