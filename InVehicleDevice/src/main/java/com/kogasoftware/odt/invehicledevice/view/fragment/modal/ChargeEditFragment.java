@@ -4,6 +4,7 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -138,6 +139,10 @@ public class ChargeEditFragment extends OperationSchedulesSyncFragmentAbstract {
                 passengerRecord.paidCharge = (long) Integer.parseInt(chargeEditTextView.getText().toString());
             }
 
+            Log.i(TAG, "user operation: Charge And GetOn button clicked. { "
+                    + "passengerRecordId: " + passengerRecord.id + ","
+                    + " charge: " + passengerRecord.paidCharge + " }");
+
             final ContentValues values = passengerRecord.toContentValues();
             final String where = PassengerRecord.Columns._ID + " = ?";
             final String[] whereArgs = new String[]{passengerRecord.id.toString()};
@@ -151,7 +156,10 @@ public class ChargeEditFragment extends OperationSchedulesSyncFragmentAbstract {
             FragmentUtils.hideModal(ChargeEditFragment.this);
         });
 
-        quitChargeButtonView.setOnClickListener(v -> FragmentUtils.hideModal(ChargeEditFragment.this));
+        quitChargeButtonView.setOnClickListener(v -> {
+            Log.i(TAG, "user operation: Quit Charge button clicked.");
+            FragmentUtils.hideModal(ChargeEditFragment.this);
+        });
     }
 
     private static PassengerRecord getById(List<PassengerRecord> passengerRecords, Long id) {
