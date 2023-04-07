@@ -14,6 +14,8 @@ import android.view.WindowManager
 import android.view.WindowMetrics
 import com.kogasoftware.odt.invehicledevice.R
 import kotlin.jvm.JvmOverloads
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.OperationSchedule
+import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.PassengerRecord
 
 /**
  * フラグメント用の共通処理
@@ -65,4 +67,28 @@ object FragmentUtils {
             Pair(realSize.x, realSize.y)
         }
     }
+
+
+    enum class PassengerStatus {
+        SELECTED_GET_OFF, GET_OFF, SELECTED_GET_ON, GET_ON, NONE
+    }
+
+    @JvmStatic
+    fun getPassengerStatus(passengerRecord: PassengerRecord, operationSchedule: OperationSchedule): PassengerStatus? {
+        if (operationSchedule.id == passengerRecord.arrivalScheduleId) {
+            return if (passengerRecord.getOffTime != null) {
+                PassengerStatus.SELECTED_GET_OFF
+            } else {
+                PassengerStatus.GET_OFF
+            }
+        } else if (operationSchedule.id == passengerRecord.departureScheduleId) {
+            return if (passengerRecord.getOnTime != null) {
+                PassengerStatus.SELECTED_GET_ON
+            } else {
+                PassengerStatus.GET_ON
+            }
+        }
+        return PassengerStatus.NONE
+    }
+
 }

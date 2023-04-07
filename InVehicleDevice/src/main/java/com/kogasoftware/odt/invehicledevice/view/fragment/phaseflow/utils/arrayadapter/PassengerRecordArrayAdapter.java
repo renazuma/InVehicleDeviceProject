@@ -68,7 +68,7 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
             OperationSchedule operationSchedule = getTargetOperationSchedule(passengerRecord);
 
             Log.i(TAG, "user operation: Passenger Record Row clicked. { "
-                    + "status: " + getScheduleStatus(passengerRecord).toString() + ","
+                    + "status: " + FragmentUtils.getPassengerStatus(passengerRecord, operationSchedule).toString() + ","
                     + " PassengerRecordId: " + passengerRecord.id + ","
                     + " userId: " + passengerRecord.userId + " }");
 
@@ -231,35 +231,9 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
         }
     }
 
-    public enum ScheduleStatus {
-        SELECTED_GET_OFF,
-        GET_OFF,
-        SELECTED_GET_ON,
-        GET_ON,
-        NONE
-    }
-
-    private ScheduleStatus getScheduleStatus(PassengerRecord passengerRecord) {
-        OperationSchedule operationSchedule = getTargetOperationSchedule(passengerRecord);
-        if (operationSchedule.id.equals(passengerRecord.arrivalScheduleId)) {
-            if (passengerRecord.getOffTime != null) {
-                return ScheduleStatus.SELECTED_GET_OFF;
-            } else {
-                return ScheduleStatus.GET_OFF;
-            }
-        } else if (operationSchedule.id.equals(passengerRecord.departureScheduleId)) {
-            if (passengerRecord.getOnTime != null) {
-                return ScheduleStatus.SELECTED_GET_ON;
-            } else {
-                return ScheduleStatus.GET_ON;
-            }
-        }
-        return ScheduleStatus.NONE;
-    }
-
     private void setRowDefaultBackgroundColor(View convertView, PassengerRecord passengerRecord) {
         int colorCode = 0;
-        switch (getScheduleStatus(passengerRecord)) {
+        switch (FragmentUtils.getPassengerStatus(passengerRecord, getTargetOperationSchedule(passengerRecord))) {
             case SELECTED_GET_OFF:
                 colorCode = ContextCompat.getColor(fragment.getContext(), R.color.selected_get_off_row);
                 break;
