@@ -32,6 +32,8 @@ import org.joda.time.DateTime;
 public class ScheduleVehicleNotificationFragment extends Fragment
         implements
         LoaderCallbacks<Cursor> {
+
+    private static final String TAG = ScheduleVehicleNotificationFragment.class.getSimpleName();
     private static final Integer LOADER_ID = 1;
     private static final String OPERATION_LIST_BUTTON_VISIBLE_KEY = "operation_list_button_visible";
     // TODO: Activityは一つしかないので、InVehicleDeviceActivityの指定は不要では？
@@ -52,7 +54,7 @@ public class ScheduleVehicleNotificationFragment extends Fragment
         } else {
             showOperationListButton.setVisibility(View.GONE);
         }
-        showOperationListButton.setOnClickListener(view12 -> onShowOperationListButtonClick());
+        showOperationListButton.setOnClickListener(view12 -> onShowOperationScheduleListButtonClick());
         Button closeButton = view
                 .findViewById(R.id.schedule_vehicle_notification_close_button);
         closeButton.setOnClickListener(view1 -> onCloseButtonClick());
@@ -108,7 +110,7 @@ public class ScheduleVehicleNotificationFragment extends Fragment
         } while (cursor.moveToNext());
         detailTextView.setText(content);
 
-        Log.i(ScheduleVehicleNotificationFragment.class.getSimpleName(), "Schedule Notification fragment display appended.");
+        Log.i(TAG, "Schedule Notification fragment display appended.");
     }
 
     private void hide(final Runnable onComplete) {
@@ -151,8 +153,8 @@ public class ScheduleVehicleNotificationFragment extends Fragment
     public void onLoaderReset(Loader<Cursor> loader) {
     }
 
-    private void onShowOperationListButtonClick() {
-        Log.i(ScheduleVehicleNotificationFragment.class.getSimpleName(), "Operation List button clicked.");
+    private void onShowOperationScheduleListButtonClick() {
+        Log.i(TAG, "user operation: Operation Schedule List button clicked.");
         hide(() -> {
             if (!isAdded()) {
                 return;
@@ -170,7 +172,7 @@ public class ScheduleVehicleNotificationFragment extends Fragment
     }
 
     private void onCloseButtonClick() {
-        Log.i(ScheduleVehicleNotificationFragment.class.getSimpleName(), "Close button clicked.");
+        Log.i(TAG, "user operation: Close button clicked.");
         hide(() -> {
             if (!isAdded()) {
                 return;
@@ -197,6 +199,6 @@ public class ScheduleVehicleNotificationFragment extends Fragment
 
         FragmentUtils.showModal(fragmentManager, ScheduleVehicleNotificationFragment.newInstance(true), FRAGMENT_TAG);
 
-        Log.i(ScheduleVehicleNotificationFragment.class.getSimpleName(), "Schedule Notification fragment displayed.");
+        Log.i(TAG, "Schedule Notification fragment displayed.");
     }
 }
