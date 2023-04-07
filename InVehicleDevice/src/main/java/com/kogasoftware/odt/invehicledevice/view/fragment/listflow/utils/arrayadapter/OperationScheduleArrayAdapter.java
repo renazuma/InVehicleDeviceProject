@@ -339,6 +339,11 @@ public class OperationScheduleArrayAdapter
                 return;
             }
             PassengerRecord passengerRecord = (PassengerRecord) tag;
+
+            Log.i(TAG, "user operation: User Row Memo button clicked. {"
+                    + "passengerRecordId: " + passengerRecord.id + ","
+                    + " userId: " + passengerRecord.userId + " }");
+
             if (fragment.getFragmentManager() == null) {
                 return;
             }
@@ -349,6 +354,16 @@ public class OperationScheduleArrayAdapter
     protected final OnClickListener onMapButtonClickListener = new OnClickListener() {
         @Override
         public void onClick(View view) {
+            Object tag = view.getTag();
+            if (!(tag instanceof OperationSchedule)) {
+                return;
+            }
+            final OperationSchedule operationSchedule = (OperationSchedule) tag;
+
+            Log.i(TAG, "user operation: Map button clicked. { "
+                    + "operationScheduleId: " + operationSchedule.id + ","
+                    + " platformId: " + operationSchedule.platformId + " }");
+
             ViewDisabler.disable(view);
             FragmentUtils.showModal(fragment.getFragmentManager(), MapFragment.newInstance());
         }
@@ -362,6 +377,11 @@ public class OperationScheduleArrayAdapter
                 return;
             }
             final OperationSchedule operationSchedule = (OperationSchedule) tag;
+
+            Log.i(TAG, "user operation: Navi button clicked. { "
+                    + "operationScheduleId: " + operationSchedule.id + ","
+                    + " platformId: " + operationSchedule.platformId + " }");
+
             operationSchedule.startNavigation(getContext());
         }
     };
