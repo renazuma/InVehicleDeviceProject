@@ -7,6 +7,7 @@ import android.content.CursorLoader;
 import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +22,7 @@ import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.VehicleN
 import com.kogasoftware.odt.invehicledevice.view.activity.InVehicleDeviceActivity;
 import com.kogasoftware.odt.invehicledevice.view.fragment.listflow.utils.FlickUnneededListView;
 import com.kogasoftware.odt.invehicledevice.view.fragment.listflow.utils.arrayadapter.OperationScheduleArrayAdapter;
+import com.kogasoftware.odt.invehicledevice.view.fragment.modal.ChargeEditFragment;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.FragmentUtils;
 
 import java.util.concurrent.TimeUnit;
@@ -29,6 +31,7 @@ import java.util.concurrent.TimeUnit;
  * 運行予定一覧画面
  */
 public class OperationListFragment extends Fragment {
+    private static final String TAG = OperationListFragment.class.getSimpleName();
     private static final String CLOSEABLE_KEY = "closeable";
     private static final Integer OPERATION_SCHEDULE_LOADER_ID = 1;
     private static final Integer PASSENGER_RECORD_LOADER_ID = 2;
@@ -146,7 +149,11 @@ public class OperationListFragment extends Fragment {
 
         // 戻るボタン（スケジュールのみ）
         final Button closeButton = view.findViewById(R.id.operation_list_close_button);
-        closeButton.setOnClickListener(v -> FragmentUtils.hideModal(OperationListFragment.this));
+        closeButton.setOnClickListener(v -> {
+            Log.i(TAG, "user operation: Close button clicked.");
+            FragmentUtils.hideModal(OperationListFragment.this);
+        });
+
         if (closeable) {
             closeButton.setVisibility(View.VISIBLE);
         } else {
@@ -165,12 +172,14 @@ public class OperationListFragment extends Fragment {
         final Button hidePassengerButton = view.findViewById(R.id.operation_list_hide_passengers_button);
 
         showPassengerButton.setOnClickListener(view1 -> {
+            Log.i(TAG, "user operation: Show Passenger button clicked.");
             adapter.showPassengerRecords();
             showPassengerButton.setVisibility(View.GONE);
             hidePassengerButton.setVisibility(View.VISIBLE);
             closeButton.setVisibility(View.GONE);
         });
         hidePassengerButton.setOnClickListener(v -> {
+            Log.i(TAG, "user operation: Hide Passenger button clicked.");
             adapter.hidePassengerRecords();
             hidePassengerButton.setVisibility(View.GONE);
             showPassengerButton.setVisibility(View.VISIBLE);
