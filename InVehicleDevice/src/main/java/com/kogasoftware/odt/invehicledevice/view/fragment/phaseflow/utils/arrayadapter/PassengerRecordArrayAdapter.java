@@ -67,6 +67,11 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
 
             OperationSchedule operationSchedule = getTargetOperationSchedule(passengerRecord);
 
+            Log.i(TAG, "user operation: Passenger Record Row clicked. { "
+                    + "status: " + getScheduleStatus(passengerRecord).toString() + ","
+                    + " PassengerRecordId: " + passengerRecord.id + ","
+                    + " userId: " + passengerRecord.userId + " }");
+
             // 料金設定ページに遷移するパターン。他のケースと動きが大きく異なるのでこのパターンだけ別扱いにしている。
             // HACK: その他のパターンも整理し直して、シンプルに直すべき。
             if (isChargeEditPattern(passengerRecord)) {
