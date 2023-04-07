@@ -325,19 +325,18 @@ public class OperationScheduleArrayAdapter
     private int getPassengerRecordRowColor(View passengerRecordRowView, boolean invert) {
         PassengerRecordRowTag passengerRecordRowTag = (PassengerRecordRowTag) passengerRecordRowView.getTag();
         PassengerRecord passengerRecord = passengerRecordRowTag.passengerRecord;
+        OperationSchedule operationSchedule = passengerRecordRowTag.operationSchedule;
 
-        if (passengerRecordRowTag.getOn) {
-            if ((passengerRecord.getOnTime != null) ^ invert) {
-                return ContextCompat.getColor(fragment.getContext(), R.color.selected_get_on_row);
-            } else {
-                return ContextCompat.getColor(fragment.getContext(), R.color.get_on_row);
-            }
-        } else {
-            if ((passengerRecord.getOffTime != null) ^ invert) {
+        switch (FragmentUtils.getPassengerStatus(passengerRecord, operationSchedule)) {
+            case SELECTED_GET_OFF:
                 return ContextCompat.getColor(fragment.getContext(), R.color.selected_get_off_row);
-            } else {
+            case GET_OFF:
                 return ContextCompat.getColor(fragment.getContext(), R.color.get_off_row);
-            }
+            case SELECTED_GET_ON:
+                return ContextCompat.getColor(fragment.getContext(), R.color.selected_get_on_row);
+            case GET_ON:
+            default:
+                return ContextCompat.getColor(fragment.getContext(), R.color.get_on_row);
         }
     }
 
