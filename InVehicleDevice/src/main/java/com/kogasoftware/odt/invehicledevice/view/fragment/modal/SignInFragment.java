@@ -25,6 +25,7 @@ import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.text.Html;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,6 +35,7 @@ import com.google.common.base.CharMatcher;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.kogasoftware.odt.invehicledevice.InVehicleDeviceApplication;
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.InVehicleDevice;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.task.SignInErrorBroadcastIntent;
@@ -51,6 +53,8 @@ import java.util.concurrent.Executors;
 public class SignInFragment
         extends PreferenceFragment
         implements LoaderCallbacks<Cursor>, OnSharedPreferenceChangeListener {
+
+    private static final String TAG = SignInFragment.class.getSimpleName();
 
     private static final int LOADER_ID = 1;
     private static final String FIRST_LOAD_KEY = "first_load";
@@ -156,6 +160,12 @@ public class SignInFragment
     }
 
     private void onSaveConfigButtonClick() {
+        Log.i(TAG, "user operation: Save Config button clicked."
+                + "{ "
+                + "url: " + preferences.getString("url", null)
+                + " login: " + preferences.getString("login", null)
+                + " }");
+
         List<String> errors = check();
         if (!errors.isEmpty()) {
             String li = errors.size() == 1 ? "" : "- ";
