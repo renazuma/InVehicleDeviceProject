@@ -225,6 +225,16 @@ public class OperationScheduleArrayAdapter
         }
 
         private boolean onTouch() {
+            PassengerRecordRowTag passengerRecordRowTag = (PassengerRecordRowTag) passengerRecordRowView.getTag();
+            PassengerRecord passengerRecord = passengerRecordRowTag.passengerRecord;
+            OperationSchedule operationSchedule = passengerRecordRowTag.operationSchedule;
+
+            // TODO: ログの出力を見る限り、一度のタップで複数回反応しているらしい。これによって情報の大量保存と大量送信が起きている？調査して直す。
+            Log.i(TAG, "user operation: Passenger Record Row clicked. { "
+                    + "status: " + FragmentUtils.getPassengerStatus(passengerRecord, operationSchedule).toString() + ","
+                    + " PassengerRecordId: " + passengerRecord.id + ","
+                    + " userId: " + passengerRecord.userId + " }");
+
             boolean isEventComplete;
 
             if (isSelectingEvent()) {
