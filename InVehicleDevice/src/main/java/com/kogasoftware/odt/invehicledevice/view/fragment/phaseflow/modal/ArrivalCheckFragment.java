@@ -4,6 +4,7 @@ import android.app.Fragment;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +22,7 @@ import org.joda.time.DateTime;
  * 到着チェック画面
  */
 public class ArrivalCheckFragment extends Fragment {
+    private static final String TAG = ArrivalCheckFragment.class.getSimpleName();
     private static final String OPERATION_PHASE_KEY = "operation_phase";
 
     public static Fragment newInstance(OperationPhase operationPhase) {
@@ -41,10 +43,14 @@ public class ArrivalCheckFragment extends Fragment {
         TextView commentTextView = view.findViewById(R.id.arrival_check_comment_text_view);
 
         Button closeButton = view.findViewById(R.id.arrival_check_close_button);
-        closeButton.setOnClickListener(v -> FragmentUtils.hideModal(ArrivalCheckFragment.this));
+        closeButton.setOnClickListener(v -> {
+            Log.i(TAG, "user operation: Close button clicked.");
+            FragmentUtils.hideModal(ArrivalCheckFragment.this);
+        });
 
         Button arrivalButton = view.findViewById(R.id.arrival_button);
         arrivalButton.setOnClickListener(view1 -> {
+            Log.i(TAG, "user operation: Arrival button clicked.");
             FragmentUtils.hideModal(ArrivalCheckFragment.this);
             Thread tt = new Thread() {
                 @Override
