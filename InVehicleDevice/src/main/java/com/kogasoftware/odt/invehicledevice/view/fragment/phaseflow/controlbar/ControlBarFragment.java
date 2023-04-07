@@ -6,6 +6,7 @@ import android.content.ContentResolver;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -181,6 +182,7 @@ public class ControlBarFragment extends OperationSchedulesSyncFragmentAbstract {
         final Phase phase = operationPhase.getPhase();
 
         getView().findViewById(R.id.navi_button).setOnClickListener(v -> {
+            Log.i(TAG, "user operation: Navi button clicked." );
             ViewDisabler.disable(v);
             showNavigation(phase);
         });
@@ -199,6 +201,7 @@ public class ControlBarFragment extends OperationSchedulesSyncFragmentAbstract {
             mapButton.setVisibility(VISIBLE);
         }
         mapButton.setOnClickListener(v -> {
+          Log.i(TAG, "user operation: Map button clicked." );
           ViewDisabler.disable(v);
           showMapFragment();
         });
@@ -209,17 +212,21 @@ public class ControlBarFragment extends OperationSchedulesSyncFragmentAbstract {
         }
 
         getView().findViewById(R.id.operation_schedule_list_button).setOnClickListener(v -> {
+            Log.i(TAG, "user operation: Operation Schedule List button clicked." );
             ViewDisabler.disable(v);
             showOperationScheduleListFragment();
         });
 
         Button changePhaseButton = getView().findViewById(R.id.change_phase_button);
         getView().setBackgroundColor(Color.WHITE);
-        switch (operationPhase.getPhase()) {
+
+        Phase currentPhase = operationPhase.getPhase();
+        switch (currentPhase) {
             case DRIVE:
                 changePhaseButton.setEnabled(true);
                 changePhaseButton.setText(getString(R.string.it_arrives_button_text));
                 changePhaseButton.setOnClickListener(v -> {
+                    Log.i(TAG, "user operation: Arrived button clicked." );
                     ViewDisabler.disable(v);
                     showArrivalCheckFragment();
                 });
@@ -233,6 +240,7 @@ public class ControlBarFragment extends OperationSchedulesSyncFragmentAbstract {
                 changePhaseButton.setEnabled(true);
                 changePhaseButton.setText("確認\nする");
                 changePhaseButton.setOnClickListener(v -> {
+                    Log.i(TAG, "user operation: Confirm " + currentPhase + " button clicked." );
                     ViewDisabler.disable(v);
                     showDepartureCheckFragment(phase);
                 });
