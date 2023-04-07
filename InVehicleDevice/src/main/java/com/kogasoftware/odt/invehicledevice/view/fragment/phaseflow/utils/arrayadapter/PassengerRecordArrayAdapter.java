@@ -166,6 +166,11 @@ public class PassengerRecordArrayAdapter extends ArrayAdapter<PassengerRecord> {
             }
 
             PassengerRecord passengerRecord = (PassengerRecord) tag;
+
+            Log.i(TAG, "user operation: Passenger Record Row Memo button clicked. { "
+                    + "PassengerRecordId: " + passengerRecord.id + ","
+                    + " userId: " + passengerRecord.userId + " }");
+
             FragmentUtils.showModal(fragment.getFragmentManager(), PassengerRecordMemoFragment.newInstance(passengerRecord));
         }
     };
