@@ -90,6 +90,17 @@ public class OperationScheduleArrayAdapter
         }
 
         private boolean onTouch() {
+            List<OperationSchedule> operationSchedules = (List<OperationSchedule>) operationScheduleRowView.getTag();
+            OperationSchedule representativeOS = operationSchedules.get(0);
+
+            // HACK: メソッドは'isNotYetDeparted`となっているが、ここで実際に取りたいのは、`未到着`であるかどうかなので、名前が実体に合っていない。
+            String status = isNotYetDeparted(operationScheduleRowView) ? "notYetDeparted" : "departed";
+
+            Log.i(TAG, "user operation: Operation Schedule Row clicked. { "
+                    + "status: " + status
+                    + ", platformId: " + representativeOS.platformId
+                    + ", operationScheduleId: " + representativeOS.id + " }");
+
             boolean isEventComplete;
 
             if (isSelectingEvent()) {
