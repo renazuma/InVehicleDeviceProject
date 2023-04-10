@@ -2,6 +2,7 @@ package com.kogasoftware.odt.invehicledevice.view.fragment.modal;
 
 import android.app.Fragment;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +11,7 @@ import android.widget.TextView;
 
 import com.kogasoftware.odt.invehicledevice.R;
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.OperationSchedule;
+import com.kogasoftware.odt.invehicledevice.view.fragment.modal.notification.ScheduleVehicleNotificationFragment;
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.FragmentUtils;
 
 /**
@@ -26,7 +28,10 @@ public class PlatformMemoFragment extends Fragment {
                 .getSerializable(OPERATION_SCHEDULE_KEY);
         Button closeButton = view
                 .findViewById(R.id.platform_memo_close_button);
-        closeButton.setOnClickListener(v -> FragmentUtils.hideModal(PlatformMemoFragment.this));
+        closeButton.setOnClickListener(v -> {
+            Log.i(PlatformMemoFragment.class.getSimpleName(), "user operation: Close button clicked.");
+            FragmentUtils.hideModal(PlatformMemoFragment.this);
+        });
         TextView platformMemoTextView = view
                 .findViewById(R.id.platform_memo_text_view);
         platformMemoTextView.setText(operationSchedule.memo);
