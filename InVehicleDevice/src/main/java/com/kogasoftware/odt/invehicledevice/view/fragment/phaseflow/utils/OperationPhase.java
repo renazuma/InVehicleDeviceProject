@@ -23,15 +23,14 @@ public class OperationPhase implements Serializable {
 
         if (currentPhaseOperationSchedules.isEmpty()) {
             return OperationSchedule.Phase.FINISH;
-        } else {
-            if (isDrive(currentPhaseOperationSchedules)) {
-                return OperationSchedule.Phase.DRIVE;
-            } else if (isGetOn(currentPhaseOperationSchedules, passengerRecords)) {
-                return OperationSchedule.Phase.PLATFORM_GET_ON;
-            } else {
-                return OperationSchedule.Phase.PLATFORM_GET_OFF;
-            }
         }
+        if (isDrive(currentPhaseOperationSchedules)) {
+            return OperationSchedule.Phase.DRIVE;
+        }
+        if (isGetOn(currentPhaseOperationSchedules, passengerRecords)) {
+            return OperationSchedule.Phase.PLATFORM_GET_ON;
+        }
+        return OperationSchedule.Phase.PLATFORM_GET_OFF;
     }
 
     private Boolean isDrive(List<OperationSchedule> operationSchedules) {
