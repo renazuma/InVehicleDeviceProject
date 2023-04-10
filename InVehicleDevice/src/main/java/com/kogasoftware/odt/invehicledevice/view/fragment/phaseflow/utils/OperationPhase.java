@@ -6,6 +6,7 @@ import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.Passenge
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.ScheduleUtil;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 public class OperationPhase implements Serializable {
@@ -56,21 +57,15 @@ public class OperationPhase implements Serializable {
 
     public List<OperationSchedule> getCurrentOperationSchedules() {
         List<List<OperationSchedule>> phaseOperationSchedulesList = ScheduleUtil.getOperationSchedulesSortedPerPlatform(operationSchedules, passengerRecords);
-        List<OperationSchedule> currentPhaseOperationSchedules = Lists.newArrayList();
 
         for (List<OperationSchedule> phaseOperationSchedules : phaseOperationSchedulesList) {
             for (OperationSchedule operationSchedule : phaseOperationSchedules) {
                 if (operationSchedule.arrivedAt == null || operationSchedule.departedAt == null) {
-                    currentPhaseOperationSchedules = phaseOperationSchedules;
-                    break;
+                    return phaseOperationSchedules;
                 }
             }
-            if (!currentPhaseOperationSchedules.isEmpty()) {
-                break;
-            }
         }
-
-        return currentPhaseOperationSchedules;
+        return new ArrayList<>();
     }
 
     public OperationSchedule getCurrentRepresentativeOS() {
