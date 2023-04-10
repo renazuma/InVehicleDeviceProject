@@ -8,6 +8,7 @@ import com.kogasoftware.odt.invehicledevice.view.fragment.utils.ScheduleUtil;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class OperationPhase implements Serializable {
     public final List<OperationSchedule> operationSchedules;
@@ -58,12 +59,16 @@ public class OperationPhase implements Serializable {
     public List<OperationSchedule> getCurrentOperationSchedules() {
         List<List<OperationSchedule>> phaseOperationSchedulesList = ScheduleUtil.getOperationSchedulesSortedPerPlatform(operationSchedules, passengerRecords);
 
+        return findFirstIncompleteOperationSchedule(phaseOperationSchedulesList).orElse(new ArrayList<>());
+    }
+
+    private Optional<List<OperationSchedule>> findFirstIncompleteOperationSchedule(List<List<OperationSchedule>> phaseOperationSchedulesList) {
         for (List<OperationSchedule> phaseOperationSchedules : phaseOperationSchedulesList) {
             if (containsIncompleteOperation(phaseOperationSchedules)) {
-                return phaseOperationSchedules;
+                return Optional.of(phaseOperationSchedules);
             }
         }
-        return new ArrayList<>();
+        return Optional.empty();
     }
 
     private boolean containsIncompleteOperation(List<OperationSchedule> phaseOperationSchedules) {
@@ -74,7 +79,6 @@ public class OperationPhase implements Serializable {
         }
         return false;
     }
-
 
     public OperationSchedule getCurrentRepresentativeOS() {
         if (isExistCurrent()) {
