@@ -59,14 +59,22 @@ public class OperationPhase implements Serializable {
         List<List<OperationSchedule>> phaseOperationSchedulesList = ScheduleUtil.getOperationSchedulesSortedPerPlatform(operationSchedules, passengerRecords);
 
         for (List<OperationSchedule> phaseOperationSchedules : phaseOperationSchedulesList) {
-            for (OperationSchedule operationSchedule : phaseOperationSchedules) {
-                if (operationSchedule.arrivedAt == null || operationSchedule.departedAt == null) {
-                    return phaseOperationSchedules;
-                }
+            if (containsIncompleteOperation(phaseOperationSchedules)) {
+                return phaseOperationSchedules;
             }
         }
         return new ArrayList<>();
     }
+
+    private boolean containsIncompleteOperation(List<OperationSchedule> phaseOperationSchedules) {
+        for (OperationSchedule operationSchedule : phaseOperationSchedules) {
+            if (operationSchedule.arrivedAt == null || operationSchedule.departedAt == null) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     public OperationSchedule getCurrentRepresentativeOS() {
         if (isExistCurrent()) {
