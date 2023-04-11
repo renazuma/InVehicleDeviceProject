@@ -19,6 +19,7 @@ import com.kogasoftware.odt.invehicledevice.view.fragment.phaseflow.utils.Operat
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.OperationSchedulesSyncFragmentAbstract;
 
 import java.util.LinkedList;
+import java.util.stream.Collectors;
 
 /**
  * 順番に運行を進める画面。上部に「HeaderBarFragment」右部に「ControlBarFragment」中心に「**PhaseFragment」を配置する
@@ -62,6 +63,9 @@ public class PhaseFlowLayoutFragment extends OperationSchedulesSyncFragmentAbstr
             LinkedList<PassengerRecord> passengerRecords, Boolean phaseChanged) {
         OperationPhase operationPhase = new OperationPhase(operationSchedules, passengerRecords);
         Phase phase = operationPhase.getPhase();
+
+        createPhaseDecisionLog(operationPhase, passengerRecords);
+
         Log.i(LOGGING_TAG, "phase=" + phase + " phaseChanged=" + phaseChanged);
 
         if (!phaseChanged) {
@@ -85,6 +89,25 @@ public class PhaseFlowLayoutFragment extends OperationSchedulesSyncFragmentAbstr
         }
 
         fragmentTransaction.commitAllowingStateLoss();
+    }
+
+
+    private void createPhaseDecisionLog(OperationPhase operationPhase, LinkedList<PassengerRecord> passengerRecords) {
+        OperationSchedule operationSchedule = operationPhase.getCurrentRepresentativeOS();
+        Log.i(LOGGING_TAG, "phaseDecision next platform: {"
+                + " operationScheduleId: " + ((operationSchedule != null) ? operationSchedule.id : null)
+                + ", platformId: " + ((operationSchedule != null) ? operationSchedule.platformId: null)
+                + ", platformName: " + ((operationSchedule != null) ? operationSchedule.name: null)
+                + ", arrived_at: " + ((operationSchedule != null) ? operationSchedule.arrivedAt : null)
+                + ", departed_at: " + ((operationSchedule != null) ? operationSchedule.departedAt : null)
+                + " }");
+        Log.i(LOGGING_TAG, "phaseDecision drive decision data: " + operationPhase.getCurrentOperationSchedules().stream()
+                .map(s -> "id: " + s.id + ", arrivedAt: " + s.arrivedAt)
+                .collect(Collectors.toList()));
+        // TODO: 分割してわかりやすくする
+        Log.i(LOGGING_TAG, "phaseDecision is getOn decision data: " + operationPhase.getCurrentOperationSchedules().stream()
+                .map(s -> "operationScheduleId: " + s.id + ", completeGetOff: " + s.completeGetOff +  ", getOffSchedulePassengerRecords is empty: " + s.getGetOffScheduledPassengerRecords(passengerRecords).isEmpty())
+                .collect(Collectors.toList()));
     }
 
     // 実運用画面の表示
