@@ -248,21 +248,4 @@ public class OperationSchedule implements Serializable {
         cursor.setNotificationUri(contentResolver, OperationSchedule.CONTENT.URI);
         return cursor;
     }
-
-    public static Pair<String, String> getNextPlatformLocation(ContentResolver contentResolver) {
-        String latitude = "";
-        String longitude = "";
-
-        Cursor cursor = contentResolver.query(OperationSchedule.CONTENT.URI, null, null, null, null);
-
-        OperationSchedule nextOperationSchedule =
-                OperationSchedule.getAll(cursor).stream().filter(os ->
-                    os.arrivedAt == null).findFirst().get();
-        if (nextOperationSchedule != null) {
-            latitude = nextOperationSchedule.latitude.toString();
-            longitude = nextOperationSchedule.longitude.toString();
-        }
-        cursor.close();
-        return new Pair(latitude, longitude);
-    }
 }

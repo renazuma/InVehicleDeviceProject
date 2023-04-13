@@ -385,7 +385,7 @@ public class OperationScheduleArrayAdapter
                     + " platformId: " + operationSchedule.platformId + " }");
 
             ViewDisabler.disable(view);
-            FragmentUtils.showModal(fragment.getFragmentManager(), MapFragment.newInstance());
+            FragmentUtils.showModal(fragment.getFragmentManager(), MapFragment.newInstance(operationSchedule));
         }
     };
 
@@ -434,7 +434,7 @@ public class OperationScheduleArrayAdapter
 
         setPlatformAddressView(convertView, representativeOS);
 
-        setMapButtonView(convertView);
+        setMapButtonView(convertView, representativeOS);
 
         setNaviButtonView(convertView, representativeOS);
 
@@ -473,7 +473,7 @@ public class OperationScheduleArrayAdapter
         }
     }
 
-    private void setMapButtonView(View convertView) {
+    private void setMapButtonView(View convertView, OperationSchedule representativeOS) {
         Button mapButton = convertView.findViewById(R.id.operation_list_map_button);
         Cursor serviceProviderCursor = getContext()
             .getContentResolver()
@@ -486,6 +486,8 @@ public class OperationScheduleArrayAdapter
         if (serviceProviderCursor.moveToFirst() && (new ServiceProvider(serviceProviderCursor)).zenrinMaps && zenrinMapsAccountCursor.moveToFirst()) {
             mapButton.setVisibility(View.VISIBLE);
         }
+
+        mapButton.setTag(representativeOS);
         mapButton.setOnClickListener(onMapButtonClickListener);
     }
 
