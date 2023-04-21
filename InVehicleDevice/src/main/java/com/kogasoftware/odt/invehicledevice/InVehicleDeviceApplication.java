@@ -4,6 +4,7 @@ import android.app.ActivityManager;
 import android.app.Application;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.os.Build;
 import android.util.Log;
 
 import com.kogasoftware.android.StrictModes;
@@ -50,7 +51,9 @@ public class InVehicleDeviceApplication extends Application {
         try {
             PackageInfo packageInfo = getPackageManager().getPackageInfo(
                     getPackageName(), 0);
-            Log.i(TAG, "versionCode=" + packageInfo.versionCode
+            Log.i(TAG, "osInfo=" + Build.VERSION.SDK_INT
+                    + " releaseVersion=" + Build.VERSION.RELEASE
+                    + " versionCode=" + packageInfo.versionCode
                     + " versionName=" + packageInfo.versionName
                     + " BuildConfig.DEBUG=" + BuildConfig.DEBUG);
         } catch (NameNotFoundException e) {

@@ -90,6 +90,17 @@ public class OperationScheduleArrayAdapter
         }
 
         private boolean onTouch() {
+            List<OperationSchedule> operationSchedules = (List<OperationSchedule>) operationScheduleRowView.getTag();
+            OperationSchedule representativeOS = operationSchedules.get(0);
+
+            // HACK: メソッドは'isNotYetDeparted`となっているが、ここで実際に取りたいのは、`未到着`であるかどうかなので、名前が実体に合っていない。
+            String status = isNotYetDeparted(operationScheduleRowView) ? "notYetDeparted" : "departed";
+
+            Log.i(TAG, "user operation: Operation Schedule Row clicked. { "
+                    + "status: " + status
+                    + ", platformId: " + representativeOS.platformId
+                    + ", operationScheduleId: " + representativeOS.id + " }");
+
             boolean isEventComplete;
 
             if (isSelectingEvent()) {
@@ -225,6 +236,16 @@ public class OperationScheduleArrayAdapter
         }
 
         private boolean onTouch() {
+            PassengerRecordRowTag passengerRecordRowTag = (PassengerRecordRowTag) passengerRecordRowView.getTag();
+            PassengerRecord passengerRecord = passengerRecordRowTag.passengerRecord;
+            OperationSchedule operationSchedule = passengerRecordRowTag.operationSchedule;
+
+            // TODO: ログの出力を見る限り、一度のタップで複数回反応しているらしい。これによって情報の大量保存と大量送信が起きている？調査して直す。
+            Log.i(TAG, "user operation: Passenger Record Row clicked. { "
+                    + "status: " + FragmentUtils.getPassengerStatus(passengerRecord, operationSchedule).toString() + ","
+                    + " PassengerRecordId: " + passengerRecord.id + ","
+                    + " userId: " + passengerRecord.userId + " }");
+
             boolean isEventComplete;
 
             if (isSelectingEvent()) {
@@ -315,19 +336,18 @@ public class OperationScheduleArrayAdapter
     private int getPassengerRecordRowColor(View passengerRecordRowView, boolean invert) {
         PassengerRecordRowTag passengerRecordRowTag = (PassengerRecordRowTag) passengerRecordRowView.getTag();
         PassengerRecord passengerRecord = passengerRecordRowTag.passengerRecord;
+        OperationSchedule operationSchedule = passengerRecordRowTag.operationSchedule;
 
-        if (passengerRecordRowTag.getOn) {
-            if ((passengerRecord.getOnTime != null) ^ invert) {
-                return ContextCompat.getColor(fragment.getContext(), R.color.selected_get_on_row);
-            } else {
-                return ContextCompat.getColor(fragment.getContext(), R.color.get_on_row);
-            }
-        } else {
-            if ((passengerRecord.getOffTime != null) ^ invert) {
+        switch (FragmentUtils.getPassengerStatus(passengerRecord, operationSchedule)) {
+            case SELECTED_GET_OFF:
                 return ContextCompat.getColor(fragment.getContext(), R.color.selected_get_off_row);
-            } else {
+            case GET_OFF:
                 return ContextCompat.getColor(fragment.getContext(), R.color.get_off_row);
-            }
+            case SELECTED_GET_ON:
+                return ContextCompat.getColor(fragment.getContext(), R.color.selected_get_on_row);
+            case GET_ON:
+            default:
+                return ContextCompat.getColor(fragment.getContext(), R.color.get_on_row);
         }
     }
 
@@ -339,6 +359,11 @@ public class OperationScheduleArrayAdapter
                 return;
             }
             PassengerRecord passengerRecord = (PassengerRecord) tag;
+
+            Log.i(TAG, "user operation: User Row Memo button clicked. {"
+                    + "passengerRecordId: " + passengerRecord.id + ","
+                    + " userId: " + passengerRecord.userId + " }");
+
             if (fragment.getFragmentManager() == null) {
                 return;
             }
@@ -349,6 +374,16 @@ public class OperationScheduleArrayAdapter
     protected final OnClickListener onMapButtonClickListener = new OnClickListener() {
         @Override
         public void onClick(View view) {
+            Object tag = view.getTag();
+            if (!(tag instanceof OperationSchedule)) {
+                return;
+            }
+            final OperationSchedule operationSchedule = (OperationSchedule) tag;
+
+            Log.i(TAG, "user operation: Map button clicked. { "
+                    + "operationScheduleId: " + operationSchedule.id + ","
+                    + " platformId: " + operationSchedule.platformId + " }");
+
             ViewDisabler.disable(view);
             FragmentUtils.showModal(fragment.getFragmentManager(), MapFragment.newInstance());
         }
@@ -362,6 +397,11 @@ public class OperationScheduleArrayAdapter
                 return;
             }
             final OperationSchedule operationSchedule = (OperationSchedule) tag;
+
+            Log.i(TAG, "user operation: Navi button clicked. { "
+                    + "operationScheduleId: " + operationSchedule.id + ","
+                    + " platformId: " + operationSchedule.platformId + " }");
+
             operationSchedule.startNavigation(getContext());
         }
     };

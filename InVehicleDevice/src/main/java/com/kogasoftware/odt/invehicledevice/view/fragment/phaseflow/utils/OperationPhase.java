@@ -6,7 +6,9 @@ import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.Passenge
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.ScheduleUtil;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class OperationPhase implements Serializable {
     public final List<OperationSchedule> operationSchedules;
@@ -23,15 +25,14 @@ public class OperationPhase implements Serializable {
 
         if (currentPhaseOperationSchedules.isEmpty()) {
             return OperationSchedule.Phase.FINISH;
-        } else {
-            if (isDrive(currentPhaseOperationSchedules)) {
-                return OperationSchedule.Phase.DRIVE;
-            } else if (isGetOn(currentPhaseOperationSchedules, passengerRecords)) {
-                return OperationSchedule.Phase.PLATFORM_GET_ON;
-            } else {
-                return OperationSchedule.Phase.PLATFORM_GET_OFF;
-            }
         }
+        if (isDrive(currentPhaseOperationSchedules)) {
+            return OperationSchedule.Phase.DRIVE;
+        }
+        if (isGetOn(currentPhaseOperationSchedules, passengerRecords)) {
+            return OperationSchedule.Phase.PLATFORM_GET_ON;
+        }
+        return OperationSchedule.Phase.PLATFORM_GET_OFF;
     }
 
     private Boolean isDrive(List<OperationSchedule> operationSchedules) {
@@ -57,21 +58,26 @@ public class OperationPhase implements Serializable {
 
     public List<OperationSchedule> getCurrentOperationSchedules() {
         List<List<OperationSchedule>> phaseOperationSchedulesList = ScheduleUtil.getOperationSchedulesSortedPerPlatform(operationSchedules, passengerRecords);
-        List<OperationSchedule> currentPhaseOperationSchedules = Lists.newArrayList();
 
+        return findFirstIncompleteOperationSchedule(phaseOperationSchedulesList).orElse(new ArrayList<>());
+    }
+
+    private Optional<List<OperationSchedule>> findFirstIncompleteOperationSchedule(List<List<OperationSchedule>> phaseOperationSchedulesList) {
         for (List<OperationSchedule> phaseOperationSchedules : phaseOperationSchedulesList) {
-            for (OperationSchedule operationSchedule : phaseOperationSchedules) {
-                if (operationSchedule.arrivedAt == null || operationSchedule.departedAt == null) {
-                    currentPhaseOperationSchedules = phaseOperationSchedules;
-                    break;
-                }
-            }
-            if (!currentPhaseOperationSchedules.isEmpty()) {
-                break;
+            if (containsIncompleteOperation(phaseOperationSchedules)) {
+                return Optional.of(phaseOperationSchedules);
             }
         }
+        return Optional.empty();
+    }
 
-        return currentPhaseOperationSchedules;
+    private boolean containsIncompleteOperation(List<OperationSchedule> phaseOperationSchedules) {
+        for (OperationSchedule operationSchedule : phaseOperationSchedules) {
+            if (operationSchedule.arrivedAt == null || operationSchedule.departedAt == null) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public OperationSchedule getCurrentRepresentativeOS() {

@@ -3,6 +3,7 @@ package com.kogasoftware.odt.invehicledevice.view.fragment.phaseflow.modal;
 import android.app.Fragment;
 import android.content.ContentResolver;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -58,7 +59,10 @@ public class DepartureCheckFragment extends Fragment {
         }
 
         Button closeButton = view.findViewById(R.id.departure_check_close_button);
-        closeButton.setOnClickListener(v -> FragmentUtils.hideModal(DepartureCheckFragment.this));
+        closeButton.setOnClickListener(v -> {
+            Log.i(TAG, "user operation: Close button clicked.");
+            FragmentUtils.hideModal(DepartureCheckFragment.this);
+        });
         if (phase == Phase.PLATFORM_GET_OFF) {
             closeButton.setText("降車一覧に戻る");
         } else {
@@ -66,6 +70,7 @@ public class DepartureCheckFragment extends Fragment {
         }
 
         departureButton.setOnClickListener(v -> {
+            Log.i(TAG, "user operation: Departure button clicked.");
             FragmentUtils.hideModal(DepartureCheckFragment.this);
             Thread tt = new Thread() {
                 @Override

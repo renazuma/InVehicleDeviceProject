@@ -2,6 +2,7 @@ package com.kogasoftware.odt.invehicledevice.view.fragment.modal;
 
 import android.app.Fragment;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,7 +30,10 @@ public class PassengerRecordMemoFragment extends Fragment {
                 .getSerializable(PASSENGER_RECORD_KEY);
         Button closeButton = view
                 .findViewById(R.id.passenger_record_memo_close_button);
-        closeButton.setOnClickListener(v -> FragmentUtils.hideModal(PassengerRecordMemoFragment.this));
+        closeButton.setOnClickListener(v -> {
+            Log.i(this.getClass().getSimpleName(), "user operation: close button clicked.");
+            FragmentUtils.hideModal(PassengerRecordMemoFragment.this);
+        });
         TextView titleTextView = view
                 .findViewById(R.id.memo_title_text_view);
         StringBuilder title = new StringBuilder();

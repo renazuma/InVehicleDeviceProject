@@ -5,6 +5,7 @@ import android.app.FragmentManager;
 import android.content.ContentResolver;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,10 +44,14 @@ public class AdminVehicleNotificationFragment extends Fragment {
         TextView bodyTextView = view
                 .findViewById(R.id.notification_text_view);
         bodyTextView.setText(vehicleNotification.body);
-        view.findViewById(R.id.reply_yes_button).setOnClickListener(
-                view12 -> submit(VehicleNotification.Response.YES));
-        view.findViewById(R.id.reply_no_button).setOnClickListener(
-                view1 -> submit(VehicleNotification.Response.NO));
+        view.findViewById(R.id.reply_yes_button).setOnClickListener(view12 -> {
+            Log.i(AdminVehicleNotificationFragment.class.getSimpleName(), "user operation: Reply Yes button clicked.");
+            submit(VehicleNotification.Response.YES);
+        });
+        view.findViewById(R.id.reply_no_button).setOnClickListener(view1 -> {
+            Log.i(AdminVehicleNotificationFragment.class.getSimpleName(), "user operation: Reply No button clicked.");
+            submit(VehicleNotification.Response.NO);
+        });
     }
 
     public static AdminVehicleNotificationFragment newInstance(
