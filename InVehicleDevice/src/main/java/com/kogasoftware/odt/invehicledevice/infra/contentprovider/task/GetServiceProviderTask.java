@@ -99,6 +99,7 @@ public class GetServiceProviderTask extends SynchronizationTask {
                 zenrinMapsAccountValues.put(ZenrinMapsAccount.Columns.USER_ID, zenrinMapsAccountNode.path("user_id").asText());
                 zenrinMapsAccountValues.put(ZenrinMapsAccount.Columns.PASSWORD, zenrinMapsAccountNode.path("password").asText());
                 zenrinMapsAccountValues.put(ZenrinMapsAccount.Columns.SERVICE_ID, zenrinMapsAccountNode.path("service_id").asText());
+                zenrinMapsAccountValues.put(ZenrinMapsAccount.Columns.ZENRIN_MAPS_API_HOST, zenrinMapsAccountNode.path("zenrin_maps_api_host").asText());
                 database.insertOrThrow(ZenrinMapsAccount.TABLE_NAME, null, zenrinMapsAccountValues);
             }
 
