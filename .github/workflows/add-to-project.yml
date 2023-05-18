@@ -10,7 +10,13 @@ jobs:
     name: Add to project
     runs-on: ubuntu-latest
     steps:
+      - name: Generate token
+        id: generate_token
+        uses: tibdex/github-app-token@v1.8.0
+        with:
+          app_id: ${{ secrets.ODT_BOT_APP_ID }}
+          private_key: ${{ secrets.ODT_BOT_APP_PRIVATE_KEY }}
       - uses: actions/add-to-project@v0.5.0
         with:
           project-url: https://github.com/orgs/odt/projects/5
-          github-token: ${{ secrets.ADD_TO_PROJECT_PAT }}
+          github-token: ${{ steps.generate_token.outputs.token }}
