@@ -79,7 +79,7 @@ public class ControlBarFragment extends OperationSchedulesSyncFragmentAbstract {
             return;
         }
 
-        FragmentUtils.showModal(getFragmentManager(), new MapFragment());
+        FragmentUtils.showModal(getFragmentManager(), MapFragment.newInstance(operationPhase.getCurrentRepresentativeOS()));
     }
 
     private void showOperationScheduleListFragment() {

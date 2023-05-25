@@ -25,7 +25,6 @@ import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.Operatio
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.ServiceUnitStatusLog
 import com.kogasoftware.odt.invehicledevice.infra.contentprovider.table.ZenrinMapsAccount
 import com.kogasoftware.odt.invehicledevice.view.fragment.utils.FragmentUtils.deviceSize
-import java.io.IOException
 import kotlin.math.roundToInt
 
 /**
@@ -74,7 +73,11 @@ class MapFragment : Fragment() {
         val (width, height) = imageSizePair()
         val (userId, password, serviceId) = ZenrinMapsAccount.getAccountData(context.contentResolver)
         val (vehicleLatitude, vehicleLongitude) = ServiceUnitStatusLog.getLatestLocation(context.contentResolver)
-        val (platformLatitude, platformLongitude) = OperationSchedule.getNextPlatformLocation(context.contentResolver)
+
+        val operationSchedule = arguments.getSerializable(ARG_OPERATION_SCHEDULE) as OperationSchedule
+
+        val platformLatitude = operationSchedule.latitude.toString()
+        val platformLongitude = operationSchedule.longitude.toString()
 
         return MapApi(userId, password, serviceId)
             .imageUrl(width, height, zoom, vehicleLatitude, vehicleLongitude, platformLatitude, platformLongitude)
@@ -139,9 +142,15 @@ class MapFragment : Fragment() {
     }
 
     companion object {
+        private const val ARG_OPERATION_SCHEDULE = "operation_schedule"
+
         @JvmStatic
-        fun newInstance(): MapFragment {
-            return MapFragment()
+        fun newInstance(operationSchedule: OperationSchedule): MapFragment {
+            val mapFragment = MapFragment()
+            val args = Bundle()
+            args.putSerializable(ARG_OPERATION_SCHEDULE, operationSchedule)
+            mapFragment.arguments = args
+            return mapFragment
         }
     }
 }
