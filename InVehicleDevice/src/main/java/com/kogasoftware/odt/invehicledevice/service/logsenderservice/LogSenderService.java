@@ -41,7 +41,6 @@ public class LogSenderService extends Service {
     private Boolean destroyed = false;
     private Thread logcatThread = new Thread();
     private Thread compressThread = new Thread();
-    private Thread uploadThread = new Thread();
     private final List<Closeable> closeables = new LinkedList<>();
 
      //  HACK: SDカードを使わない運用になったので、調査をして不要であれば削除してよい。
@@ -75,11 +74,6 @@ public class LogSenderService extends Service {
         }
     }
 
-    public UploadThread createUploadThread(
-            BlockingQueue<File> compressedLogFiles) {
-        return new UploadThread(this, compressedLogFiles);
-    }
-
     /**
      * スレッド開始。onDestroy()発生後に行われるのを防ぐためメインスレッドで実行する。
      */
@@ -93,7 +87,6 @@ public class LogSenderService extends Service {
 
         compressThread = new CompressThread(rawLogFiles,
                 compressedLogFiles);
-        uploadThread = createUploadThread(compressedLogFiles);
 
         try {
             logcatThread = new LogcatThread(logcatSplitFileOutputStream);
@@ -105,8 +98,6 @@ public class LogSenderService extends Service {
 
         logcatThread.start();
         compressThread.start();
-        uploadThread.start();
-
 	}
 
     @Override
@@ -165,7 +156,6 @@ public class LogSenderService extends Service {
         Log.i(TAG, "onDestroy()");
         logcatThread.interrupt();
         compressThread.interrupt();
-        uploadThread.interrupt();
         for (Closeable closeable : closeables) {
             try {
                 closeable.close();
