@@ -6,7 +6,7 @@ privacy_policy_url="https://www.ntt-east.co.jp/policy/"
 app_name="車載器"
 
 function convert_strings () {
-  find ./InVehicleDevice -name \*.java -o -name \*.kt -o -name \*.xml -o -name \*.txt -o -name build.gradle| xargs sed -i s/kogasoftware/odekakedemand/g
+  find ./InVehicleDevice \( -name '*.java' -o -name '*.kt' -o -name '*.xml' -o -name '*.txt' -o -name build.gradle \) -type f | xargs sed -i s/kogasoftware/odekakedemand/g
   sed -i -r "s#(<string name=\"privacy_policy_url\">).*(</string>)#\1${privacy_policy_url}\2#g" ./InVehicleDevice/src/main/res/values-ja/strings.xml
   sed -i -r "s#(<string name=\"app_name\">).*(</string>)#\1${app_name}\2#g" ./InVehicleDevice/src/main/res/values-ja/strings.xml
 }
