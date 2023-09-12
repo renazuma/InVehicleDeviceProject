@@ -1,0 +1,9 @@
+name: Dependabot のプルリクエストは auto-merge を有効にする
+on: pull_request
+permissions:
+  contents: write
+  pull-requests: write
+jobs:
+  dependabot:
+    uses: odt/OperatorWeb/.github/workflows/dependabot-auto-merge.yml@master
+    secrets: inherit

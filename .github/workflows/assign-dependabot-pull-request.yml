@@ -1,0 +1,14 @@
+name: Dependabot のプルリクエストのアサイニーをうまくやる
+on:
+  pull_request:
+    types: [review_requested]
+permissions:
+  pull-requests: write
+  # `gh pr edit` does not work with only `pull-requests: write` permissions
+  # https://github.com/cli/cli/issues/6274
+  # が解消されたら不要
+  repository-projects: read
+jobs:
+  assign:
+    uses: odt/OperatorWeb/.github/workflows/assign-dependabot-pull-request.yml@master
+    secrets: inherit
