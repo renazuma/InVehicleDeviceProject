@@ -46,10 +46,10 @@ class ZenrinMapsAccount(cursor: Cursor?) {
         }
 
         fun getAccountData(contentResolver: ContentResolver): List<String> {
-            var userId: String = "";
-            var password: String = "";
-            var serviceId: String = "";
-            var zenrinMapsApiHost: String = "";
+            var userId = "";
+            var password = "";
+            var serviceId = "";
+            var zenrinMapsApiHost = "";
 
             val c: Cursor? = contentResolver.query(ZenrinMapsAccount.CONTENT.URI, null, null, null, null)
             val userIdIndex: Int? = c?.getColumnIndex(ZenrinMapsAccount.Columns.USER_ID)
