@@ -19,7 +19,8 @@ class MapApi(val userId: String, val password: String, val serviceId: String) {
     val DEVICE_FLAG = "1"
 
     @Throws(InterruptedException::class, IOException::class)
-    fun imageUrl(width: Int,
+    fun imageUrl(endpointHost: String,
+                 width: Int,
                  height: Int,
                  zoom: Int,
                  vehicleLatitude: String,
@@ -30,7 +31,7 @@ class MapApi(val userId: String, val password: String, val serviceId: String) {
         val (aid: String, kid: String, zisLmtinf) = getAuthInfo()
         val userFigure: String = userFigureRequest(vehicleLatitude, vehicleLongitude, platformLatitude, platformLongitude)
 
-        val url = "https://test-api.zip-site.com/api/zips/general/map" +
+        val url = endpointHost + "/api/zips/general/map" +
                 "?width=$width" +
                 "&height=$height" +
                 "&center=$vehicleLongitude%2C$vehicleLatitude" +

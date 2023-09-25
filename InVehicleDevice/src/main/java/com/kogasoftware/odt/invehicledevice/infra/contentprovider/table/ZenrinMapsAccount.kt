@@ -15,12 +15,14 @@ class ZenrinMapsAccount(cursor: Cursor?) {
         const val USER_ID = "user_id"
         const val PASSWORD = "password"
         const val SERVICE_ID = "service_id"
+        const val ZENRIN_MAPS_API_HOST = "zenrin_maps_api_host"
     }
 
     val id: Long
     val userId: String
     val password: String
     val serviceId: String
+    val zenrinMapsApiHost: String
 
     init {
         val reader = CursorReader(cursor)
@@ -28,6 +30,7 @@ class ZenrinMapsAccount(cursor: Cursor?) {
         userId = reader.readString(Columns.USER_ID)
         password = reader.readString(Columns.PASSWORD)
         serviceId = reader.readString(Columns.SERVICE_ID)
+        zenrinMapsApiHost = reader.readString(Columns.ZENRIN_MAPS_API_HOST)
     }
 
     companion object {
@@ -42,22 +45,32 @@ class ZenrinMapsAccount(cursor: Cursor?) {
             return cursor
         }
 
-        fun getAccountData(contentResolver: ContentResolver): Triple<String, String, String> {
-            var userId: String = "";
-            var password: String = "";
-            var serviceId: String = "";
+        fun getAccountData(contentResolver: ContentResolver): List<String> {
+            var userId = "";
+            var password = "";
+            var serviceId = "";
+            var zenrinMapsApiHost = "";
 
             val c: Cursor? = contentResolver.query(ZenrinMapsAccount.CONTENT.URI, null, null, null, null)
             val userIdIndex: Int? = c?.getColumnIndex(ZenrinMapsAccount.Columns.USER_ID)
             val passwordIndex: Int? = c?.getColumnIndex(ZenrinMapsAccount.Columns.PASSWORD)
             val serviceIdIndex: Int? = c?.getColumnIndex(ZenrinMapsAccount.Columns.SERVICE_ID)
-            if (userIdIndex != null && passwordIndex != null && serviceIdIndex != null && c.moveToFirst()) {
-                userId = c.getString(userIdIndex)
-                password = c.getString(passwordIndex)
-                serviceId = c.getString(serviceIdIndex)
+            val zenrinMapsApiHostIndex: Int? = c?.getColumnIndex(ZenrinMapsAccount.Columns.ZENRIN_MAPS_API_HOST)
+            if (c!!.moveToFirst()) {
+                if (userIdIndex != null && passwordIndex != null && serviceIdIndex != null) {
+                    userId = c.getString(userIdIndex)
+                    password = c.getString(passwordIndex)
+                    serviceId = c.getString(serviceIdIndex)
+                }
+                zenrinMapsApiHost = if (zenrinMapsApiHostIndex != null && c.getString(zenrinMapsApiHostIndex) != null) {
+                    "https://" + c.getString(zenrinMapsApiHostIndex)
+                } else {
+                    "https://test-api.zip-site.com"
+                }
             }
+
             c?.close()
-            return Triple(userId, password, serviceId)
+            return listOf(userId, password, serviceId, zenrinMapsApiHost)
         }
     }
 }

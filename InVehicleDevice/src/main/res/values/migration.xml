@@ -171,5 +171,8 @@
         , service_id TEXT NOT NULL
       )
     </item>
+    <item>
+      ALTER TABLE zenrin_maps_accounts ADD zenrin_maps_api_host TEXT
+    </item>
   </string-array>
 </resources>

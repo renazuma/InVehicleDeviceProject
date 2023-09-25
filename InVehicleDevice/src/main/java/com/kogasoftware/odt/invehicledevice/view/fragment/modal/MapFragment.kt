@@ -71,7 +71,7 @@ class MapFragment : Fragment() {
         val zoom = 20
 
         val (width, height) = imageSizePair()
-        val (userId, password, serviceId) = ZenrinMapsAccount.getAccountData(context.contentResolver)
+        val (userId, password, serviceId, endpointHost) = ZenrinMapsAccount.getAccountData(context.contentResolver)
         val (vehicleLatitude, vehicleLongitude) = ServiceUnitStatusLog.getLatestLocation(context.contentResolver)
 
         val operationSchedule = arguments.getSerializable(ARG_OPERATION_SCHEDULE) as OperationSchedule
@@ -80,7 +80,7 @@ class MapFragment : Fragment() {
         val platformLongitude = operationSchedule.longitude.toString()
 
         return MapApi(userId, password, serviceId)
-            .imageUrl(width, height, zoom, vehicleLatitude, vehicleLongitude, platformLatitude, platformLongitude)
+            .imageUrl(endpointHost, width, height, zoom, vehicleLatitude, vehicleLongitude, platformLatitude, platformLongitude)
     }
 
     private fun circularProgressDrawable(): CircularProgressDrawable {
