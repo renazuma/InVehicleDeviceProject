@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'org.jetbrains.kotlin.android'
 
 // リリース用APKを作る際に、バージョンコードをインクリメントするコミットを積むこと
-def VERSION_CODE = 20024
+def VERSION_CODE = 20025
 
 android {
     compileSdkVersion 33
