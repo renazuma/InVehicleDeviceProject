@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'org.jetbrains.kotlin.android'
 
 // リリース用APKを作る際に、バージョンコードをインクリメントするコミットを積むこと
-def VERSION_CODE = 20025
+def VERSION_CODE = 20026
 
 android {
     compileSdkVersion 33
@@ -12,7 +12,7 @@ android {
         testInstrumentationRunner "com.kogasoftware.android.DexMakerInstrumentationTestRunner"
         minSdkVersion 24
         multiDexEnabled true
-        targetSdkVersion 31
+        targetSdkVersion 33
     }
     signingConfigs {
         release {
